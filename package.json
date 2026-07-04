@@ -4,6 +4,7 @@
   "private": true,
   "description": "CHM Group FORM D 웹앱 (Next.js) — @chm/design-system 소비",
   "scripts": {
+    "preinstall": "node scripts/git-auth.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
