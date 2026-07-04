@@ -1,0 +1,213 @@
+/* =========================================================================
+ * CHM Group Design System — Design Tokens
+ * "사람을 키우고, 집을 고치고, 마을을 연결한다"
+ *
+ * 단일 진실 공급원(Single Source of Truth).
+ * 모든 컴포넌트는 아래 CSS 변수를 참조합니다.
+ * 6대 핵심가치 = 6대 브랜드 컬러:
+ *   자립(Orange) · 신뢰(Blue) · 상생(Green)
+ *   공동체(Gold) · 혁신(Purple) · 지속가능성(Deep Green)
+ * ========================================================================= */
+
+:root {
+  /* --- Brand: 신뢰(Trust) / Blue — Primary ------------------------------ */
+  --chm-trust-50:  #eaf2fa;
+  --chm-trust-100: #cfe0f1;
+  --chm-trust-200: #a6c6e5;
+  --chm-trust-300: #7baad8;
+  --chm-trust-400: #5490c7;
+  --chm-trust-500: #2e75b6; /* base */
+  --chm-trust-600: #275f97;
+  --chm-trust-700: #204c79;
+  --chm-trust-800: #1a3b5d;
+  --chm-trust-900: #142c45;
+
+  /* --- Brand: 자립(Self-Reliance) / Orange ----------------------------- */
+  --chm-selfreliance-50:  #fef4e9;
+  --chm-selfreliance-100: #fce3c6;
+  --chm-selfreliance-200: #f9cb94;
+  --chm-selfreliance-300: #f6b061;
+  --chm-selfreliance-400: #f49e42;
+  --chm-selfreliance-500: #f28c28; /* base */
+  --chm-selfreliance-600: #d5741a;
+  --chm-selfreliance-700: #a95a15;
+  --chm-selfreliance-800: #7e4310;
+  --chm-selfreliance-900: #5a300b;
+
+  /* --- Brand: 상생(Cooperation) / Green -------------------------------- */
+  --chm-cooperation-50:  #edf7ed;
+  --chm-cooperation-100: #cfe9d0;
+  --chm-cooperation-200: #a6d7a8;
+  --chm-cooperation-300: #7bc47e;
+  --chm-cooperation-400: #5cb85f;
+  --chm-cooperation-500: #4caf50; /* base */
+  --chm-cooperation-600: #3d9141;
+  --chm-cooperation-700: #2f7233;
+  --chm-cooperation-800: #235526;
+  --chm-cooperation-900: #183c1a;
+
+  /* --- Brand: 공동체(Community) / Golden Yellow ------------------------ */
+  --chm-community-50:  #fef9e9;
+  --chm-community-100: #fcefc2;
+  --chm-community-200: #f9e28c;
+  --chm-community-300: #f6d55c;
+  --chm-community-400: #f5cd4f;
+  --chm-community-500: #f4c542; /* base */
+  --chm-community-600: #d9a81f;
+  --chm-community-700: #a8831a;
+  --chm-community-800: #7d6113;
+  --chm-community-900: #58440d;
+
+  /* --- Brand: 혁신(Innovation) / Purple -------------------------------- */
+  --chm-innovation-50:  #f2ecf7;
+  --chm-innovation-100: #dfceeb;
+  --chm-innovation-200: #c3a6d9;
+  --chm-innovation-300: #a67dc6;
+  --chm-innovation-400: #9166b5;
+  --chm-innovation-500: #7b4fa3; /* base */
+  --chm-innovation-600: #664187;
+  --chm-innovation-700: #52356c;
+  --chm-innovation-800: #3e2851;
+  --chm-innovation-900: #2b1c39;
+
+  /* --- Brand: 지속가능성(Sustainability) / Deep Green ------------------ */
+  --chm-sustainability-50:  #e9f3ee;
+  --chm-sustainability-100: #c7e0d2;
+  --chm-sustainability-200: #98c7ae;
+  --chm-sustainability-300: #67ad89;
+  --chm-sustainability-400: #429a6e;
+  --chm-sustainability-500: #1f6e43; /* base */
+  --chm-sustainability-600: #1a5d39;
+  --chm-sustainability-700: #154a2e;
+  --chm-sustainability-800: #103822;
+  --chm-sustainability-900: #0b2717;
+
+  /* --- Neutral / Ink (워드마크 딥네이비 → 그레이) --------------------- */
+  --chm-ink-0:   #ffffff;
+  --chm-ink-50:  #f6f8fa;
+  --chm-ink-100: #eceff3;
+  --chm-ink-200: #dde3ea;
+  --chm-ink-300: #c3ccd6;
+  --chm-ink-400: #97a4b2;
+  --chm-ink-500: #6b7a8b;
+  --chm-ink-600: #4e5d6c;
+  --chm-ink-700: #3a4552;
+  --chm-ink-800: #2c3540; /* 워드마크 딥네이비 */
+  --chm-ink-900: #1c232b;
+
+  /* --- Semantic (역할 기반 별칭) --------------------------------------- */
+  --chm-primary:        var(--chm-trust-500);
+  --chm-primary-hover:  var(--chm-trust-600);
+  --chm-primary-active: var(--chm-trust-700);
+  --chm-primary-soft:   var(--chm-trust-50);
+
+  --chm-success:      var(--chm-cooperation-500);
+  --chm-success-soft: var(--chm-cooperation-50);
+  --chm-warning:      var(--chm-selfreliance-500);
+  --chm-warning-soft: var(--chm-selfreliance-50);
+  --chm-caution:      var(--chm-community-500);
+  --chm-caution-soft: var(--chm-community-50);
+  --chm-info:         var(--chm-trust-500);
+  --chm-info-soft:    var(--chm-trust-50);
+
+  /* danger: 브랜드에 적색이 없어 기능 전용 색으로 도입 */
+  --chm-danger:      #e14b4b;
+  --chm-danger-hover:#c73b3b;
+  --chm-danger-soft: #fdeceb;
+
+  /* --- Surface & Text -------------------------------------------------- */
+  --chm-bg:            var(--chm-ink-50);
+  --chm-surface:       var(--chm-ink-0);
+  --chm-surface-muted: var(--chm-ink-100);
+  --chm-border:        var(--chm-ink-200);
+  --chm-border-strong: var(--chm-ink-300);
+
+  --chm-text:          var(--chm-ink-800);
+  --chm-text-muted:    var(--chm-ink-600);
+  --chm-text-subtle:   var(--chm-ink-500);
+  --chm-text-inverse:  var(--chm-ink-0);
+  --chm-text-link:     var(--chm-trust-600);
+
+  /* --- Typography ------------------------------------------------------ */
+  --chm-font-sans: "Pretendard", "Pretendard Variable", -apple-system,
+    BlinkMacSystemFont, system-ui, "Segoe UI", Roboto, "Apple SD Gothic Neo",
+    "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --chm-font-mono: "JetBrains Mono", "SFMono-Regular", Menlo, Consolas,
+    "Liberation Mono", monospace;
+
+  --chm-text-display: 3rem;      /* 48px */
+  --chm-text-h1:      2.25rem;   /* 36px */
+  --chm-text-h2:      1.75rem;   /* 28px */
+  --chm-text-h3:      1.375rem;  /* 22px */
+  --chm-text-h4:      1.125rem;  /* 18px */
+  --chm-text-body-lg: 1.0625rem; /* 17px */
+  --chm-text-body:    1rem;      /* 16px */
+  --chm-text-body-sm: 0.875rem;  /* 14px */
+  --chm-text-caption: 0.75rem;   /* 12px */
+  --chm-text-overline:0.6875rem; /* 11px */
+
+  --chm-leading-tight: 1.25;
+  --chm-leading-snug:  1.4;
+  --chm-leading-normal:1.6;
+
+  --chm-weight-regular:  400;
+  --chm-weight-medium:   500;
+  --chm-weight-semibold: 600;
+  --chm-weight-bold:     700;
+
+  /* --- Spacing (4px 그리드) ------------------------------------------- */
+  --chm-space-0:  0;
+  --chm-space-1:  0.25rem;  /* 4  */
+  --chm-space-2:  0.5rem;   /* 8  */
+  --chm-space-3:  0.75rem;  /* 12 */
+  --chm-space-4:  1rem;     /* 16 */
+  --chm-space-5:  1.25rem;  /* 20 */
+  --chm-space-6:  1.5rem;   /* 24 */
+  --chm-space-8:  2rem;     /* 32 */
+  --chm-space-10: 2.5rem;   /* 40 */
+  --chm-space-12: 3rem;     /* 48 */
+  --chm-space-16: 4rem;     /* 64 */
+  --chm-space-20: 5rem;     /* 80 */
+
+  /* --- Radius (엠블럼의 부드러운 육각형 느낌) ------------------------- */
+  --chm-radius-sm:   6px;
+  --chm-radius-md:   10px;
+  --chm-radius-lg:   14px;
+  --chm-radius-xl:   20px;
+  --chm-radius-2xl:  28px;
+  --chm-radius-full: 9999px;
+
+  /* --- Shadow (부드럽고 신뢰감 있는 그림자) -------------------------- */
+  --chm-shadow-sm: 0 1px 2px rgba(28, 35, 43, 0.06),
+                   0 1px 1px rgba(28, 35, 43, 0.04);
+  --chm-shadow-md: 0 4px 12px rgba(28, 35, 43, 0.08),
+                   0 2px 4px rgba(28, 35, 43, 0.05);
+  --chm-shadow-lg: 0 12px 28px rgba(28, 35, 43, 0.10),
+                   0 4px 8px rgba(28, 35, 43, 0.06);
+  --chm-shadow-xl: 0 24px 48px rgba(28, 35, 43, 0.14),
+                   0 8px 16px rgba(28, 35, 43, 0.08);
+  --chm-ring: 0 0 0 3px var(--chm-trust-200);
+
+  /* --- Motion ---------------------------------------------------------- */
+  --chm-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --chm-duration-fast:   120ms;
+  --chm-duration-normal: 200ms;
+  --chm-duration-slow:   320ms;
+
+  /* --- Z-index --------------------------------------------------------- */
+  --chm-z-dropdown: 1000;
+  --chm-z-sticky:   1100;
+  --chm-z-overlay:  1200;
+  --chm-z-modal:    1300;
+  --chm-z-toast:    1400;
+}
+
+/* --- Keyframes (Modal 등에서 사용) ------------------------------------- */
+@keyframes chm-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes chm-pop {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}

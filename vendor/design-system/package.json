@@ -1,0 +1,20 @@
+{
+  "name": "@chm/design-system",
+  "version": "0.1.0",
+  "description": "CHM Group Design System (vendored into chm-web)",
+  "type": "module",
+  "sideEffects": ["*.css"],
+  "main": "./src/index.js",
+  "module": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./tokens.css": "./src/tokens/tokens.css",
+    "./tokens.json": "./src/tokens/tokens.json",
+    "./tailwind.preset": "./tailwind.preset.js"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18",
+    "tailwindcss": ">=3.3"
+  }
+}

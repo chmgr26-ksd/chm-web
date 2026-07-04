@@ -5,7 +5,8 @@ module.exports = {
   content: [
     './app/**/*.{js,jsx}',
     './components/**/*.{js,jsx}',
-    // 디자인 시스템 컴포넌트가 쓰는 유틸리티 클래스도 스캔해야 생성됨
+    // 벤더링된 디자인 시스템 컴포넌트가 쓰는 유틸리티 클래스도 스캔해야 생성됨
+    './vendor/design-system/src/**/*.{js,jsx}',
     './node_modules/@chm/design-system/src/**/*.{js,jsx}',
   ],
 };

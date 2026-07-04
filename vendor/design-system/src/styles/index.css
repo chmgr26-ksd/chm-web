@@ -1,0 +1,12 @@
+/* CHM Design System — 스타일 엔트리 (앱/Storybook에서 임포트) */
+@import "../tokens/tokens.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 기본 타이포 바탕 */
+@layer base {
+  html { font-family: var(--chm-font-sans); }
+  body { background: var(--chm-bg); color: var(--chm-text); }
+}
