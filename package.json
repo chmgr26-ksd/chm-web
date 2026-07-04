@@ -13,7 +13,7 @@
     "next": "^14.2.15",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "@chm/design-system": "git+ssh://git@github.com/ppangppangsk/chm-group.git"
+    "@chm/design-system": "git+https://github.com/ppangppangsk/chm-group.git"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
