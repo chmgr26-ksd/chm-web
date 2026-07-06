@@ -5,11 +5,35 @@ import { cn } from '../lib/cn.js';
  * CHM Group 로고.
  * 6대 핵심가치를 상징하는 6색 육각형 엠블럼 + 중앙의 집(house) 심볼.
  *
- * @param {'full'|'emblem'|'wordmark'} [variant='full']  표시 형태
- * @param {number} [size=40]  엠블럼 높이(px)
- * @param {boolean} [inverse=false]  어두운 배경용(워드마크 흰색)
+ * variant:
+ *  - 'full'     : SVG 엠블럼 + 워드마크 (확장/테마/inverse 대응, 기본)
+ *  - 'emblem'   : SVG 엠블럼만
+ *  - 'wordmark' : 워드마크만
+ *  - 'official' : 공식 래스터 로고(원본 마스터, 픽셀 정합). `src` 필요.
+ *                 밝은 배경 전용(워드마크가 딥네이비). 다크 배경은 'full' inverse 권장.
+ *
+ * @param {'full'|'emblem'|'wordmark'|'official'} [variant='full']
+ * @param {number} [size=40]  높이(px)
+ * @param {boolean} [inverse=false]  어두운 배경용(SVG 워드마크 흰색)
+ * @param {string} [src]  official 변형에서 렌더할 로고 이미지 URL
+ *                        (예: import logo from '@chm/design-system/logo.png')
+ * @param {string} [alt]  official 변형 대체 텍스트
  */
-export function Logo({ variant = 'full', size = 40, inverse = false, className, ...props }) {
+export function Logo({ variant = 'full', size = 40, inverse = false, src, alt = 'CHM Group — Community Housing Management', className, ...props }) {
+  // 공식 래스터 로고 — src가 있을 때만 렌더, 없으면 SVG full로 폴백.
+  if (variant === 'official' && src) {
+    return (
+      <img
+        src={src}
+        alt={alt}
+        className={cn('chm-logo', className)}
+        style={{ height: size * 1.1, width: 'auto', display: 'block' }}
+        {...props}
+      />
+    );
+  }
+  if (variant === 'official') variant = 'full';
+
   const wordColor = inverse ? 'var(--chm-ink-0)' : 'var(--chm-ink-800)';
   const tagColor = inverse ? 'var(--chm-ink-300)' : 'var(--chm-ink-600)';
 

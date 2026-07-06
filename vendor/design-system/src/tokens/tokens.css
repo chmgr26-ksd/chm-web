@@ -93,6 +93,7 @@
   --chm-ink-600: #4e5d6c;
   --chm-ink-700: #3a4552;
   --chm-ink-800: #2c3540; /* 워드마크 딥네이비 */
+  --chm-ink-850: #1e2a38; /* 다크 섹션 배경(공식 웹 핸드오프 잉크) */
   --chm-ink-900: #1c232b;
 
   /* --- Semantic (역할 기반 별칭) --------------------------------------- */
@@ -100,6 +101,13 @@
   --chm-primary-hover:  var(--chm-trust-600);
   --chm-primary-active: var(--chm-trust-700);
   --chm-primary-soft:   var(--chm-trust-50);
+
+  /* CTA(행동 유도) — 공개 사이트의 "신청/문의" 주력색 = 자립 오렌지.
+     primary(신뢰 블루)는 톤/링크, cta(오렌지)는 전환 버튼에 사용. */
+  --chm-cta:        var(--chm-selfreliance-500);
+  --chm-cta-hover:  var(--chm-selfreliance-600);
+  --chm-cta-active: var(--chm-selfreliance-700);
+  --chm-cta-soft:   var(--chm-selfreliance-50);
 
   --chm-success:      var(--chm-cooperation-500);
   --chm-success-soft: var(--chm-cooperation-50);
@@ -119,6 +127,9 @@
   --chm-bg:            var(--chm-ink-50);
   --chm-surface:       var(--chm-ink-0);
   --chm-surface-muted: var(--chm-ink-100);
+  --chm-surface-warm:  #faf9f7; /* 웜 뉴트럴 섹션 배경 */
+  --chm-surface-cool:  #f3f7fb; /* 쿨 연블루 섹션 배경(히어로) */
+  --chm-surface-dark:  var(--chm-ink-850); /* 다크 섹션(통계밴드·공지바) */
   --chm-border:        var(--chm-ink-200);
   --chm-border-strong: var(--chm-ink-300);
 
@@ -134,6 +145,8 @@
     "Noto Sans KR", "Malgun Gothic", sans-serif;
   --chm-font-mono: "JetBrains Mono", "SFMono-Regular", Menlo, Consolas,
     "Liberation Mono", monospace;
+  /* 숫자·영문 라벨·워드마크 강조용(통계 수치 등). 한글은 sans로 폴백. */
+  --chm-font-display: "Montserrat", var(--chm-font-sans);
 
   --chm-text-display: 3rem;      /* 48px */
   --chm-text-h1:      2.25rem;   /* 36px */

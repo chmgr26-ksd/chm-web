@@ -10,7 +10,8 @@
     ".": "./src/index.js",
     "./tokens.css": "./src/tokens/tokens.css",
     "./tokens.json": "./src/tokens/tokens.json",
-    "./tailwind.preset": "./tailwind.preset.js"
+    "./tailwind.preset": "./tailwind.preset.js",
+    "./logo.png": "./src/assets/logo.png"
   },
   "peerDependencies": {
     "react": ">=18",

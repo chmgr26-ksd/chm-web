@@ -12,6 +12,7 @@ export { cn } from './lib/cn.js';
 // 브랜드
 export { Logo } from './components/Logo.jsx';
 export { ValueCard } from './components/ValueCard.jsx';
+export { ValueDotStrip } from './components/ValueDotStrip.jsx';
 
 // 액션 & 표시
 export { Button } from './components/Button.jsx';
@@ -72,6 +73,8 @@ export { NoticeList, NoticeItem } from './components/NoticeList.jsx';
 export { PageHero } from './components/PageHero.jsx';
 export { FeatureCard } from './components/FeatureCard.jsx';
 export { Timeline, TimelineItem } from './components/Timeline.jsx';
+export { NoticeBar } from './components/NoticeBar.jsx';
+export { StatBand } from './components/StatBand.jsx';
 
 // 토큰 (JS에서 프로그래매틱 접근용)
 export { default as tokens } from './tokens/tokens.json';

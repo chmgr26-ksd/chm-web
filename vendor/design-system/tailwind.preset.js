@@ -36,10 +36,12 @@ module.exports = {
       pattern: /(bg|text|border|ring)-(trust|selfreliance|cooperation|community|innovation|sustainability)-(50|100|200|300|400|500|600|700|800|900)/,
     },
     'bg-primary', 'bg-primary-hover', 'bg-primary-active', 'bg-primary-soft', 'text-primary',
+    'bg-cta', 'bg-cta-hover', 'bg-cta-active', 'bg-cta-soft', 'text-cta',
     'bg-danger', 'bg-danger-soft', 'text-danger',
     'text-success', 'text-warning', 'text-caution', 'text-info',
-    'bg-surface', 'bg-surface-muted', 'border-border',
-    'font-sans', 'font-mono',
+    'bg-surface', 'bg-surface-muted', 'bg-surface-warm', 'bg-surface-cool', 'bg-surface-dark',
+    'border-border',
+    'font-sans', 'font-mono', 'font-display',
   ],
   theme: {
     extend: {
@@ -54,7 +56,7 @@ module.exports = {
           0: 'var(--chm-ink-0)',   50: 'var(--chm-ink-50)',   100: 'var(--chm-ink-100)',
           200: 'var(--chm-ink-200)', 300: 'var(--chm-ink-300)', 400: 'var(--chm-ink-400)',
           500: 'var(--chm-ink-500)', 600: 'var(--chm-ink-600)', 700: 'var(--chm-ink-700)',
-          800: 'var(--chm-ink-800)', 900: 'var(--chm-ink-900)',
+          800: 'var(--chm-ink-800)', 850: 'var(--chm-ink-850)', 900: 'var(--chm-ink-900)',
         },
         // semantic aliases
         primary: {
@@ -62,6 +64,12 @@ module.exports = {
           hover:   'var(--chm-primary-hover)',
           active:  'var(--chm-primary-active)',
           soft:    'var(--chm-primary-soft)',
+        },
+        cta: {
+          DEFAULT: 'var(--chm-cta)',
+          hover:   'var(--chm-cta-hover)',
+          active:  'var(--chm-cta-active)',
+          soft:    'var(--chm-cta-soft)',
         },
         success: 'var(--chm-success)',
         warning: 'var(--chm-warning)',
@@ -75,6 +83,9 @@ module.exports = {
         surface: {
           DEFAULT: 'var(--chm-surface)',
           muted:   'var(--chm-surface-muted)',
+          warm:    'var(--chm-surface-warm)',
+          cool:    'var(--chm-surface-cool)',
+          dark:    'var(--chm-surface-dark)',
         },
         border: 'var(--chm-border)',
       },
@@ -82,6 +93,7 @@ module.exports = {
         sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui',
                'Apple SD Gothic Neo', 'Noto Sans KR', 'sans-serif'],
         mono: ['JetBrains Mono', 'SFMono-Regular', 'Menlo', 'monospace'],
+        display: ['Montserrat', 'Pretendard', 'sans-serif'],
       },
       fontSize: {
         display:  ['3rem',      { lineHeight: '1.15', fontWeight: '700' }],
