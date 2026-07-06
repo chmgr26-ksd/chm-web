@@ -5,7 +5,7 @@ import { cn } from '../lib/cn.js';
  * Button — CHM Group 기본 액션 버튼.
  *
  * @param {'solid'|'soft'|'outline'|'ghost'|'link'} [variant='solid']
- * @param {'primary'|'success'|'warning'|'caution'|'danger'|'ink'} [tone='primary']
+ * @param {'primary'|'cta'|'success'|'warning'|'caution'|'danger'|'ink'} [tone='primary']
  * @param {'sm'|'md'|'lg'} [size='md']
  * @param {boolean} [block]  전체 너비
  * @param {boolean} [loading]
@@ -18,6 +18,13 @@ const TONE = {
     outline: 'border border-trust-500 text-trust-600 hover:bg-trust-50',
     ghost: 'text-trust-600 hover:bg-trust-50',
     link: 'text-trust-600 underline-offset-4 hover:underline',
+  },
+  cta: {
+    solid: 'bg-cta text-white hover:bg-cta-hover active:bg-cta-active',
+    soft: 'bg-cta-soft text-selfreliance-700 hover:bg-selfreliance-100',
+    outline: 'border border-cta text-selfreliance-700 hover:bg-cta-soft',
+    ghost: 'text-selfreliance-700 hover:bg-cta-soft',
+    link: 'text-selfreliance-700 underline-offset-4 hover:underline',
   },
   success: {
     solid: 'bg-cooperation-500 text-white hover:bg-cooperation-600 active:bg-cooperation-700',
