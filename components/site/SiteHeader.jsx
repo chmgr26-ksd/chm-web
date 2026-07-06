@@ -34,9 +34,7 @@ export default function SiteHeader() {
                 {n.label}
               </Link>
             ))}
-            <Link href="/apply" className="ml-1 sm:ml-3">
-              <Button tone="cta" size="sm">집수리 신청</Button>
-            </Link>
+            <Button as={Link} href="/apply" tone="cta" size="sm" className="ml-1 sm:ml-3">집수리 신청</Button>
           </nav>
         </Container>
       </header>

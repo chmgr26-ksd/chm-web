@@ -101,7 +101,7 @@ export default function BusinessPage() {
               <div className="text-h4 font-bold text-ink-850">우리 동네 집수리, 지금 신청하세요</div>
               <div className="mt-1 text-body-sm text-ink-600">작은 수리도 괜찮습니다. 접수 후 영업일 기준 1일 내에 연락드립니다.</div>
             </div>
-            <Link href="/apply"><Button tone="cta" size="lg">집수리 신청</Button></Link>
+            <Button as={Link} href="/apply" tone="cta" size="lg">집수리 신청</Button>
           </div>
         </Container>
       </section>

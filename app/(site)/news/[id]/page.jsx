@@ -34,7 +34,7 @@ export default function NewsDetailPage({ params }) {
         </div>
 
         <div className="mt-10 flex flex-wrap items-center gap-3">
-          <Link href="/apply"><Button tone="cta" size="lg">참여 신청하기</Button></Link>
+          <Button as={Link} href="/apply" tone="cta" size="lg">참여 신청하기</Button>
           <a
             href={CONTACT.phoneHref}
             className="text-body-sm font-semibold text-ink-600 hover:text-primary"

@@ -26,8 +26,8 @@ export default function HomePage() {
         title={<><span className="text-cta">사람</span>을 키우고, <span className="text-primary">집</span>을 고치고, <span className="text-sustainability-600">마을</span>을 연결한다</>}
         description="주민이 직접 배우고 참여하는 동네 집수리 서비스. 작은 수리부터 정기 점검까지, 믿을 수 있는 이웃 기술자가 찾아갑니다."
         actions={<>
-          <Link href="/apply"><Button tone="cta" size="lg">집수리 신청</Button></Link>
-          <Link href="/business"><Button variant="outline" tone="primary" size="lg">사업 소개 보기</Button></Link>
+          <Button as={Link} href="/apply" tone="cta" size="lg">집수리 신청</Button>
+          <Button as={Link} href="/business" variant="outline" tone="primary" size="lg">사업 소개 보기</Button>
         </>}
         media={
           <div className="relative">
@@ -142,7 +142,7 @@ export default function HomePage() {
             <p className="text-body-lg text-white/85">작은 수리도 괜찮습니다. 신청을 남겨주시면 하루 안에 연락드립니다.</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link href="/apply"><Button tone="cta" size="lg">집수리 신청</Button></Link>
+            <Button as={Link} href="/apply" tone="cta" size="lg">집수리 신청</Button>
             <a
               href={CONTACT.phoneHref}
               className="inline-flex h-12 items-center rounded-chm-lg border-[1.5px] border-white/50 px-6 text-body-lg font-bold text-white transition-colors hover:bg-white/10"

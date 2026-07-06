@@ -10,6 +10,9 @@ import { cn } from '../lib/cn.js';
  * @param {boolean} [block]  전체 너비
  * @param {boolean} [loading]
  * @param {React.ReactNode} [leftIcon] [rightIcon]
+ * @param {React.ElementType} [as='button']  렌더할 엘리먼트/컴포넌트.
+ *   링크로 쓰려면 `as={Link}`(next/link) 또는 `as="a"`를 지정 — <a> 안에 <button>을
+ *   중첩(잘못된 HTML)하지 말고 버튼 자체를 링크로 렌더할 것.
  */
 const TONE = {
   primary: {
@@ -71,6 +74,7 @@ const SIZE = {
 
 export const Button = React.forwardRef(function Button(
   {
+    as: Comp = 'button',
     variant = 'solid',
     tone = 'primary',
     size = 'md',
@@ -85,14 +89,21 @@ export const Button = React.forwardRef(function Button(
   },
   ref
 ) {
+  const isNative = Comp === 'button';
+  const isBlocked = disabled || loading;
+  // <button>이 아닐 때(<a>/Link 등)는 disabled 대신 aria/스타일로 비활성 표현.
+  const stateProps = isNative
+    ? { disabled: isBlocked }
+    : { 'aria-disabled': isBlocked || undefined };
+
   return (
-    <button
+    <Comp
       ref={ref}
-      disabled={disabled || loading}
+      {...stateProps}
       className={cn(
         'inline-flex items-center justify-center font-semibold whitespace-nowrap select-none',
         'transition-colors duration-chm ease-chm focus:outline-none focus-visible:ring-2 focus-visible:ring-trust-300 focus-visible:ring-offset-1',
-        'disabled:opacity-50 disabled:pointer-events-none',
+        isNative ? 'disabled:opacity-50 disabled:pointer-events-none' : isBlocked && 'opacity-50 pointer-events-none',
         SIZE[size],
         TONE[tone][variant],
         block && 'w-full',
@@ -109,7 +120,7 @@ export const Button = React.forwardRef(function Button(
       {!loading && leftIcon}
       {children}
       {!loading && rightIcon}
-    </button>
+    </Comp>
   );
 });
 

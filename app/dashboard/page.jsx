@@ -31,7 +31,7 @@ export default function DashboardPage() {
         </Sidebar>
       }
       topbar={
-        <Topbar actions={<><Link href="/"><Button variant="soft" size="sm">사이트로</Button></Link><Avatar name="김수동" value="trust" size="sm" /></>}>
+        <Topbar actions={<><Button as={Link} href="/" variant="soft" size="sm">사이트로</Button><Avatar name="김수동" value="trust" size="sm" /></>}>
           <div className="text-h4 font-semibold text-ink-800">대시보드</div>
         </Topbar>
       }
