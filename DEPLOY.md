@@ -12,7 +12,11 @@
 | **빌드 명령** | **`npm run build`** |
 | 패키지 관리자 | **npm** |
 | 출력 디렉토리 | 비움 / 자동 (Next.js 서버 모드 — 강제 시 `.next`) |
-| 시작 명령 | **`npm run start`** (= `next start`) |
+| 시작 명령 | **`npm run start`** (= `node server.js`) |
+
+> **커스텀 서버**: `server.js`가 `process.env.PORT`(Hostinger가 지정)에 단일 프로세스로
+> 바인딩합니다. 기본 `next start`는 Hostinger LiteSpeed(LSAPI) 환경에서 포트/프록시가
+> 어긋나 503이 나므로 커스텀 서버를 사용합니다. (미들웨어·ISR·정적서빙 모두 동작 확인)
 
 ## 환경 변수
 

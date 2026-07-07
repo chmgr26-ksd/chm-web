@@ -8,7 +8,7 @@
     "postinstall": "prisma generate",
     "prebuild": "rm -rf .next",
     "build": "prisma migrate deploy && next build",
-    "start": "next start",
+    "start": "node server.js",
     "lint": "next lint"
   },
   "prisma": {
