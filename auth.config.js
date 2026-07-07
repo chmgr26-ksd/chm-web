@@ -22,6 +22,10 @@ export const authConfig = {
         }
         return true;
       }
+      // 마이페이지는 로그인한 회원 누구나
+      if (path.startsWith('/account')) {
+        return isLoggedIn; // 미로그인 → 로그인 페이지로
+      }
       return true;
     },
     jwt({ token, user }) {

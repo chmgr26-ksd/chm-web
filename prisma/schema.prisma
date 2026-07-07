@@ -42,6 +42,7 @@ model User {
   updatedAt    DateTime @updatedAt
 
   handledInquiries Inquiry[] @relation("InquiryHandler")
+  inquiries        Inquiry[] @relation("InquiryOwner")
 }
 
 model Inquiry {
@@ -58,9 +59,14 @@ model Inquiry {
   handlerId String?
   handler   User?  @relation("InquiryHandler", fields: [handlerId], references: [id], onDelete: SetNull)
 
+  // 로그인 상태로 신청한 경우 본인(마이페이지에서 조회)
+  userId String?
+  user   User?  @relation("InquiryOwner", fields: [userId], references: [id], onDelete: SetNull)
+
   @@index([status])
   @@index([type])
   @@index([createdAt])
+  @@index([userId])
 }
 
 // 후원 (Phase 2 후속 — PG 연동 전 스캐폴드)

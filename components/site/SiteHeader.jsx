@@ -52,10 +52,10 @@ export default function SiteHeader() {
                     대시보드
                   </Link>
                 )}
-                <span className="flex items-center gap-1.5 text-body-sm text-ink-600">
+                <Link href="/account" className="flex items-center gap-1.5 rounded-chm-md px-1.5 py-1 text-body-sm text-ink-600 hover:bg-ink-100" title="마이페이지">
                   <Avatar name={user?.name || '회원'} value="trust" size="sm" />
                   <span className="max-w-[7rem] truncate font-semibold text-ink-800">{user?.name}</span>
-                </span>
+                </Link>
                 <button type="button" onClick={logout} className="rounded-chm-md px-2.5 py-2 text-body-sm font-semibold text-ink-500 hover:bg-ink-100 hover:text-ink-800">
                   로그아웃
                 </button>
@@ -115,6 +115,9 @@ export default function SiteHeader() {
                       {user?.role === 'ADMIN' ? '관리자' : user?.role === 'STAFF' ? '직원' : '회원'}
                     </span>
                   </div>
+                  <Link href="/account" onClick={close} className="rounded-chm-md px-3 py-2.5 text-body font-semibold text-ink-700 hover:bg-ink-100">
+                    마이페이지
+                  </Link>
                   {isStaff && (
                     <Link href="/dashboard" onClick={close} className="rounded-chm-md px-3 py-2.5 text-body font-semibold text-primary hover:bg-primary-soft">
                       대시보드
