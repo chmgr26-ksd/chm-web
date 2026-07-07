@@ -18,14 +18,40 @@
 
 | 이름 | 값 | 용도 |
 |---|---|---|
-| **`NPM_CONFIG_PRODUCTION`** | `false` | devDependencies(Next·Tailwind) 설치 보장 |
-| `NEXTAUTH_URL` / `NEXTAUTH_SECRET` | — | Phase 2 |
-| `DATABASE_URL` | — | Phase 2 |
+| **`NPM_CONFIG_PRODUCTION`** | `false` | devDependencies(Next·Tailwind·Prisma) 설치 보장 |
+| **`DATABASE_URL`** | `mysql://user:pass@host:3306/db` | Prisma DB 접속 (Phase 2 필수) |
+| **`AUTH_SECRET`** | `openssl rand -base64 32` 결과 | Auth.js 세션 서명 (Phase 2 필수) |
+| **`AUTH_TRUST_HOST`** | `true` | 프록시(Hostinger) 뒤 호스트 신뢰 (Phase 2 필수) |
 
 > 토큰(`GH_TOKEN`)은 **더 이상 필요 없습니다.** (디자인 시스템이 벤더링됨)
 
 ## 배포 → 확인
-- `/` 홈 (PageHero·서비스·통계) · `/login` · `/dashboard`
+- `/` 홈 · `/about` · `/business` · `/news` · `/apply` · `/location`
+- `/login` · `/signup` · `/dashboard`(직원·관리자만)
+
+---
+
+## Phase 2 배포 (회원·권한·문의 DB)
+
+빌드 명령 `npm run build` 는 이제 **`prisma migrate deploy && next build`** 입니다.
+즉 배포 때마다 마이그레이션이 자동 적용됩니다. **최초 1회 순서:**
+
+1. **Hostinger에서 MySQL 데이터베이스 생성** (hPanel → Databases → MySQL).
+   생성된 host·db·user·pass로 `DATABASE_URL` 을 구성해 환경변수에 등록.
+2. `AUTH_SECRET`(= `openssl rand -base64 32`), `AUTH_TRUST_HOST=true`, `NPM_CONFIG_PRODUCTION=false` 환경변수 등록.
+3. **배포 실행** → `npm install`(postinstall: `prisma generate`) → `prisma migrate deploy`(테이블 생성) → `next build`.
+4. **초기 관리자 계정 생성** (한 번만). 아래 중 하나:
+   - 시드 스크립트: `ADMIN_EMAIL=... ADMIN_PASSWORD=... ADMIN_NAME=... npx prisma db seed`
+   - 또는 `/signup` 으로 가입 후 DB에서 승격:
+     `UPDATE User SET role='ADMIN' WHERE email='가입한이메일';`
+
+### 권한 구분
+- `ADMIN` 관리자 / `STAFF` 직원 → `/dashboard` 접근 가능(미들웨어 보호)
+- `USER` 일반 회원 → `/dashboard` 접근 시 홈으로 리다이렉트
+
+### 미포함(후속 증분)
+- **후원 결제**: PG(토스페이먼츠/PortOne) 계약·키 필요 — 스키마(`Donation`)만 스캐폴드됨.
+- 일반 회원 마이페이지(내 신청 내역).
 
 ---
 
@@ -42,6 +68,6 @@ git add vendor && git commit -m "chore: 디자인 시스템 동기화" && git pu
 > **트레이드오프**: 벤더링은 DS를 앱에 복제하므로 배포가 100% 확실해지는 대신,
 > DS 변경 시 위 동기화가 필요합니다. (private git 의존성의 인증 문제를 피하기 위한 선택)
 
-## 나중 단계 (Phase 2+)
-DB(MySQL)·인증(Auth.js) 추가 시 위 환경 변수를 채우고, 빌드 전에
-`npx prisma migrate deploy` 를 실행하도록 구성합니다.
+## 스키마 변경 시
+`prisma/schema.prisma` 수정 후 로컬에서 `npx prisma migrate dev --name 변경명` 으로
+마이그레이션 파일을 만들고 커밋하면, 배포 시 `prisma migrate deploy` 가 자동 적용합니다.

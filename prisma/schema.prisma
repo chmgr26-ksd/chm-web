@@ -1,0 +1,77 @@
+// CHM Group 웹앱 — Prisma 스키마 (Phase 2: 회원·권한·문의·후원)
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// 권한 구분: 일반 회원 / 직원 / 관리자
+enum Role {
+  USER
+  STAFF
+  ADMIN
+}
+
+// 참여 신청 유형 (참여신청 폼)
+enum InquiryType {
+  REPAIR // 집수리 서비스
+  EDU    // 집수리 교실 참가
+  VOL    // 자원봉사 · 협력
+}
+
+// 문의 처리 상태
+enum InquiryStatus {
+  NEW       // 접수
+  CONTACTED // 확인 연락 완료
+  SCHEDULED // 방문/일정 조율
+  DONE      // 완료
+  CANCELED  // 취소
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  phone        String?
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  handledInquiries Inquiry[] @relation("InquiryHandler")
+}
+
+model Inquiry {
+  id        String        @id @default(cuid())
+  type      InquiryType
+  name      String
+  phone     String
+  area      String?
+  message   String?       @db.Text
+  status    InquiryStatus @default(NEW)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  handlerId String?
+  handler   User?  @relation("InquiryHandler", fields: [handlerId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([type])
+  @@index([createdAt])
+}
+
+// 후원 (Phase 2 후속 — PG 연동 전 스캐폴드)
+model Donation {
+  id        String   @id @default(cuid())
+  name      String
+  amount    Int
+  message   String?  @db.Text
+  status    String   @default("PENDING") // PENDING | PAID | FAILED
+  createdAt DateTime @default(now())
+
+  @@index([status])
+  @@index([createdAt])
+}

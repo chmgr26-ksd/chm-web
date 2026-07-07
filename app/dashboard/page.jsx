@@ -1,67 +1,150 @@
-'use client';
-
 import Link from 'next/link';
+import { auth, signOut } from '@/auth';
+import { prisma } from '@/lib/prisma';
 import {
   AppShell, Sidebar, SidebarSection, SidebarItem, Topbar,
-  PageHeader, Stat, Card, CardBody, BarChart, Badge, Avatar, Button,
-  NoticeList, NoticeItem,
+  PageHeader, Stat, Badge, Avatar, Button, EmptyState,
+  Table, THead, TBody, TR, TH, TD,
 } from '@chm/design-system';
+import InquiryStatusSelect from './InquiryStatusSelect';
 
-const ico = (d) => <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d={d} stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+// 세션·DB에 의존하므로 항상 동적 렌더.
+export const dynamic = 'force-dynamic';
 
-export default function DashboardPage() {
+const TYPE_LABEL = { REPAIR: '집수리 서비스', EDU: '집수리 교실', VOL: '자원봉사·협력' };
+const TYPE_VALUE = { REPAIR: 'selfreliance', EDU: 'trust', VOL: 'community' };
+const STATUS_LABEL = { NEW: '접수', CONTACTED: '확인 연락', SCHEDULED: '일정 조율', DONE: '완료', CANCELED: '취소' };
+const STATUS_VALUE = { NEW: 'trust', CONTACTED: 'community', SCHEDULED: 'selfreliance', DONE: 'cooperation', CANCELED: 'innovation' };
+
+function fmtDate(d) {
+  const dt = new Date(d);
+  const p = (n) => String(n).padStart(2, '0');
+  return `${dt.getFullYear()}.${p(dt.getMonth() + 1)}.${p(dt.getDate())} ${p(dt.getHours())}:${p(dt.getMinutes())}`;
+}
+
+export default async function DashboardPage() {
+  const session = await auth();
+  const user = session?.user;
+  const roleLabel = user?.role === 'ADMIN' ? '관리자' : '직원';
+
+  const [total, byStatus, byType, recent] = await Promise.all([
+    prisma.inquiry.count(),
+    prisma.inquiry.groupBy({ by: ['status'], _count: { _all: true } }),
+    prisma.inquiry.groupBy({ by: ['type'], _count: { _all: true } }),
+    prisma.inquiry.findMany({ orderBy: { createdAt: 'desc' }, take: 20 }),
+  ]);
+
+  const statusCount = Object.fromEntries(byStatus.map((r) => [r.status, r._count._all]));
+  const typeCount = Object.fromEntries(byType.map((r) => [r.type, r._count._all]));
+  const inProgress = (statusCount.CONTACTED || 0) + (statusCount.SCHEDULED || 0);
+
   return (
-    <AppShell
-      sidebar={
-        <Sidebar footer={
-          <div className="flex items-center gap-2">
-            <Avatar name="김수동" value="trust" size="sm" />
-            <div className="min-w-0"><div className="truncate text-body-sm font-semibold text-ink-800">김수동</div><div className="text-caption text-ink-500">대표</div></div>
-          </div>
-        }>
-          <SidebarSection label="현황">
-            <SidebarItem active icon={ico('M3 12l9-9 9 9M5 10v10h14V10')}>대시보드</SidebarItem>
-            <SidebarItem icon={ico('M4 20V10M10 20V4M16 20v-8M22 20H2')} badge="new">통계·분석</SidebarItem>
-          </SidebarSection>
-          <SidebarSection label="업무">
-            <SidebarItem icon={ico('M14 7l3 3-9 9H5v-3z')} badge={8}>집수리 신청</SidebarItem>
-            <SidebarItem icon={ico('M17 20v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8')}>회원 관리</SidebarItem>
-            <SidebarItem icon={ico('M4 4h16v12H8l-4 4z')}>소식·공지</SidebarItem>
-          </SidebarSection>
-        </Sidebar>
-      }
-      topbar={
-        <Topbar actions={<><Button as={Link} href="/" variant="soft" size="sm">사이트로</Button><Avatar name="김수동" value="trust" size="sm" /></>}>
-          <div className="text-h4 font-semibold text-ink-800">대시보드</div>
-        </Topbar>
-      }
-    >
-      <PageHeader title="안녕하세요, 김수동님 👋" description="오늘의 사업단 운영 현황입니다." />
-      <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
-        <Stat label="이번 달 신청" value="126" unit="건" accent="trust" trend={{ dir: 'up', text: '+18%' }} />
-        <Stat label="처리 완료" value="98" unit="건" accent="cooperation" trend={{ dir: 'up', text: '+12%' }} />
-        <Stat label="배정 대기" value="14" unit="건" accent="selfreliance" />
-        <Stat label="신규 회원" value="23" unit="명" accent="innovation" trend={{ dir: 'up', text: '+5명' }} />
-      </div>
-      <div className="mt-4 grid gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-2"><CardBody>
-          <div className="mb-4 flex items-center justify-between">
-            <div className="text-h4 font-semibold text-ink-800">월별 집수리 처리</div>
-            <Badge value="trust" dot>2026 상반기</Badge>
-          </div>
-          <BarChart tone="trust" data={[
-            { label: '1월', value: 62 }, { label: '2월', value: 74 }, { label: '3월', value: 68 },
-            { label: '4월', value: 91 }, { label: '5월', value: 104 }, { label: '6월', value: 126 },
-          ]} />
-        </CardBody></Card>
-        <Card><CardBody>
-          <div className="mb-3 text-h4 font-semibold text-ink-800">최근 공지</div>
-          <NoticeList className="border-0">
-            <NoticeItem category="공지" title="상반기 회원 모집" date="07.01" />
-            <NoticeItem category="소식" title="사업단 발대식" date="06.24" />
-          </NoticeList>
-        </CardBody></Card>
-      </div>
-    </AppShell>
+    <div style={{ height: '100vh', overflow: 'hidden' }}>
+      <AppShell
+        sidebar={
+          <Sidebar
+            footer={
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex min-w-0 items-center gap-2">
+                  <Avatar name={user?.name || '사용자'} value="trust" size="sm" />
+                  <div className="min-w-0">
+                    <div className="truncate text-body-sm font-semibold text-ink-800">{user?.name}</div>
+                    <div className="text-caption text-ink-500">{roleLabel}</div>
+                  </div>
+                </div>
+                <form
+                  action={async () => {
+                    'use server';
+                    await signOut({ redirectTo: '/login' });
+                  }}
+                >
+                  <Button type="submit" variant="ghost" tone="ink" size="sm">로그아웃</Button>
+                </form>
+              </div>
+            }
+          >
+            <SidebarSection label="현황">
+              <SidebarItem active>대시보드</SidebarItem>
+            </SidebarSection>
+            <SidebarSection label="업무">
+              <SidebarItem badge={statusCount.NEW || undefined}>집수리 신청</SidebarItem>
+              <SidebarItem>회원 관리</SidebarItem>
+            </SidebarSection>
+            <SidebarSection label="바로가기">
+              <SidebarItem>공개 사이트</SidebarItem>
+            </SidebarSection>
+          </Sidebar>
+        }
+        topbar={
+          <Topbar
+            actions={
+              <div className="flex items-center gap-3">
+                <Link href="/" className="text-body-sm font-semibold text-ink-600 hover:text-primary">사이트로</Link>
+                <Avatar name={user?.name || '사용자'} value="trust" size="sm" />
+              </div>
+            }
+          >
+            <div className="text-h4 font-semibold text-ink-800">대시보드</div>
+          </Topbar>
+        }
+      >
+        <PageHeader
+          title={`안녕하세요, ${user?.name || ''}님`}
+          description="집수리 신청·문의 현황입니다."
+        />
+
+        <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))' }}>
+          <Stat label="전체 신청" value={String(total)} unit="건" accent="trust" />
+          <Stat label="신규 접수" value={String(statusCount.NEW || 0)} unit="건" accent="selfreliance" />
+          <Stat label="처리 중" value={String(inProgress)} unit="건" accent="community" />
+          <Stat label="완료" value={String(statusCount.DONE || 0)} unit="건" accent="cooperation" />
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          {['REPAIR', 'EDU', 'VOL'].map((t) => (
+            <Badge key={t} value={TYPE_VALUE[t]} dot>
+              {TYPE_LABEL[t]} {typeCount[t] || 0}
+            </Badge>
+          ))}
+        </div>
+
+        <div className="mt-8">
+          <h2 className="mb-3 text-h4 font-bold text-ink-800">최근 신청</h2>
+          {recent.length === 0 ? (
+            <EmptyState
+              title="아직 접수된 신청이 없습니다"
+              description="공개 사이트의 참여 신청 폼으로 문의가 접수되면 여기에 표시됩니다."
+            />
+          ) : (
+            <div className="overflow-x-auto rounded-chm-lg border border-border">
+              <Table>
+                <THead>
+                  <TR>
+                    <TH>유형</TH>
+                    <TH>성함</TH>
+                    <TH>연락처</TH>
+                    <TH>지역</TH>
+                    <TH>접수일</TH>
+                    <TH>상태</TH>
+                  </TR>
+                </THead>
+                <TBody>
+                  {recent.map((q) => (
+                    <TR key={q.id}>
+                      <TD><Badge value={TYPE_VALUE[q.type]}>{TYPE_LABEL[q.type]}</Badge></TD>
+                      <TD>{q.name}</TD>
+                      <TD>{q.phone}</TD>
+                      <TD>{q.area || '—'}</TD>
+                      <TD>{fmtDate(q.createdAt)}</TD>
+                      <TD><InquiryStatusSelect id={q.id} value={q.status} /></TD>
+                    </TR>
+                  ))}
+                </TBody>
+              </Table>
+            </div>
+          )}
+        </div>
+      </AppShell>
+    </div>
   );
 }

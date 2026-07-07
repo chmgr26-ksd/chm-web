@@ -22,23 +22,36 @@ export default function ApplyPage() {
   const [err, setErr] = useState('');
   const [sent, setSent] = useState(false);
   const [sentName, setSentName] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     if (!fName.trim() || !fPhone.trim()) {
       setErr('성함과 연락처는 꼭 입력해 주세요.');
       return;
     }
+    setErr('');
+    setSubmitting(true);
     try {
-      const arr = JSON.parse(localStorage.getItem('chm_inquiries') || '[]');
-      arr.push({ type: fType, name: fName, phone: fPhone, area: fArea, msg: fMsg, at: new Date().toISOString() });
-      localStorage.setItem('chm_inquiries', JSON.stringify(arr));
+      const res = await fetch('/api/inquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: fType, name: fName, phone: fPhone, area: fArea, message: fMsg }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setSubmitting(false);
+        setErr(data.error || '접수 중 오류가 발생했습니다. 잠시 후 다시 시도하거나 전화로 문의해 주세요.');
+        return;
+      }
     } catch {
-      /* localStorage 미지원 환경은 조용히 통과 — 접수 UX 유지 */
+      setSubmitting(false);
+      setErr('네트워크 오류로 접수하지 못했습니다. 전화로 문의해 주세요.');
+      return;
     }
+    setSubmitting(false);
     setSentName(fName);
     setSent(true);
-    setErr('');
     window.scrollTo(0, 0);
   };
 
@@ -108,7 +121,7 @@ export default function ApplyPage() {
 
                 {err && <Alert tone="danger">{err}</Alert>}
 
-                <Button type="submit" tone="cta" size="lg" block>신청서 보내기</Button>
+                <Button type="submit" tone="cta" size="lg" block loading={submitting}>신청서 보내기</Button>
                 <p className="text-caption leading-normal text-ink-500">보내주신 정보는 신청 응대 목적으로만 사용됩니다. 접수 후 영업일 기준 1일 내에 연락드립니다.</p>
               </form>
             )}

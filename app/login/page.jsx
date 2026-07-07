@@ -2,39 +2,59 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { AuthCard, Field, Input, Checkbox, Button, Alert } from '@chm/design-system';
+import { useRouter } from 'next/navigation';
+import { signIn, getSession } from 'next-auth/react';
+import { AuthCard, Field, Input, Button, Alert } from '@chm/design-system';
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
-  const [msg, setMsg] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  // Phase 0: UI만. Phase 2에서 Auth.js로 실제 인증 연결.
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    setMsg('로그인 기능은 Phase 2(Auth.js)에서 연결됩니다.');
+    setError('');
+    setLoading(true);
+    const res = await signIn('credentials', { email, password: pw, redirect: false });
+    if (res?.error) {
+      setLoading(false);
+      setError('이메일 또는 비밀번호가 올바르지 않습니다.');
+      return;
+    }
+    // 권한에 따라 이동: 직원·관리자 → 대시보드, 일반 → 홈
+    const session = await getSession();
+    const role = session?.user?.role;
+    router.push(role === 'ADMIN' || role === 'STAFF' ? '/dashboard' : '/');
+    router.refresh();
   };
 
   return (
-    <AuthCard
-      title="로그인"
-      subtitle="CHM Group 업무 플랫폼"
-      footer={<>계정이 없으신가요? <Link href="#" className="font-semibold text-trust-600">회원가입</Link></>}
-    >
-      <form className="flex flex-col gap-4" onSubmit={onSubmit}>
-        {msg && <Alert tone="info">{msg}</Alert>}
-        <Field label="이메일" htmlFor="email">
-          <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
-        </Field>
-        <Field label="비밀번호" htmlFor="pw">
-          <Input id="pw" type="password" placeholder="••••••••" value={pw} onChange={(e) => setPw(e.target.value)} />
-        </Field>
-        <div className="flex items-center justify-between">
-          <Checkbox label="로그인 유지" />
-          <Link href="#" className="text-body-sm font-semibold text-trust-600">비밀번호 찾기</Link>
+    <div className="flex min-h-screen items-center justify-center bg-surface-warm px-4 py-12">
+      <div className="w-full max-w-md">
+        <div className="mb-6 flex justify-center">
+          <Link href="/" aria-label="CHM Group 홈">
+            <img src="/logo.png" alt="CHM Group" className="h-9 w-auto" />
+          </Link>
         </div>
-        <Button type="submit" size="lg" block>로그인</Button>
-      </form>
-    </AuthCard>
+        <AuthCard
+          title="로그인"
+          subtitle="CHM Group 업무 플랫폼"
+          footer={<>계정이 없으신가요? <Link href="/signup" className="font-semibold text-primary">회원가입</Link></>}
+        >
+          <form className="flex flex-col gap-4" onSubmit={onSubmit}>
+            {error && <Alert tone="danger">{error}</Alert>}
+            <Field label="이메일" htmlFor="email">
+              <Input id="email" type="email" autoComplete="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+            </Field>
+            <Field label="비밀번호" htmlFor="pw">
+              <Input id="pw" type="password" autoComplete="current-password" placeholder="••••••••" value={pw} onChange={(e) => setPw(e.target.value)} />
+            </Field>
+            <Button type="submit" size="lg" block loading={loading}>로그인</Button>
+          </form>
+        </AuthCard>
+      </div>
+    </div>
   );
 }

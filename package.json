@@ -5,20 +5,28 @@
   "description": "CHM Group FORM D 웹앱 (Next.js) — @chm/design-system 소비",
   "scripts": {
     "dev": "next dev",
+    "postinstall": "prisma generate",
     "prebuild": "rm -rf .next",
-    "build": "next build",
+    "build": "prisma migrate deploy && next build",
     "start": "next start",
     "lint": "next lint"
   },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
   "dependencies": {
+    "@chm/design-system": "file:./vendor/design-system",
+    "@prisma/client": "^6.19.3",
+    "bcryptjs": "^3.0.3",
     "next": "^14.2.15",
+    "next-auth": "5.0.0-beta.31",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "@chm/design-system": "file:./vendor/design-system"
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
+    "prisma": "^6.19.3",
     "tailwindcss": "^3.4.17"
   }
 }
