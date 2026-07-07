@@ -19,9 +19,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!email || !password) return null;
 
         const user = await prisma.user.findUnique({ where: { email } });
-        if (!user) return null;
+        if (!user || !user.passwordHash) return null;
 
-        const ok = await bcrypt.compare(password, user.passwordHash);
+        // 손상된/무효 해시(평문 삽입 등)면 bcrypt가 예외를 던짐 →
+        // Configuration 오류 대신 "로그인 실패(null)"로 안전하게 처리.
+        let ok = false;
+        try {
+          ok = await bcrypt.compare(password, user.passwordHash);
+        } catch {
+          return null;
+        }
         if (!ok) return null;
 
         return { id: user.id, email: user.email, name: user.name, role: user.role };
