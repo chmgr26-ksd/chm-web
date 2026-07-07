@@ -1,5 +1,6 @@
 import '@chm/design-system/tokens.css';
 import './globals.css';
+import Providers from '../components/site/Providers';
 
 export const metadata = {
   title: 'CHM Group',
@@ -22,7 +23,7 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap"
         />
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

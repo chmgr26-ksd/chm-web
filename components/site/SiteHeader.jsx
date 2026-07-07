@@ -3,14 +3,19 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { Button, NoticeBar, Container } from '@chm/design-system';
+import { useSession, signOut } from 'next-auth/react';
+import { Button, NoticeBar, Container, Avatar } from '@chm/design-system';
 import { NAV } from './constants';
 
 export default function SiteHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const { data: session, status } = useSession();
+  const user = session?.user;
+  const isStaff = user?.role === 'ADMIN' || user?.role === 'STAFF';
   const isActive = (href) => (href === '/' ? pathname === '/' : pathname.startsWith(href));
   const close = () => setOpen(false);
+  const logout = () => signOut({ callbackUrl: '/' });
 
   return (
     <>
@@ -38,7 +43,30 @@ export default function SiteHeader() {
                 {n.label}
               </Link>
             ))}
-            <Button as={Link} href="/apply" tone="cta" size="sm" className="ml-3">집수리 신청</Button>
+
+            {/* 계정 영역 */}
+            {status === 'authenticated' ? (
+              <div className="ml-1 flex items-center gap-2 border-l border-border pl-3">
+                {isStaff && (
+                  <Link href="/dashboard" className="rounded-chm-md px-3 py-2 text-body-sm font-semibold text-primary hover:bg-primary-soft">
+                    대시보드
+                  </Link>
+                )}
+                <span className="flex items-center gap-1.5 text-body-sm text-ink-600">
+                  <Avatar name={user?.name || '회원'} value="trust" size="sm" />
+                  <span className="max-w-[7rem] truncate font-semibold text-ink-800">{user?.name}</span>
+                </span>
+                <button type="button" onClick={logout} className="rounded-chm-md px-2.5 py-2 text-body-sm font-semibold text-ink-500 hover:bg-ink-100 hover:text-ink-800">
+                  로그아웃
+                </button>
+              </div>
+            ) : (
+              <Link href="/login" className="ml-1 border-l border-border pl-3 pr-1 text-body-sm font-semibold text-ink-700 hover:text-cta">
+                로그인
+              </Link>
+            )}
+
+            <Button as={Link} href="/apply" tone="cta" size="sm" className="ml-1">집수리 신청</Button>
           </nav>
 
           {/* 모바일 햄버거 (< sm) */}
@@ -75,6 +103,38 @@ export default function SiteHeader() {
                   {n.label}
                 </Link>
               ))}
+
+              <div className="my-1 border-t border-border" />
+
+              {status === 'authenticated' ? (
+                <>
+                  <div className="flex items-center gap-2 px-3 py-2 text-body-sm text-ink-600">
+                    <Avatar name={user?.name || '회원'} value="trust" size="sm" />
+                    <span className="font-semibold text-ink-800">{user?.name}</span>
+                    <span className="text-caption text-ink-500">
+                      {user?.role === 'ADMIN' ? '관리자' : user?.role === 'STAFF' ? '직원' : '회원'}
+                    </span>
+                  </div>
+                  {isStaff && (
+                    <Link href="/dashboard" onClick={close} className="rounded-chm-md px-3 py-2.5 text-body font-semibold text-primary hover:bg-primary-soft">
+                      대시보드
+                    </Link>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => { close(); logout(); }}
+                    className="rounded-chm-md px-3 py-2.5 text-left text-body font-semibold text-ink-600 hover:bg-ink-100"
+                  >
+                    로그아웃
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link href="/login" onClick={close} className="rounded-chm-md px-3 py-2.5 text-body font-semibold text-ink-700 hover:bg-ink-100">로그인</Link>
+                  <Link href="/signup" onClick={close} className="rounded-chm-md px-3 py-2.5 text-body font-semibold text-ink-700 hover:bg-ink-100">회원가입</Link>
+                </>
+              )}
+
               <Button as={Link} href="/apply" tone="cta" size="md" className="mt-2" onClick={close}>집수리 신청</Button>
             </Container>
           </div>
