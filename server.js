@@ -25,6 +25,11 @@ app
     server.on('error', (err) => console.error('[server] error:', err));
     server.listen(port, hostname, () => {
       console.log(`> Ready on http://${hostname}:${port}`);
+      // DB 커넥션 워밍업 — 첫 대시보드 요청의 콜드 쿼리 지연으로 인한
+      // 스트림 끊김(빈 화면 조각) 방지. 실패해도 무시.
+      setTimeout(() => {
+        fetch(`http://127.0.0.1:${port}/api/health`).catch(() => {});
+      }, 800);
     });
   })
   .catch((err) => {
