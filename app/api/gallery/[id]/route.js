@@ -1,0 +1,31 @@
+import { NextResponse } from 'next/server';
+import { auth } from '@/auth';
+import { prisma } from '@/lib/prisma';
+import { can } from '@/lib/rbac';
+
+// 이미지 바이너리 서빙(공개). 콘텐츠 해시가 아니므로 짧게 캐시.
+export async function GET(req, { params }) {
+  const img = await prisma.galleryImage.findUnique({ where: { id: params.id } });
+  if (!img) return new NextResponse('Not found', { status: 404 });
+  return new NextResponse(img.data, {
+    headers: {
+      'Content-Type': img.mimeType,
+      'Cache-Control': 'public, max-age=86400',
+    },
+  });
+}
+
+// 이미지 삭제 — gallery:manage.
+export async function DELETE(req, { params }) {
+  const session = await auth();
+  if (!can(session?.user, 'gallery:manage')) {
+    return NextResponse.json({ error: '권한이 없습니다.' }, { status: 403 });
+  }
+  try {
+    await prisma.galleryImage.delete({ where: { id: params.id } });
+  } catch (e) {
+    if (e?.code === 'P2025') return NextResponse.json({ error: '이미지를 찾을 수 없습니다.' }, { status: 404 });
+    throw e;
+  }
+  return NextResponse.json({ ok: true });
+}
