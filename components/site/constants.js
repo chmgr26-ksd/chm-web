@@ -17,6 +17,8 @@ export const NAV = [
   { href: '/about', label: '소개' },
   { href: '/business', label: '사업 안내' },
   { href: '/news', label: '소식' },
+  { href: '/gallery', label: '갤러리' },
+  { href: '/faq', label: 'FAQ' },
   { href: '/location', label: '오시는 길' },
 ];
 
