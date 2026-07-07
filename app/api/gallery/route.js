@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { can } from '@/lib/rbac';
@@ -35,5 +36,6 @@ export async function POST(req) {
   await prisma.galleryImage.create({
     data: { title, mimeType: file.type, size: buf.length, data: buf },
   });
+  revalidatePath('/gallery');
   return NextResponse.json({ ok: true });
 }

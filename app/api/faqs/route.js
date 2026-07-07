@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { can } from '@/lib/rbac';
@@ -16,5 +17,6 @@ export async function POST(req) {
     return NextResponse.json({ error: '질문과 답변을 입력해 주세요.' }, { status: 400 });
   }
   const faq = await prisma.faq.create({ data: { question, answer, published: body.published !== false } });
+  revalidatePath('/faq');
   return NextResponse.json({ ok: true, id: faq.id });
 }

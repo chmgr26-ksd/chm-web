@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { can } from '@/lib/rbac';
@@ -29,7 +30,7 @@ export async function PATCH(req, { params }) {
     if (e?.code === 'P2025') return NextResponse.json({ error: '이미지를 찾을 수 없습니다.' }, { status: 404 });
     throw e;
   }
-  return NextResponse.json({ ok: true });
+  revalidatePath('/gallery');  return NextResponse.json({ ok: true });
 }
 
 // 이미지 삭제 — gallery:manage.
@@ -44,5 +45,5 @@ export async function DELETE(req, { params }) {
     if (e?.code === 'P2025') return NextResponse.json({ error: '이미지를 찾을 수 없습니다.' }, { status: 404 });
     throw e;
   }
-  return NextResponse.json({ ok: true });
+  revalidatePath('/gallery');  return NextResponse.json({ ok: true });
 }

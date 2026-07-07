@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { can } from '@/lib/rbac';
@@ -26,7 +27,7 @@ export async function PATCH(req, { params }) {
     if (e?.code === 'P2025') return NextResponse.json({ error: 'FAQ를 찾을 수 없습니다.' }, { status: 404 });
     throw e;
   }
-  return NextResponse.json({ ok: true });
+  revalidatePath('/faq');  return NextResponse.json({ ok: true });
 }
 
 export async function DELETE(req, { params }) {
@@ -40,5 +41,5 @@ export async function DELETE(req, { params }) {
     if (e?.code === 'P2025') return NextResponse.json({ error: 'FAQ를 찾을 수 없습니다.' }, { status: 404 });
     throw e;
   }
-  return NextResponse.json({ ok: true });
+  revalidatePath('/faq');  return NextResponse.json({ ok: true });
 }

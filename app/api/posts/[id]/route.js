@@ -1,8 +1,15 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { can } from '@/lib/rbac';
 import { isValidCategory } from '@/lib/posts';
+
+function revalidatePost(id) {
+  revalidatePath('/news');
+  revalidatePath(`/news/${id}`);
+  revalidatePath('/');
+}
 
 // 소식 수정 — posts:manage. 부분 갱신(발행 토글 포함).
 export async function PATCH(req, { params }) {
@@ -33,7 +40,7 @@ export async function PATCH(req, { params }) {
     if (e?.code === 'P2025') return NextResponse.json({ error: '글을 찾을 수 없습니다.' }, { status: 404 });
     throw e;
   }
-  return NextResponse.json({ ok: true });
+  revalidatePost(params.id);  return NextResponse.json({ ok: true });
 }
 
 // 소식 삭제 — posts:manage.
@@ -48,5 +55,5 @@ export async function DELETE(req, { params }) {
     if (e?.code === 'P2025') return NextResponse.json({ error: '글을 찾을 수 없습니다.' }, { status: 404 });
     throw e;
   }
-  return NextResponse.json({ ok: true });
+  revalidatePost(params.id);  return NextResponse.json({ ok: true });
 }

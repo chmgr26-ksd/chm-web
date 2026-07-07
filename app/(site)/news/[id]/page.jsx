@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { POST_CATEGORY } from '@/lib/posts';
 import { CONTACT } from '../../../../components/site/constants';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 120;
 
 function fmtDate(d) {
   const dt = new Date(d);

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { can } from '@/lib/rbac';
@@ -31,5 +32,7 @@ export async function POST(req) {
       authorName: session.user.name || null,
     },
   });
+  revalidatePath('/news');
+  revalidatePath('/');
   return NextResponse.json({ ok: true, id: post.id });
 }

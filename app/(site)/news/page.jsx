@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { POST_CATEGORY } from '@/lib/posts';
 import PageBanner from '../../../components/site/PageBanner';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 export const metadata = { title: '소식 · CHM Group' };
 
 function fmtDate(d) {

@@ -2,7 +2,7 @@ import { Container, Accordion, AccordionItem, EmptyState } from '@chm/design-sys
 import { prisma } from '@/lib/prisma';
 import PageBanner from '../../../components/site/PageBanner';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 export const metadata = { title: '자주 묻는 질문 · CHM Group' };
 
 export default async function FaqPage() {
