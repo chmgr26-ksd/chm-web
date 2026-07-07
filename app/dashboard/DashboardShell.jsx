@@ -7,7 +7,7 @@ import {
 } from '@chm/design-system';
 import { can, ROLE_LABEL } from '@/lib/rbac';
 
-export default function DashboardShell({ user, newCount = 0, children }) {
+export default function DashboardShell({ user, children }) {
   const pathname = usePathname();
   const canManageMembers = can(user, 'members:manage');
   const roleLabel = ROLE_LABEL[user?.role] || '직원';
@@ -36,7 +36,7 @@ export default function DashboardShell({ user, newCount = 0, children }) {
             }
           >
             <SidebarSection label="현황">
-              <SidebarItem href="/dashboard" active={pathname === '/dashboard'} badge={newCount || undefined}>대시보드 · 신청</SidebarItem>
+              <SidebarItem href="/dashboard" active={pathname === '/dashboard'}>대시보드 · 신청</SidebarItem>
               <SidebarItem href="/dashboard/analytics" active={pathname.startsWith('/dashboard/analytics')}>방문자 통계</SidebarItem>
               <SidebarItem href="/dashboard/posts" active={pathname.startsWith('/dashboard/posts')}>소식 관리</SidebarItem>
               <SidebarItem href="/dashboard/faqs" active={pathname.startsWith('/dashboard/faqs')}>FAQ 관리</SidebarItem>
