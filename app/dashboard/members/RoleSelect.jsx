@@ -3,12 +3,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Select } from '@chm/design-system';
+import { ROLE_VALUES, ROLE_LABEL } from '@/lib/rbac';
 
-const OPTIONS = [
-  { value: 'USER', label: '일반 회원' },
-  { value: 'STAFF', label: '직원' },
-  { value: 'ADMIN', label: '관리자' },
-];
+const OPTIONS = ROLE_VALUES.map((v) => ({ value: v, label: ROLE_LABEL[v] }));
 
 export default function RoleSelect({ id, value }) {
   const router = useRouter();

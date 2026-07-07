@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { Button, NoticeBar, Container, Avatar } from '@chm/design-system';
+import { can, ROLE_LABEL } from '@/lib/rbac';
 import { NAV } from './constants';
 
 export default function SiteHeader() {
@@ -12,7 +13,7 @@ export default function SiteHeader() {
   const [open, setOpen] = useState(false);
   const { data: session, status } = useSession();
   const user = session?.user;
-  const isStaff = user?.role === 'ADMIN' || user?.role === 'STAFF';
+  const canDashboard = can(user, 'dashboard:access');
   const isActive = (href) => (href === '/' ? pathname === '/' : pathname.startsWith(href));
   const close = () => setOpen(false);
   // Auth.js가 프록시 뒤에서 절대 URL을 0.0.0.0:3000으로 만드는 문제를 피하려
@@ -52,7 +53,7 @@ export default function SiteHeader() {
             {/* 계정 영역 */}
             {status === 'authenticated' ? (
               <div className="ml-1 flex items-center gap-2 border-l border-border pl-3">
-                {isStaff && (
+                {canDashboard && (
                   <Link href="/dashboard" className="rounded-chm-md px-3 py-2 text-body-sm font-semibold text-primary hover:bg-primary-soft">
                     대시보드
                   </Link>
@@ -117,13 +118,13 @@ export default function SiteHeader() {
                     <Avatar name={user?.name || '회원'} value="trust" size="sm" />
                     <span className="font-semibold text-ink-800">{user?.name}</span>
                     <span className="text-caption text-ink-500">
-                      {user?.role === 'ADMIN' ? '관리자' : user?.role === 'STAFF' ? '직원' : '회원'}
+                      {ROLE_LABEL[user?.role] || '회원'}
                     </span>
                   </div>
                   <Link href="/account" onClick={close} className="rounded-chm-md px-3 py-2.5 text-body font-semibold text-ink-700 hover:bg-ink-100">
                     마이페이지
                   </Link>
-                  {isStaff && (
+                  {canDashboard && (
                     <Link href="/dashboard" onClick={close} className="rounded-chm-md px-3 py-2.5 text-body font-semibold text-primary hover:bg-primary-soft">
                       대시보드
                     </Link>

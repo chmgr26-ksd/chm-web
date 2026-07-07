@@ -4,11 +4,11 @@ import {
   PageHeader, Badge, EmptyState,
   Table, THead, TBody, TR, TH, TD,
 } from '@chm/design-system';
+import { can, ROLE_LABEL } from '@/lib/rbac';
 import RoleSelect from './RoleSelect';
 
 export const dynamic = 'force-dynamic';
 
-const ROLE_LABEL = { ADMIN: '관리자', STAFF: '직원', USER: '일반 회원' };
 const ROLE_VALUE = { ADMIN: 'innovation', STAFF: 'trust', USER: 'cooperation' };
 
 function fmtDate(d) {
@@ -21,8 +21,8 @@ export default async function MembersPage() {
   const session = await auth();
   const me = session.user;
 
-  // 회원 관리는 관리자 전용(사이드바에도 관리자만 노출되지만 직접 접근 차단).
-  if (me.role !== 'ADMIN') {
+  // 회원 관리는 members:view 권한(관리자) 전용 — 직접 접근도 차단.
+  if (!can(me, 'members:view')) {
     return (
       <>
         <PageHeader title="회원 관리" />

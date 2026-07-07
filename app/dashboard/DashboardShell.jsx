@@ -5,11 +5,12 @@ import { signOut } from 'next-auth/react';
 import {
   AppShell, Sidebar, SidebarSection, SidebarItem, Topbar, Avatar, Button,
 } from '@chm/design-system';
+import { can, ROLE_LABEL } from '@/lib/rbac';
 
 export default function DashboardShell({ user, newCount = 0, children }) {
   const pathname = usePathname();
-  const isAdmin = user?.role === 'ADMIN';
-  const roleLabel = user?.role === 'ADMIN' ? '관리자' : '직원';
+  const canManageMembers = can(user, 'members:manage');
+  const roleLabel = ROLE_LABEL[user?.role] || '직원';
   // 프록시 뒤 0.0.0.0 리다이렉트 회피 — 클라이언트가 상대경로로 이동.
   const logout = async () => {
     await signOut({ redirect: false });
@@ -37,7 +38,7 @@ export default function DashboardShell({ user, newCount = 0, children }) {
             <SidebarSection label="현황">
               <SidebarItem href="/dashboard" active={pathname === '/dashboard'} badge={newCount || undefined}>대시보드 · 신청</SidebarItem>
             </SidebarSection>
-            {isAdmin && (
+            {canManageMembers && (
               <SidebarSection label="관리">
                 <SidebarItem href="/dashboard/members" active={pathname.startsWith('/dashboard/members')}>회원 관리</SidebarItem>
               </SidebarSection>

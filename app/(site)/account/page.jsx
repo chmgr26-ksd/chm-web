@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { Container, Badge, EmptyState, Button } from '@chm/design-system';
+import { can, ROLE_LABEL } from '@/lib/rbac';
 import PageBanner from '../../../components/site/PageBanner';
 
 export const dynamic = 'force-dynamic';
@@ -11,7 +12,6 @@ const TYPE_LABEL = { REPAIR: '집수리 서비스', EDU: '집수리 교실', VOL
 const TYPE_VALUE = { REPAIR: 'selfreliance', EDU: 'trust', VOL: 'community' };
 const STATUS_LABEL = { NEW: '접수', CONTACTED: '확인 연락', SCHEDULED: '일정 조율', DONE: '완료', CANCELED: '취소' };
 const STATUS_VALUE = { NEW: 'trust', CONTACTED: 'community', SCHEDULED: 'selfreliance', DONE: 'cooperation', CANCELED: 'innovation' };
-const ROLE_LABEL = { ADMIN: '관리자', STAFF: '직원', USER: '일반 회원' };
 
 function fmtDate(d) {
   const dt = new Date(d);
@@ -53,7 +53,7 @@ export default async function AccountPage() {
                 <dd><Badge value="trust">{ROLE_LABEL[user.role] || '회원'}</Badge></dd>
               </div>
             </dl>
-            {(user.role === 'ADMIN' || user.role === 'STAFF') && (
+            {can(user, 'dashboard:access') && (
               <div className="mt-5 border-t border-border pt-5">
                 <Button as={Link} href="/dashboard" variant="soft" tone="primary" size="sm" block>업무 대시보드로</Button>
               </div>
