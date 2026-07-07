@@ -2,7 +2,18 @@ import Link from 'next/link';
 import {
   Container, Button, PageHero, StatBand, ValueDotStrip,
 } from '@chm/design-system';
-import { NEWS, CONTACT } from '../../components/site/constants';
+import { CONTACT } from '../../components/site/constants';
+import { prisma } from '@/lib/prisma';
+import { POST_CATEGORY } from '@/lib/posts';
+
+// 최근 소식을 DB에서 읽되 홈은 정적 유지(ISR, 5분마다 재생성).
+export const revalidate = 300;
+
+function fmtDate(d) {
+  const dt = new Date(d);
+  const p = (n) => String(n).padStart(2, '0');
+  return `${dt.getFullYear()}.${p(dt.getMonth() + 1)}.${p(dt.getDate())}`;
+}
 
 const SERVICES = [
   { no: '01', value: 'selfreliance', title: '집수리 서비스', desc: '방충망·수전·조명 같은 경수리부터 정기 점검까지. 표준 단가와 품질보증으로 믿고 맡길 수 있습니다.' },
@@ -17,7 +28,12 @@ const STEPS = [
   { n: 4, value: 'sustainability', title: '정기 점검', desc: '수리 이후에도 주기적으로 집 상태를 살핍니다.' },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const recentPosts = await prisma.post.findMany({
+    where: { published: true },
+    orderBy: { createdAt: 'desc' },
+    take: 3,
+  });
   return (
     <>
       {/* ── 히어로(신뢰형) ── */}
@@ -119,17 +135,20 @@ export default function HomePage() {
             <Link href="/news" className="text-body-sm font-bold text-primary hover:underline">전체 보기 →</Link>
           </div>
           <div className="grid gap-6 md:grid-cols-3">
-            {NEWS.slice(0, 3).map((n) => (
-              <Link
-                key={n.id}
-                href={`/news/${n.id}`}
-                className="block rounded-chm-lg border border-border p-6 transition-all hover:border-ink-300 hover:shadow-chm-md"
-              >
-                <span className={`mb-3.5 inline-block rounded-chm-full bg-${n.value}-500 px-2.5 py-1 text-caption font-bold text-white`}>{n.cat}</span>
-                <div className="mb-3 text-body-lg font-bold leading-snug text-ink-850">{n.title}</div>
-                <div className="text-caption text-ink-500">{n.date}</div>
-              </Link>
-            ))}
+            {recentPosts.map((n) => {
+              const cat = POST_CATEGORY[n.category] || { label: n.category, value: 'trust' };
+              return (
+                <Link
+                  key={n.id}
+                  href={`/news/${n.id}`}
+                  className="block rounded-chm-lg border border-border p-6 transition-all hover:border-ink-300 hover:shadow-chm-md"
+                >
+                  <span className={`mb-3.5 inline-block rounded-chm-full bg-${cat.value}-500 px-2.5 py-1 text-caption font-bold text-white`}>{cat.label}</span>
+                  <div className="mb-3 text-body-lg font-bold leading-snug text-ink-850">{n.title}</div>
+                  <div className="text-caption text-ink-500">{fmtDate(n.createdAt)}</div>
+                </Link>
+              );
+            })}
           </div>
         </Container>
       </section>

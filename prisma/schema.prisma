@@ -69,6 +69,30 @@ model Inquiry {
   @@index([userId])
 }
 
+// 소식·게시판 카테고리
+enum PostCategory {
+  NOTICE   // 공지
+  RECRUIT  // 모집
+  EVENT    // 행사
+  CAMPAIGN // 캠페인
+}
+
+// 소식·공지 게시글(관리자 직접 작성)
+model Post {
+  id         String       @id @default(cuid())
+  category   PostCategory @default(NOTICE)
+  title      String
+  body       String       @db.Text
+  published  Boolean      @default(true)
+  authorId   String?
+  authorName String?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  @@index([published, createdAt])
+  @@index([createdAt])
+}
+
 // 앱 설정(싱글턴) — 이메일 알림 발신/수신 구성. SMTP 비번은 암호화 저장(smtpPassEnc).
 model AppSetting {
   id             String   @id @default("singleton")
