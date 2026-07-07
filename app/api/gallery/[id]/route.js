@@ -15,6 +15,23 @@ export async function GET(req, { params }) {
   });
 }
 
+// 이미지 설명(제목) 수정 — gallery:manage.
+export async function PATCH(req, { params }) {
+  const session = await auth();
+  if (!can(session?.user, 'gallery:manage')) {
+    return NextResponse.json({ error: '권한이 없습니다.' }, { status: 403 });
+  }
+  const body = await req.json().catch(() => ({}));
+  const title = (body.title ?? '').toString().trim() || null;
+  try {
+    await prisma.galleryImage.update({ where: { id: params.id }, data: { title } });
+  } catch (e) {
+    if (e?.code === 'P2025') return NextResponse.json({ error: '이미지를 찾을 수 없습니다.' }, { status: 404 });
+    throw e;
+  }
+  return NextResponse.json({ ok: true });
+}
+
 // 이미지 삭제 — gallery:manage.
 export async function DELETE(req, { params }) {
   const session = await auth();

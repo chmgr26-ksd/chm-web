@@ -35,7 +35,9 @@ function FaqItem({ faq, onChanged }) {
       </div>
       <Field label="질문"><Input value={q} onChange={(e) => setQ(e.target.value)} /></Field>
       <div className="mt-3"><Field label="답변"><Textarea rows={3} value={a} onChange={(e) => setA(e.target.value)} /></Field></div>
-      {dirty && <Button size="sm" className="mt-3" onClick={() => patch({ question: q, answer: a })} loading={busy}>저장</Button>}
+      <Button size="sm" tone="primary" className="mt-3" onClick={() => patch({ question: q, answer: a })} loading={busy} disabled={!dirty}>
+        {dirty ? '수정 저장' : '저장됨'}
+      </Button>
     </div>
   );
 }

@@ -4,12 +4,49 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Field, Input, Button, Alert } from '@chm/design-system';
 
+function GalleryItem({ img, onChanged }) {
+  const [title, setTitle] = useState(img.title || '');
+  const [busy, setBusy] = useState(false);
+  const dirty = title !== (img.title || '');
+
+  const save = async () => {
+    setBusy(true);
+    await fetch(`/api/gallery/${img.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title }),
+    });
+    setBusy(false);
+    onChanged();
+  };
+  const remove = async () => {
+    if (!confirm('이 사진을 삭제할까요?')) return;
+    setBusy(true);
+    await fetch(`/api/gallery/${img.id}`, { method: 'DELETE' });
+    setBusy(false);
+    onChanged();
+  };
+
+  return (
+    <div className="flex flex-col overflow-hidden rounded-chm-lg border border-border">
+      <img src={`/api/gallery/${img.id}`} alt={img.title || ''} className="aspect-square w-full object-cover" />
+      <div className="flex flex-col gap-2 p-2.5">
+        <Input size="sm" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="설명(선택)" />
+        <div className="flex gap-1.5">
+          <Button size="sm" tone="primary" onClick={save} disabled={!dirty || busy} className="flex-1">저장</Button>
+          <Button size="sm" variant="soft" tone="danger" onClick={remove} disabled={busy}>삭제</Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function GalleryManager({ images }) {
   const router = useRouter();
+  const refresh = () => router.refresh();
   const fileRef = useRef(null);
   const [title, setTitle] = useState('');
   const [uploading, setUploading] = useState(false);
-  const [busyId, setBusyId] = useState(null);
   const [msg, setMsg] = useState(null);
 
   const upload = async (e) => {
@@ -28,15 +65,7 @@ export default function GalleryManager({ images }) {
     setTitle('');
     if (fileRef.current) fileRef.current.value = '';
     setMsg({ tone: 'success', text: '업로드되었습니다.' });
-    router.refresh();
-  };
-
-  const remove = async (id) => {
-    if (!confirm('이 사진을 삭제할까요?')) return;
-    setBusyId(id);
-    await fetch(`/api/gallery/${id}`, { method: 'DELETE' });
-    setBusyId(null);
-    router.refresh();
+    refresh();
   };
 
   return (
@@ -58,18 +87,7 @@ export default function GalleryManager({ images }) {
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {images.map((img) => (
-            <div key={img.id} className="group relative overflow-hidden rounded-chm-lg border border-border">
-              <img src={`/api/gallery/${img.id}`} alt={img.title || ''} className="aspect-square w-full object-cover" />
-              <button
-                type="button"
-                onClick={() => remove(img.id)}
-                disabled={busyId === img.id}
-                className="absolute right-2 top-2 rounded-chm-md bg-ink-900/70 px-2 py-1 text-caption font-semibold text-white opacity-0 transition-opacity hover:bg-danger group-hover:opacity-100"
-              >
-                삭제
-              </button>
-              {img.title && <div className="px-2 py-1.5 text-caption text-ink-600">{img.title}</div>}
-            </div>
+            <GalleryItem key={img.id} img={img} onChanged={refresh} />
           ))}
         </div>
       )}
