@@ -23,6 +23,8 @@ export default function SiteFooter() {
               </li>
             ))}
             <li><Link href="/apply" className="text-ink-300 hover:text-white">참여 신청</Link></li>
+            <li><Link href="/faq" className="text-ink-300 hover:text-white">자주 묻는 질문</Link></li>
+            <li><Link href="/gallery" className="text-ink-300 hover:text-white">갤러리</Link></li>
             <li><Link href="/login" className="text-ink-400 hover:text-white">로그인 · 회원</Link></li>
           </ul>
         </div>

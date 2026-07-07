@@ -38,6 +38,7 @@ export default function DashboardShell({ user, newCount = 0, children }) {
             <SidebarSection label="현황">
               <SidebarItem href="/dashboard" active={pathname === '/dashboard'} badge={newCount || undefined}>대시보드 · 신청</SidebarItem>
               <SidebarItem href="/dashboard/posts" active={pathname.startsWith('/dashboard/posts')}>소식 관리</SidebarItem>
+              <SidebarItem href="/dashboard/faqs" active={pathname.startsWith('/dashboard/faqs')}>FAQ 관리</SidebarItem>
             </SidebarSection>
             {canManageMembers && (
               <SidebarSection label="관리">

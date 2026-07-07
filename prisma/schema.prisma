@@ -93,6 +93,18 @@ model Post {
   @@index([createdAt])
 }
 
+// 자주 묻는 질문(FAQ)
+model Faq {
+  id        String   @id @default(cuid())
+  question  String   @db.Text
+  answer    String   @db.Text
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([published, createdAt])
+}
+
 // 앱 설정(싱글턴) — 이메일 알림 발신/수신 구성. SMTP 비번은 암호화 저장(smtpPassEnc).
 model AppSetting {
   id             String   @id @default("singleton")
