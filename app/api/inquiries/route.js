@@ -1,24 +1,16 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
-import { sendMail, isMailConfigured } from '@/lib/mailer';
+import { notifyAdmins } from '@/lib/mailer';
 
 // 참여신청 폼 → 문의 접수(공개 엔드포인트). 폼의 type 키를 enum으로 매핑.
 const TYPE_MAP = { repair: 'REPAIR', edu: 'EDU', vol: 'VOL' };
 const TYPE_LABEL = { REPAIR: '집수리 서비스', EDU: '집수리 교실', VOL: '자원봉사·협력' };
 
-// 신규 문의 알림(관리자에게). 실패/미설정이어도 접수에는 영향 없음.
-async function notifyNewInquiry({ type, name, phone, area, message }) {
-  if (!isMailConfigured()) return;
-  let to = process.env.NOTIFY_EMAIL;
-  if (!to) {
-    const admins = await prisma.user.findMany({ where: { role: 'ADMIN' }, select: { email: true } });
-    to = admins.map((a) => a.email).join(',');
-  }
-  if (!to) return;
+// 신규 문의 알림(설정된 수신자/관리자에게). 미설정·실패여도 접수에는 영향 없음.
+function notifyNewInquiry({ type, name, phone, area, message }) {
   const label = TYPE_LABEL[type] || type;
-  await sendMail({
-    to,
+  return notifyAdmins({
     subject: `[CHM] 새 문의 접수 — ${name} (${label})`,
     text:
       `새로운 참여 신청이 접수되었습니다.\n\n` +

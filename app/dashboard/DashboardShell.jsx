@@ -41,6 +41,7 @@ export default function DashboardShell({ user, newCount = 0, children }) {
             {canManageMembers && (
               <SidebarSection label="관리">
                 <SidebarItem href="/dashboard/members" active={pathname.startsWith('/dashboard/members')}>회원 관리</SidebarItem>
+                <SidebarItem href="/dashboard/settings" active={pathname.startsWith('/dashboard/settings')}>알림 설정</SidebarItem>
               </SidebarSection>
             )}
             <SidebarSection label="바로가기">
