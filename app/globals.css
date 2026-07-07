@@ -4,4 +4,7 @@
 
 @layer base {
   html { font-family: var(--chm-font-sans); }
+  /* 한글이 어절(단어) 단위로 줄바꿈되도록 — 핸드오프 필수 규칙.
+     긴 영문/이메일/URL은 넘칠 때만 강제 분리. */
+  body { word-break: keep-all; overflow-wrap: break-word; }
 }
