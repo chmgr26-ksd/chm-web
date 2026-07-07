@@ -93,6 +93,16 @@ model Post {
   @@index([createdAt])
 }
 
+// 방문자 페이지뷰(공개 사이트) — 통계용.
+model PageView {
+  id        String   @id @default(cuid())
+  path      String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([path])
+}
+
 // 갤러리 이미지 — 바이너리를 DB(LONGBLOB)에 저장(배포에도 보존). 업로드 크기 제한.
 model GalleryImage {
   id        String   @id @default(cuid())
