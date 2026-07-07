@@ -17,6 +17,12 @@ function fmtDate(d) {
   return `${dt.getFullYear()}.${p(dt.getMonth() + 1)}.${p(dt.getDate())}`;
 }
 
+function fmtDateTime(d) {
+  const dt = new Date(d);
+  const p = (n) => String(n).padStart(2, '0');
+  return `${dt.getFullYear()}.${p(dt.getMonth() + 1)}.${p(dt.getDate())} ${p(dt.getHours())}:${p(dt.getMinutes())}`;
+}
+
 export default async function MembersPage() {
   const session = await auth();
   const me = session.user;
@@ -31,10 +37,13 @@ export default async function MembersPage() {
     );
   }
 
-  const users = await prisma.user.findMany({
-    orderBy: { createdAt: 'desc' },
-    include: { _count: { select: { inquiries: true } } },
-  });
+  const [users, roleLogs] = await Promise.all([
+    prisma.user.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: { _count: { select: { inquiries: true } } },
+    }),
+    prisma.roleChangeLog.findMany({ orderBy: { createdAt: 'desc' }, take: 20 }),
+  ]);
 
   return (
     <>
@@ -76,6 +85,43 @@ export default async function MembersPage() {
             ))}
           </TBody>
         </Table>
+      </div>
+
+      {/* 권한 변경 이력(감사 로그) */}
+      <div className="mt-10">
+        <h2 className="mb-3 text-h4 font-bold text-ink-800">권한 변경 이력</h2>
+        {roleLogs.length === 0 ? (
+          <EmptyState title="변경 이력이 없습니다" description="회원 권한을 변경하면 여기에 기록됩니다." />
+        ) : (
+          <div className="overflow-x-auto rounded-chm-lg border border-border">
+            <Table>
+              <THead>
+                <TR>
+                  <TH>일시</TH>
+                  <TH>대상</TH>
+                  <TH>변경</TH>
+                  <TH>처리자</TH>
+                </TR>
+              </THead>
+              <TBody>
+                {roleLogs.map((log) => (
+                  <TR key={log.id}>
+                    <TD>{fmtDateTime(log.createdAt)}</TD>
+                    <TD>{log.targetEmail}</TD>
+                    <TD>
+                      <span className="inline-flex items-center gap-1.5">
+                        <Badge value={ROLE_VALUE[log.fromRole]}>{ROLE_LABEL[log.fromRole]}</Badge>
+                        <span className="text-ink-400">→</span>
+                        <Badge value={ROLE_VALUE[log.toRole]}>{ROLE_LABEL[log.toRole]}</Badge>
+                      </span>
+                    </TD>
+                    <TD>{log.actorEmail}</TD>
+                  </TR>
+                ))}
+              </TBody>
+            </Table>
+          </div>
+        )}
       </div>
     </>
   );

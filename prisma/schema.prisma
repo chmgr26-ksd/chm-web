@@ -69,6 +69,22 @@ model Inquiry {
   @@index([userId])
 }
 
+// RBAC 감사 로그 — 회원 권한 변경 이력(누가·누구를·무엇으로).
+// 사용자 삭제 후에도 이력이 남도록 이메일을 비정규화 저장.
+model RoleChangeLog {
+  id          String   @id @default(cuid())
+  actorId     String?
+  actorEmail  String
+  targetId    String?
+  targetEmail String
+  fromRole    Role
+  toRole      Role
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([targetId])
+}
+
 // 후원 (Phase 2 후속 — PG 연동 전 스캐폴드)
 model Donation {
   id        String   @id @default(cuid())

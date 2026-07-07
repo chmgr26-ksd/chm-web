@@ -49,9 +49,12 @@
 - `ADMIN` 관리자 / `STAFF` 직원 → `/dashboard` 접근 가능(미들웨어 보호)
 - `USER` 일반 회원 → `/dashboard` 접근 시 홈으로 리다이렉트
 
+### 이메일 알림(선택)
+문의 접수 시 관리자에게 메일을 보내려면 SMTP 환경변수를 설정하세요(미설정 시 발송만 건너뜀):
+`SMTP_HOST`·`SMTP_PORT`(465/587)·`SMTP_USER`·`SMTP_PASS`·`SMTP_FROM`(선택)·`NOTIFY_EMAIL`(선택, 미설정 시 관리자 전체). Hostinger 이메일 계정의 SMTP를 쓰면 됩니다.
+
 ### 미포함(후속 증분)
 - **후원 결제**: PG(토스페이먼츠/PortOne) 계약·키 필요 — 스키마(`Donation`)만 스캐폴드됨.
-- 일반 회원 마이페이지(내 신청 내역).
 
 ---
 

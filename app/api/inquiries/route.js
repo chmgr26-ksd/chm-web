@@ -1,9 +1,32 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { sendMail, isMailConfigured } from '@/lib/mailer';
 
 // 참여신청 폼 → 문의 접수(공개 엔드포인트). 폼의 type 키를 enum으로 매핑.
 const TYPE_MAP = { repair: 'REPAIR', edu: 'EDU', vol: 'VOL' };
+const TYPE_LABEL = { REPAIR: '집수리 서비스', EDU: '집수리 교실', VOL: '자원봉사·협력' };
+
+// 신규 문의 알림(관리자에게). 실패/미설정이어도 접수에는 영향 없음.
+async function notifyNewInquiry({ type, name, phone, area, message }) {
+  if (!isMailConfigured()) return;
+  let to = process.env.NOTIFY_EMAIL;
+  if (!to) {
+    const admins = await prisma.user.findMany({ where: { role: 'ADMIN' }, select: { email: true } });
+    to = admins.map((a) => a.email).join(',');
+  }
+  if (!to) return;
+  const label = TYPE_LABEL[type] || type;
+  await sendMail({
+    to,
+    subject: `[CHM] 새 문의 접수 — ${name} (${label})`,
+    text:
+      `새로운 참여 신청이 접수되었습니다.\n\n` +
+      `유형: ${label}\n성함: ${name}\n연락처: ${phone}\n` +
+      `거주 지역: ${area || '-'}\n내용: ${message || '-'}\n\n` +
+      `대시보드에서 확인해 주세요.`,
+  });
+}
 
 export async function POST(req) {
   const body = await req.json().catch(() => null);
@@ -27,5 +50,11 @@ export async function POST(req) {
   const userId = session?.user?.id || null;
 
   await prisma.inquiry.create({ data: { type, name, phone, area, message, userId } });
+
+  // 관리자 알림 메일 — fire-and-forget(접수 응답을 지연/실패시키지 않음).
+  notifyNewInquiry({ type, name, phone, area, message }).catch((e) =>
+    console.error('[inquiry] 알림 메일 실패:', e?.message || e)
+  );
+
   return NextResponse.json({ ok: true });
 }

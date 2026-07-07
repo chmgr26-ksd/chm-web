@@ -4,6 +4,8 @@ import { prisma } from '@/lib/prisma';
 import { Container, Badge, EmptyState, Button } from '@chm/design-system';
 import { can, ROLE_LABEL } from '@/lib/rbac';
 import PageBanner from '../../../components/site/PageBanner';
+import ProfileForm from './ProfileForm';
+import PasswordForm from './PasswordForm';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: '마이페이지 · CHM Group' };
@@ -21,11 +23,11 @@ function fmtDate(d) {
 
 export default async function AccountPage() {
   const session = await auth();
-  const user = session.user;
-  const inquiries = await prisma.inquiry.findMany({
-    where: { userId: user.id },
-    orderBy: { createdAt: 'desc' },
-  });
+  const [dbUser, inquiries] = await Promise.all([
+    prisma.user.findUnique({ where: { id: session.user.id } }),
+    prisma.inquiry.findMany({ where: { userId: session.user.id }, orderBy: { createdAt: 'desc' } }),
+  ]);
+  const user = dbUser || session.user; // DB 최신값 우선
 
   return (
     <>
@@ -35,7 +37,8 @@ export default async function AccountPage() {
         description="내 정보와 신청 내역을 확인할 수 있습니다."
       />
       <section className="bg-surface">
-        <Container size="xl" className="grid gap-8 py-14 md:grid-cols-[0.9fr_1.6fr] md:items-start">
+        <Container size="xl" className="flex flex-col gap-10 py-14">
+          <div className="grid gap-8 md:grid-cols-[0.9fr_1.6fr] md:items-start">
           {/* 내 정보 */}
           <div className="rounded-chm-lg border border-border p-6">
             <h2 className="mb-4 text-h4 font-bold text-ink-850">내 정보</h2>
@@ -88,6 +91,19 @@ export default async function AccountPage() {
                 ))}
               </ul>
             )}
+          </div>
+          </div>
+
+          {/* 내 정보 수정 · 비밀번호 변경 */}
+          <div className="grid gap-8 md:grid-cols-2">
+            <div className="rounded-chm-lg border border-border p-6">
+              <h2 className="mb-4 text-h4 font-bold text-ink-850">내 정보 수정</h2>
+              <ProfileForm initialName={user.name} initialPhone={user.phone || ''} />
+            </div>
+            <div className="rounded-chm-lg border border-border p-6">
+              <h2 className="mb-4 text-h4 font-bold text-ink-850">비밀번호 변경</h2>
+              <PasswordForm />
+            </div>
           </div>
         </Container>
       </section>

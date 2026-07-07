@@ -28,10 +28,14 @@ export const authConfig = {
       }
       return true;
     },
-    jwt({ token, user }) {
+    jwt({ token, user, trigger, session }) {
       if (user) {
         token.role = user.role;
         token.id = user.id;
+      }
+      // 프로필 수정 후 useSession().update({ name })로 세션 이름 동기화.
+      if (trigger === 'update' && session?.name) {
+        token.name = session.name;
       }
       return token;
     },
