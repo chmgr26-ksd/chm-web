@@ -15,7 +15,12 @@ export default function SiteHeader() {
   const isStaff = user?.role === 'ADMIN' || user?.role === 'STAFF';
   const isActive = (href) => (href === '/' ? pathname === '/' : pathname.startsWith(href));
   const close = () => setOpen(false);
-  const logout = () => signOut({ callbackUrl: '/' });
+  // Auth.js가 프록시 뒤에서 절대 URL을 0.0.0.0:3000으로 만드는 문제를 피하려
+  // 서버 리다이렉트 대신 클라이언트가 현재 공개 도메인의 상대경로로 이동.
+  const logout = async () => {
+    await signOut({ redirect: false });
+    window.location.href = '/';
+  };
 
   return (
     <>

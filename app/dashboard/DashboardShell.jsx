@@ -10,6 +10,11 @@ export default function DashboardShell({ user, newCount = 0, children }) {
   const pathname = usePathname();
   const isAdmin = user?.role === 'ADMIN';
   const roleLabel = user?.role === 'ADMIN' ? '관리자' : '직원';
+  // 프록시 뒤 0.0.0.0 리다이렉트 회피 — 클라이언트가 상대경로로 이동.
+  const logout = async () => {
+    await signOut({ redirect: false });
+    window.location.href = '/';
+  };
 
   return (
     <div style={{ height: '100vh', overflow: 'hidden' }}>
@@ -25,7 +30,7 @@ export default function DashboardShell({ user, newCount = 0, children }) {
                     <div className="text-caption text-ink-500">{roleLabel}</div>
                   </div>
                 </div>
-                <Button variant="ghost" tone="ink" size="sm" onClick={() => signOut({ callbackUrl: '/' })}>로그아웃</Button>
+                <Button variant="ghost" tone="ink" size="sm" onClick={logout}>로그아웃</Button>
               </div>
             }
           >
