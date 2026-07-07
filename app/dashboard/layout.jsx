@@ -8,7 +8,13 @@ export const dynamic = 'force-dynamic';
 export default async function DashboardLayout({ children }) {
   const session = await auth();
   const user = session?.user;
-  const newCount = await prisma.inquiry.count({ where: { status: 'NEW' } });
+  // DB 조회 실패가 레이아웃 전체를 죽이지 않도록 방어(사이드바 배지용).
+  let newCount = 0;
+  try {
+    newCount = await prisma.inquiry.count({ where: { status: 'NEW' } });
+  } catch {
+    newCount = 0;
+  }
   return (
     <DashboardShell user={user} newCount={newCount}>
       {children}

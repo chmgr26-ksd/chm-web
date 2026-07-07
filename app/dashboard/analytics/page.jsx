@@ -9,10 +9,18 @@ export const dynamic = 'force-dynamic';
 export default async function AnalyticsPage() {
   const now = new Date();
   const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const start7 = new Date(startToday);
-  start7.setDate(start7.getDate() - 6);
 
-  const [total, todayCount, topPages, views7] = await Promise.all([
+  // 최근 7일 일별 경계(서버 로컬 기준) — 각 날짜를 인덱스된 범위 count로 집계.
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const s = new Date(startToday);
+    s.setDate(s.getDate() - i);
+    const e = new Date(s);
+    e.setDate(e.getDate() + 1);
+    days.push({ label: `${s.getMonth() + 1}/${s.getDate()}`, start: s, end: e });
+  }
+
+  const [total, todayCount, topPages, ...dayCounts] = await Promise.all([
     prisma.pageView.count(),
     prisma.pageView.count({ where: { createdAt: { gte: startToday } } }),
     prisma.pageView.groupBy({
@@ -21,23 +29,10 @@ export default async function AnalyticsPage() {
       orderBy: { _count: { path: 'desc' } },
       take: 10,
     }),
-    prisma.pageView.findMany({ where: { createdAt: { gte: start7 } }, select: { createdAt: true } }),
+    ...days.map((d) => prisma.pageView.count({ where: { createdAt: { gte: d.start, lt: d.end } } })),
   ]);
 
-  // 최근 7일 일별 집계(서버 로컬 기준으로 버킷팅 → 타임존 불일치 방지)
-  const buckets = {};
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(start7);
-    d.setDate(d.getDate() + i);
-    const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-    buckets[key] = { label: `${d.getMonth() + 1}/${d.getDate()}`, value: 0 };
-  }
-  for (const v of views7) {
-    const d = new Date(v.createdAt);
-    const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-    if (buckets[key]) buckets[key].value += 1;
-  }
-  const chart = Object.values(buckets);
+  const chart = days.map((d, i) => ({ label: d.label, value: dayCounts[i] }));
   const week = chart.reduce((s, c) => s + c.value, 0);
 
   return (
