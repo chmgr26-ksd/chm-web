@@ -135,17 +135,22 @@ export default function HomePage() {
       </section>
 
       {/* ── CTA 배너 ── */}
-      <section className="bg-primary">
+      <section className="bg-selfreliance-600">
         <Container size="xl" className="flex flex-wrap items-center justify-between gap-8 py-16">
           <div>
             <h2 className="mb-2.5 text-h2 font-bold tracking-tight text-white">집 고칠 일이 있으신가요?</h2>
-            <p className="text-body-lg text-white/85">작은 수리도 괜찮습니다. 신청을 남겨주시면 하루 안에 연락드립니다.</p>
+            <p className="text-body-lg text-white/90">작은 수리도 괜찮습니다. 신청을 남겨주시면 하루 안에 연락드립니다.</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Button as={Link} href="/apply" tone="cta" size="lg">집수리 신청</Button>
+            <Link
+              href="/apply"
+              className="inline-flex h-12 items-center rounded-chm-lg bg-white px-6 text-body-lg font-bold text-selfreliance-700 transition-colors hover:bg-selfreliance-50"
+            >
+              집수리 신청
+            </Link>
             <a
               href={CONTACT.phoneHref}
-              className="inline-flex h-12 items-center rounded-chm-lg border-[1.5px] border-white/50 px-6 text-body-lg font-bold text-white transition-colors hover:bg-white/10"
+              className="inline-flex h-12 items-center rounded-chm-lg border-[1.5px] border-white/60 px-6 text-body-lg font-bold text-white transition-colors hover:bg-white/10"
             >
               전화 문의 {CONTACT.phone}
             </a>
