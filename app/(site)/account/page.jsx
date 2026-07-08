@@ -9,7 +9,7 @@ import ProfileForm from './ProfileForm';
 import PasswordForm from './PasswordForm';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: '마이페이지 · CHM Group' };
+export const metadata = { title: '마이페이지', robots: { index: false, follow: false } };
 
 const TYPE_LABEL = { REPAIR: '집수리 서비스', EDU: '집수리 교실', VOL: '자원봉사·협력' };
 const TYPE_VALUE = { REPAIR: 'selfreliance', EDU: 'trust', VOL: 'community' };

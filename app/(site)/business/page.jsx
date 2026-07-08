@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Container, Button } from '@chm/design-system';
 import PageBanner from '../../../components/site/PageBanner';
 
-export const metadata = { title: '사업 안내 · CHM Group' };
+export const metadata = { title: '사업 안내', description: '집수리 서비스·집수리 교실·마을관리사업단 — CHM Group의 사업 영역과 성장 단계를 소개합니다.' };
 
 const TAGS = ['방충망·창호', '수전·누수', '조명·전기', '문·손잡이', '곰팡이·단열', '안전 점검'];
 

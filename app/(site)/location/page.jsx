@@ -2,7 +2,7 @@ import { Container } from '@chm/design-system';
 import PageBanner from '../../../components/site/PageBanner';
 import { CONTACT } from '../../../components/site/constants';
 
-export const metadata = { title: '오시는 길 · CHM Group' };
+export const metadata = { title: '오시는 길', description: 'CHM Group 위치·연락처·운영 시간 안내. 대전광역시 유성구 어은동.' };
 
 export default function LocationPage() {
   const cards = [

@@ -15,7 +15,20 @@ function fmtDate(d) {
 
 export async function generateMetadata({ params }) {
   const post = await prisma.post.findUnique({ where: { id: params.id } });
-  return { title: post ? `${post.title} · CHM Group` : '소식 · CHM Group' };
+  if (!post || !post.published) return { title: '소식' };
+  const desc = (post.body || '').replace(/\s+/g, ' ').trim().slice(0, 150);
+  return {
+    title: post.title,
+    description: desc,
+    alternates: { canonical: `/news/${post.id}` },
+    openGraph: {
+      type: 'article',
+      title: post.title,
+      description: desc,
+      url: `/news/${post.id}`,
+      publishedTime: new Date(post.createdAt).toISOString(),
+    },
+  };
 }
 
 export default async function NewsDetailPage({ params }) {

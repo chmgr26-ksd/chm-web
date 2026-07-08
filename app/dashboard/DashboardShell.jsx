@@ -36,7 +36,8 @@ export default function DashboardShell({ user, children }) {
             }
           >
             <SidebarSection label="현황">
-              <SidebarItem href="/dashboard" active={pathname === '/dashboard'}>대시보드 · 신청</SidebarItem>
+              <SidebarItem href="/dashboard" active={pathname === '/dashboard'}>대시보드</SidebarItem>
+              <SidebarItem href="/dashboard/inquiries" active={pathname.startsWith('/dashboard/inquiries')}>문의 관리</SidebarItem>
               <SidebarItem href="/dashboard/analytics" active={pathname.startsWith('/dashboard/analytics')}>방문자 통계</SidebarItem>
               <SidebarItem href="/dashboard/posts" active={pathname.startsWith('/dashboard/posts')}>소식 관리</SidebarItem>
               <SidebarItem href="/dashboard/faqs" active={pathname.startsWith('/dashboard/faqs')}>FAQ 관리</SidebarItem>

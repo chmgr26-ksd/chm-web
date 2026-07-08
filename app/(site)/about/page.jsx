@@ -2,7 +2,7 @@ import { Container } from '@chm/design-system';
 import PageBanner from '../../../components/site/PageBanner';
 import { VALUES } from '../../../components/site/constants';
 
-export const metadata = { title: '소개 · CHM Group' };
+export const metadata = { title: '소개', description: '지역과 함께 성장하는 생활환경 관리 전문기업 CHM Group의 비전과 6대 핵심가치를 소개합니다.' };
 
 const TEAM = [
   { initial: '김', value: 'selfreliance', name: '김수동', role: '대표', desc: '사업 총괄 · BM 수립 — 前 안녕센터 사무국장, 現 LCL사회적협동조합 이사장. 충남대 LINC+ · 리빙랩 사업 참여' },
