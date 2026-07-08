@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Container, EmptyState, Button } from '@chm/design-system';
 import { prisma } from '@/lib/prisma';
 import PageBanner from '../../../components/site/PageBanner';
+import GalleryGrid from './GalleryGrid';
 
 export const metadata = { title: '갤러리', description: 'CHM Group의 현장과 활동 사진 — 집수리 현장, 교실, 마을 활동 기록입니다.' };
 
@@ -35,19 +36,7 @@ export default async function GalleryPage({ searchParams }) {
             />
           ) : (
             <>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-                {images.map((img) => (
-                  <figure key={img.id} className="overflow-hidden rounded-chm-lg border border-border">
-                    <img
-                      src={`/api/gallery/${img.id}?v=thumb`}
-                      alt={img.title || 'CHM Group 갤러리 이미지'}
-                      loading="lazy"
-                      className="aspect-square w-full object-cover transition-transform duration-300 hover:scale-105"
-                    />
-                    {img.title && <figcaption className="px-3 py-2 text-caption text-ink-600">{img.title}</figcaption>}
-                  </figure>
-                ))}
-              </div>
+              <GalleryGrid images={images} />
 
               {pageCount > 1 && (
                 <div className="mt-8 flex items-center justify-center gap-3">
