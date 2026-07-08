@@ -58,8 +58,16 @@ export async function POST(req) {
     return NextResponse.json({ error: 'PNG·JPG·GIF·WEBP 이미지만 업로드할 수 있습니다.' }, { status: 400 });
   }
 
+  // 클라이언트가 생성한 그리드용 썸네일(선택) — 실제 이미지 바이트인지 검증 후 저장.
+  let thumb = null;
+  const thumbFile = form.get('thumb');
+  if (thumbFile && typeof thumbFile !== 'string') {
+    const tbuf = Buffer.from(await thumbFile.arrayBuffer());
+    if (tbuf.length > 0 && tbuf.length <= MAX_BYTES && sniffImage(tbuf)) thumb = tbuf;
+  }
+
   await prisma.galleryImage.create({
-    data: { title, mimeType, size: buf.length, data: buf },
+    data: { title, mimeType, size: buf.length, data: buf, thumb },
   });
   revalidatePath('/gallery');
   return NextResponse.json({ ok: true });

@@ -110,6 +110,7 @@ model GalleryImage {
   mimeType  String
   size      Int
   data      Bytes
+  thumb     Bytes?   // 그리드용 썸네일(JPEG, 업로드 시 클라이언트에서 생성). 없으면 원본 폴백.
   createdAt DateTime @default(now())
 
   @@index([createdAt])

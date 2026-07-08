@@ -39,7 +39,7 @@ export default async function GalleryPage({ searchParams }) {
                 {images.map((img) => (
                   <figure key={img.id} className="overflow-hidden rounded-chm-lg border border-border">
                     <img
-                      src={`/api/gallery/${img.id}`}
+                      src={`/api/gallery/${img.id}?v=thumb`}
                       alt={img.title || 'CHM Group 갤러리 이미지'}
                       loading="lazy"
                       className="aspect-square w-full object-cover transition-transform duration-300 hover:scale-105"

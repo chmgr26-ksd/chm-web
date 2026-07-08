@@ -4,6 +4,25 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Field, Input, Button, Alert } from '@chm/design-system';
 
+// 브라우저에서 이미지를 리사이즈해 JPEG Blob 반환(서버 이미지 처리 불필요 → 메모리 안전).
+// createImageBitmap의 imageOrientation으로 EXIF 회전을 반영한다.
+async function resizeToBlob(file, maxDim, quality) {
+  const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
+  let width = bitmap.width;
+  let height = bitmap.height;
+  if (width > maxDim || height > maxDim) {
+    const scale = Math.min(maxDim / width, maxDim / height);
+    width = Math.max(1, Math.round(width * scale));
+    height = Math.max(1, Math.round(height * scale));
+  }
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  canvas.getContext('2d').drawImage(bitmap, 0, 0, width, height);
+  if (bitmap.close) bitmap.close();
+  return new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', quality));
+}
+
 function GalleryItem({ img, onChanged }) {
   const [title, setTitle] = useState(img.title || '');
   const [busy, setBusy] = useState(false);
@@ -44,7 +63,7 @@ function GalleryItem({ img, onChanged }) {
 
   return (
     <div className="flex flex-col overflow-hidden rounded-chm-lg border border-border">
-      <img src={`/api/gallery/${img.id}`} alt={img.title || ''} className="aspect-square w-full object-cover" />
+      <img src={`/api/gallery/${img.id}?v=thumb`} alt={img.title || ''} loading="lazy" className="aspect-square w-full object-cover" />
       <div className="flex flex-col gap-2 p-2.5">
         {err && <span className="text-caption text-danger-600">{err}</span>}
         <Input size="sm" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="설명(선택)" />
@@ -70,11 +89,23 @@ export default function GalleryManager({ images }) {
     setMsg(null);
     const file = fileRef.current?.files?.[0];
     if (!file) { setMsg({ tone: 'danger', text: '이미지 파일을 선택해 주세요.' }); return; }
-    const fd = new FormData();
-    fd.append('file', file);
-    if (title.trim()) fd.append('title', title.trim());
     setUploading(true);
     try {
+      const fd = new FormData();
+      // 원본(최대 1400px)+썸네일(640px)을 브라우저에서 생성해 함께 전송.
+      // 리사이즈 실패(형식 등) 시 원본 파일을 그대로 전송 → 서버가 검증.
+      try {
+        const [main, thumb] = await Promise.all([
+          resizeToBlob(file, 1400, 0.85),
+          resizeToBlob(file, 640, 0.78),
+        ]);
+        fd.append('file', main || file, main ? 'image.jpg' : file.name);
+        if (thumb) fd.append('thumb', thumb, 'thumb.jpg');
+      } catch {
+        fd.append('file', file);
+      }
+      if (title.trim()) fd.append('title', title.trim());
+
       const res = await fetch('/api/gallery', { method: 'POST', body: fd });
       const d = await res.json().catch(() => ({}));
       if (!res.ok) { setMsg({ tone: 'danger', text: d.error || '업로드에 실패했습니다.' }); return; }

@@ -5,19 +5,32 @@ import { prisma } from '@/lib/prisma';
 import { can } from '@/lib/rbac';
 
 // 이미지 바이너리 서빙(공개). 콘텐츠 해시가 아니므로 짧게 캐시.
+// ?v=thumb 이면 썸네일(있을 때)만 로드해 서빙 → 그리드 트래픽 경량화.
+const imgHeaders = (type) => ({
+  'Content-Type': type,
+  'Cache-Control': 'public, max-age=86400',
+  // 브라우저 MIME 스니핑 차단 + 문서로 렌더되지 않도록(저장형 XSS 방지)
+  'X-Content-Type-Options': 'nosniff',
+  'Content-Disposition': 'inline',
+  'Content-Security-Policy': "default-src 'none'; sandbox",
+});
+
 export async function GET(req, { params }) {
-  const img = await prisma.galleryImage.findUnique({ where: { id: params.id } });
-  if (!img) return new NextResponse('Not found', { status: 404 });
-  return new NextResponse(img.data, {
-    headers: {
-      'Content-Type': img.mimeType,
-      'Cache-Control': 'public, max-age=86400',
-      // 브라우저 MIME 스니핑 차단 + 문서로 렌더되지 않도록(저장형 XSS 방지)
-      'X-Content-Type-Options': 'nosniff',
-      'Content-Disposition': 'inline',
-      'Content-Security-Policy': "default-src 'none'; sandbox",
-    },
+  const wantThumb = new URL(req.url).searchParams.get('v') === 'thumb';
+
+  if (wantThumb) {
+    // 원본(data)을 로드하지 않고 썸네일만 조회 → 트래픽·메모리 절감.
+    const t = await prisma.galleryImage.findUnique({ where: { id: params.id }, select: { thumb: true } });
+    if (t?.thumb) return new NextResponse(t.thumb, { headers: imgHeaders('image/jpeg') });
+    // 썸네일이 없는 기존 이미지는 아래에서 원본으로 폴백.
+  }
+
+  const img = await prisma.galleryImage.findUnique({
+    where: { id: params.id },
+    select: { data: true, mimeType: true },
   });
+  if (!img) return new NextResponse('Not found', { status: 404 });
+  return new NextResponse(img.data, { headers: imgHeaders(img.mimeType) });
 }
 
 // 이미지 설명(제목) 수정 — gallery:manage.
