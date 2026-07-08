@@ -9,7 +9,7 @@ export default function SentryClient() {
     const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
     if (!dsn) return;
     let cancelled = false;
-    import('@sentry/browser')
+    import('@sentry/nextjs')
       .then((Sentry) => {
         if (cancelled || Sentry.getClient?.()) return;
         Sentry.init({
