@@ -1,7 +1,11 @@
 'use client';
 
+import { useEffect } from 'react';
+import { reportError } from '@/lib/reportError';
+
 // 페이지 렌더 실패 시 조각·빈 화면 대신 표시되는 일반 폴백.
 export default function GlobalError({ error, reset }) {
+  useEffect(() => { reportError(error); }, [error]);
   return (
     <div style={{ minHeight: '60vh', display: 'grid', placeItems: 'center', padding: '2rem', textAlign: 'center', fontFamily: 'var(--chm-font-sans, sans-serif)' }}>
       <div>

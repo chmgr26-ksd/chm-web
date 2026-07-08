@@ -1,9 +1,12 @@
 'use client';
 
+import { useEffect } from 'react';
 import { Button } from '@chm/design-system';
+import { reportError } from '@/lib/reportError';
 
 // 대시보드 렌더 실패 시 조각 대신 깔끔한 재시도 화면.
 export default function DashboardError({ error, reset }) {
+  useEffect(() => { reportError(error); }, [error]);
   return (
     <div className="grid place-items-center py-24 text-center">
       <div className="flex flex-col items-center gap-3">

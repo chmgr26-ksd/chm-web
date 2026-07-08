@@ -1,6 +1,7 @@
 import '@chm/design-system/tokens.css';
 import './globals.css';
 import Providers from '../components/site/Providers';
+import SentryClient from '../components/site/SentryClient';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://forestgreen-sheep-120944.hostingersite.com';
 const SITE_DESC =
@@ -51,6 +52,7 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap"
         />
+        <SentryClient />
         <Providers>{children}</Providers>
       </body>
     </html>

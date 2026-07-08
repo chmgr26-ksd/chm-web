@@ -116,6 +116,22 @@ model GalleryImage {
   @@index([createdAt])
 }
 
+// 이벤트·행사 — 일시·장소가 있는 행사 안내(소식과 별개, 예정/지난 행사 구분).
+model Event {
+  id          String    @id @default(cuid())
+  title       String
+  description String    @db.Text
+  location    String?
+  startAt     DateTime  // 행사 시작 일시
+  endAt       DateTime? // 종료 일시(선택)
+  published   Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([published, startAt])
+  @@index([startAt])
+}
+
 // 자주 묻는 질문(FAQ)
 model Faq {
   id        String   @id @default(cuid())

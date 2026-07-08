@@ -40,6 +40,7 @@ export default function DashboardShell({ user, children }) {
               <SidebarItem href="/dashboard/inquiries" active={pathname.startsWith('/dashboard/inquiries')}>문의 관리</SidebarItem>
               <SidebarItem href="/dashboard/analytics" active={pathname.startsWith('/dashboard/analytics')}>방문자 통계</SidebarItem>
               <SidebarItem href="/dashboard/posts" active={pathname.startsWith('/dashboard/posts')}>소식 관리</SidebarItem>
+              <SidebarItem href="/dashboard/events" active={pathname.startsWith('/dashboard/events')}>행사 관리</SidebarItem>
               <SidebarItem href="/dashboard/faqs" active={pathname.startsWith('/dashboard/faqs')}>FAQ 관리</SidebarItem>
               <SidebarItem href="/dashboard/gallery" active={pathname.startsWith('/dashboard/gallery')}>갤러리 관리</SidebarItem>
             </SidebarSection>
