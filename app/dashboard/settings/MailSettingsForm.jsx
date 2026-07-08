@@ -38,28 +38,38 @@ export default function MailSettingsForm() {
     e.preventDefault();
     setMsg(null);
     setSaving(true);
-    const res = await fetch('/api/settings/mail', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
-    });
-    const d = await res.json().catch(() => ({}));
-    setSaving(false);
-    if (!res.ok) { setMsg({ tone: 'danger', text: d.error || '저장에 실패했습니다.' }); return; }
-    setMsg({ tone: 'success', text: '저장되었습니다.' });
-    if (form.smtpPassword) setHasPassword(true);
-    setForm((f) => ({ ...f, smtpPassword: '' }));
-    setEnvFallback(false);
+    try {
+      const res = await fetch('/api/settings/mail', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok) { setMsg({ tone: 'danger', text: d.error || '저장에 실패했습니다.' }); return; }
+      setMsg({ tone: 'success', text: '저장되었습니다.' });
+      if (form.smtpPassword) setHasPassword(true);
+      setForm((f) => ({ ...f, smtpPassword: '' }));
+      setEnvFallback(false);
+    } catch {
+      setMsg({ tone: 'danger', text: '네트워크 오류로 저장하지 못했습니다.' });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const test = async () => {
     setMsg(null);
     setTesting(true);
-    const res = await fetch('/api/settings/mail/test', { method: 'POST' });
-    const d = await res.json().catch(() => ({}));
-    setTesting(false);
-    if (!res.ok) { setMsg({ tone: 'danger', text: d.error || '테스트 발송에 실패했습니다.' }); return; }
-    setMsg({ tone: 'success', text: `테스트 메일을 보냈습니다 → ${d.to}` });
+    try {
+      const res = await fetch('/api/settings/mail/test', { method: 'POST' });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok) { setMsg({ tone: 'danger', text: d.error || '테스트 발송에 실패했습니다.' }); return; }
+      setMsg({ tone: 'success', text: `테스트 메일을 보냈습니다 → ${d.to}` });
+    } catch {
+      setMsg({ tone: 'danger', text: '네트워크 오류로 발송하지 못했습니다.' });
+    } finally {
+      setTesting(false);
+    }
   };
 
   if (loading) return <div className="text-body-sm text-ink-500">불러오는 중…</div>;

@@ -24,21 +24,26 @@ export default function PasswordForm() {
       return;
     }
     setSaving(true);
-    const res = await fetch('/api/account/password', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ currentPassword: cur, newPassword: nw }),
-    });
-    const data = await res.json().catch(() => ({}));
-    setSaving(false);
-    if (!res.ok) {
-      setMsg({ tone: 'danger', text: data.error || '변경에 실패했습니다.' });
-      return;
+    try {
+      const res = await fetch('/api/account/password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword: cur, newPassword: nw }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setMsg({ tone: 'danger', text: data.error || '변경에 실패했습니다.' });
+        return;
+      }
+      setMsg({ tone: 'success', text: '비밀번호가 변경되었습니다.' });
+      setCur('');
+      setNw('');
+      setConfirm('');
+    } catch {
+      setMsg({ tone: 'danger', text: '네트워크 오류로 변경하지 못했습니다.' });
+    } finally {
+      setSaving(false);
     }
-    setMsg({ tone: 'success', text: '비밀번호가 변경되었습니다.' });
-    setCur('');
-    setNw('');
-    setConfirm('');
   };
 
   return (

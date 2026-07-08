@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { notifyAdmins } from '@/lib/mailer';
+import { rateLimit, clientIp } from '@/lib/rateLimit';
 
 // 참여신청 폼 → 문의 접수(공개 엔드포인트). 폼의 type 키를 enum으로 매핑.
 const TYPE_MAP = { repair: 'REPAIR', edu: 'EDU', vol: 'VOL' };
@@ -21,6 +22,12 @@ function notifyNewInquiry({ type, name, phone, area, message }) {
 }
 
 export async function POST(req) {
+  // 스팸·메일 폭탄 방지 — IP당 분당 5회.
+  const rl = rateLimit(`inquiry:${clientIp(req)}`, { max: 5, windowMs: 60_000 });
+  if (!rl.ok) {
+    return NextResponse.json({ error: '요청이 많습니다. 잠시 후 다시 시도해 주세요.' }, { status: 429 });
+  }
+
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ error: '잘못된 요청입니다.' }, { status: 400 });
 
@@ -35,6 +42,10 @@ export async function POST(req) {
   }
   if (!type) {
     return NextResponse.json({ error: '신청 유형이 올바르지 않습니다.' }, { status: 400 });
+  }
+  // 컬럼 길이 초과·과대 페이로드 방지(name/phone/area=VARCHAR(191), message=TEXT).
+  if (name.length > 100 || phone.length > 30 || (area && area.length > 100) || (message && message.length > 5000)) {
+    return NextResponse.json({ error: '입력이 너무 깁니다.' }, { status: 400 });
   }
 
   // 로그인 상태면 본인 신청으로 연결(마이페이지에서 조회 가능).

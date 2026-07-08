@@ -5,7 +5,8 @@ import { can, isLoggedIn } from '@/lib/rbac';
 /** @type {import('next-auth').NextAuthConfig} */
 export const authConfig = {
   trustHost: true,
-  session: { strategy: 'jwt' },
+  // 8시간 — 역할 변경/회수가 늦어도 이 시간 내 재로그인으로 반영됨(기본 30일 → 단축).
+  session: { strategy: 'jwt', maxAge: 60 * 60 * 8 },
   pages: { signIn: '/login' },
   providers: [],
   callbacks: {

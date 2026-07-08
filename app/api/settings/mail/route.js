@@ -32,13 +32,31 @@ export async function PATCH(req) {
   }
 
   const body = await req.json().catch(() => ({}));
+
+  // 포트 검증 — 비숫자/범위초과 시 NaN 저장으로 인한 500 방지.
+  let smtpPort = 587;
+  if (body.smtpPort !== undefined && body.smtpPort !== '' && body.smtpPort !== null) {
+    const p = Number.parseInt(body.smtpPort, 10);
+    if (!Number.isInteger(p) || p < 1 || p > 65535) {
+      return NextResponse.json({ error: '포트는 1~65535 사이 숫자여야 합니다.' }, { status: 400 });
+    }
+    smtpPort = p;
+  }
+
+  const smtpHost = (body.smtpHost || '').trim() || null;
+  const smtpUser = (body.smtpUser || '').trim() || null;
+  const smtpFrom = (body.smtpFrom || '').trim() || null;
+  if ((smtpHost && smtpHost.length > 191) || (smtpUser && smtpUser.length > 191) || (smtpFrom && smtpFrom.length > 191)) {
+    return NextResponse.json({ error: '입력이 너무 깁니다.' }, { status: 400 });
+  }
+
   const data = {
     mailEnabled: !!body.mailEnabled,
     mailRecipients: (body.mailRecipients || '').trim() || null,
-    smtpHost: (body.smtpHost || '').trim() || null,
-    smtpPort: body.smtpPort ? Number(body.smtpPort) : 587,
-    smtpUser: (body.smtpUser || '').trim() || null,
-    smtpFrom: (body.smtpFrom || '').trim() || null,
+    smtpHost,
+    smtpPort,
+    smtpUser,
+    smtpFrom,
   };
   if (body.smtpPassword) {
     data.smtpPassEnc = encrypt(String(body.smtpPassword));

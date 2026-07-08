@@ -12,6 +12,10 @@ export async function GET(req, { params }) {
     headers: {
       'Content-Type': img.mimeType,
       'Cache-Control': 'public, max-age=86400',
+      // 브라우저 MIME 스니핑 차단 + 문서로 렌더되지 않도록(저장형 XSS 방지)
+      'X-Content-Type-Options': 'nosniff',
+      'Content-Disposition': 'inline',
+      'Content-Security-Policy': "default-src 'none'; sandbox",
     },
   });
 }
@@ -23,7 +27,8 @@ export async function PATCH(req, { params }) {
     return NextResponse.json({ error: '권한이 없습니다.' }, { status: 403 });
   }
   const body = await req.json().catch(() => ({}));
-  const title = (body.title ?? '').toString().trim() || null;
+  let title = (body.title ?? '').toString().trim() || null;
+  if (title && title.length > 191) title = title.slice(0, 191);
   try {
     await prisma.galleryImage.update({ where: { id: params.id }, data: { title } });
   } catch (e) {

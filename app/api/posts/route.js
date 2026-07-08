@@ -21,6 +21,9 @@ export async function POST(req) {
   if (!title || !content) {
     return NextResponse.json({ error: '제목과 내용을 입력해 주세요.' }, { status: 400 });
   }
+  if (title.length > 191 || content.length > 20000) {
+    return NextResponse.json({ error: '제목(191자)·내용(20000자) 길이를 초과했습니다.' }, { status: 400 });
+  }
   if (!isValidCategory(category)) {
     return NextResponse.json({ error: '카테고리가 올바르지 않습니다.' }, { status: 400 });
   }

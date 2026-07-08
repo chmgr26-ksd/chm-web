@@ -14,8 +14,20 @@ const nextConfig = {
   async headers() {
     return [
       {
-        // /_next/static/* 와 /_next/image 는 제외(불변 캐시 유지), 그 외 전부 매치.
-        source: '/((?!_next/static/|_next/image).*)',
+        // 전역 보안 헤더 — 클릭재킹·MIME 스니핑·레퍼러 유출 방지.
+        source: '/:path*',
+        headers: [
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'Content-Security-Policy', value: "frame-ancestors 'none'" },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'X-XSS-Protection', value: '0' },
+        ],
+      },
+      {
+        // /_next/static/*·/_next/image·/api/* 제외(각자 캐시정책 유지), 그 외(HTML) 매 요청 재검증.
+        // → CDN이 삭제된 청크를 참조하는 오래된 HTML을 서빙하지 못함(ChunkLoadError 방지).
+        source: '/((?!_next/static/|_next/image|api/).*)',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
         ],

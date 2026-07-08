@@ -17,20 +17,25 @@ export default function ProfileForm({ initialName, initialPhone }) {
     e.preventDefault();
     setMsg(null);
     setSaving(true);
-    const res = await fetch('/api/account', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, phone }),
-    });
-    const data = await res.json().catch(() => ({}));
-    setSaving(false);
-    if (!res.ok) {
-      setMsg({ tone: 'danger', text: data.error || '저장에 실패했습니다.' });
-      return;
+    try {
+      const res = await fetch('/api/account', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, phone }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setMsg({ tone: 'danger', text: data.error || '저장에 실패했습니다.' });
+        return;
+      }
+      setMsg({ tone: 'success', text: '저장되었습니다.' });
+      await update({ name }); // 헤더 등 세션 이름 동기화
+      router.refresh();
+    } catch {
+      setMsg({ tone: 'danger', text: '네트워크 오류로 저장하지 못했습니다.' });
+    } finally {
+      setSaving(false);
     }
-    setMsg({ tone: 'success', text: '저장되었습니다.' });
-    await update({ name }); // 헤더 등 세션 이름 동기화
-    router.refresh();
   };
 
   return (

@@ -22,16 +22,21 @@ export default function PostForm({ post }) {
     setMsg(null);
     setSaving(true);
     const url = editing ? `/api/posts/${post.id}` : '/api/posts';
-    const res = await fetch(url, {
-      method: editing ? 'PATCH' : 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ category, title, body, published }),
-    });
-    const d = await res.json().catch(() => ({}));
-    setSaving(false);
-    if (!res.ok) { setMsg({ tone: 'danger', text: d.error || '저장에 실패했습니다.' }); return; }
-    router.push('/dashboard/posts');
-    router.refresh();
+    try {
+      const res = await fetch(url, {
+        method: editing ? 'PATCH' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ category, title, body, published }),
+      });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok) { setMsg({ tone: 'danger', text: d.error || '저장에 실패했습니다.' }); return; }
+      router.push('/dashboard/posts');
+      router.refresh();
+    } catch {
+      setMsg({ tone: 'danger', text: '네트워크 오류로 저장하지 못했습니다.' });
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (

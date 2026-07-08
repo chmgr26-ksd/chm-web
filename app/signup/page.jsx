@@ -17,26 +17,30 @@ export default function SignupPage() {
     e.preventDefault();
     setError('');
     setLoading(true);
-    const res = await fetch('/api/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
-    });
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
+    try {
+      const res = await fetch('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setError(data.error || '가입에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+        return;
+      }
+      // 가입 후 자동 로그인 → 홈 (일반 회원)
+      const login = await signIn('credentials', { email: form.email, password: form.password, redirect: false });
+      if (login?.error) {
+        router.push('/login');
+        return;
+      }
+      router.push('/');
+      router.refresh();
+    } catch {
+      setError('네트워크 오류로 가입하지 못했습니다. 잠시 후 다시 시도해 주세요.');
+    } finally {
       setLoading(false);
-      setError(data.error || '가입에 실패했습니다. 잠시 후 다시 시도해 주세요.');
-      return;
     }
-    // 가입 후 자동 로그인 → 홈 (일반 회원)
-    const login = await signIn('credentials', { email: form.email, password: form.password, redirect: false });
-    setLoading(false);
-    if (login?.error) {
-      router.push('/login');
-      return;
-    }
-    router.push('/');
-    router.refresh();
   };
 
   return (

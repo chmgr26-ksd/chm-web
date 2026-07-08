@@ -7,30 +7,46 @@ import { Field, Input, Button, Alert } from '@chm/design-system';
 function GalleryItem({ img, onChanged }) {
   const [title, setTitle] = useState(img.title || '');
   const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
   const dirty = title !== (img.title || '');
 
   const save = async () => {
     setBusy(true);
-    await fetch(`/api/gallery/${img.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title }),
-    });
-    setBusy(false);
-    onChanged();
+    setErr('');
+    try {
+      const res = await fetch(`/api/gallery/${img.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title }),
+      });
+      if (!res.ok) { const d = await res.json().catch(() => ({})); setErr(d.error || '저장 실패'); return; }
+      onChanged();
+    } catch {
+      setErr('네트워크 오류');
+    } finally {
+      setBusy(false);
+    }
   };
   const remove = async () => {
     if (!confirm('이 사진을 삭제할까요?')) return;
     setBusy(true);
-    await fetch(`/api/gallery/${img.id}`, { method: 'DELETE' });
-    setBusy(false);
-    onChanged();
+    setErr('');
+    try {
+      const res = await fetch(`/api/gallery/${img.id}`, { method: 'DELETE' });
+      if (!res.ok) { const d = await res.json().catch(() => ({})); setErr(d.error || '삭제 실패'); return; }
+      onChanged();
+    } catch {
+      setErr('네트워크 오류');
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
     <div className="flex flex-col overflow-hidden rounded-chm-lg border border-border">
       <img src={`/api/gallery/${img.id}`} alt={img.title || ''} className="aspect-square w-full object-cover" />
       <div className="flex flex-col gap-2 p-2.5">
+        {err && <span className="text-caption text-danger-600">{err}</span>}
         <Input size="sm" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="설명(선택)" />
         <div className="flex gap-1.5">
           <Button size="sm" tone="primary" onClick={save} disabled={!dirty || busy} className="flex-1">저장</Button>
@@ -58,14 +74,19 @@ export default function GalleryManager({ images }) {
     fd.append('file', file);
     if (title.trim()) fd.append('title', title.trim());
     setUploading(true);
-    const res = await fetch('/api/gallery', { method: 'POST', body: fd });
-    const d = await res.json().catch(() => ({}));
-    setUploading(false);
-    if (!res.ok) { setMsg({ tone: 'danger', text: d.error || '업로드에 실패했습니다.' }); return; }
-    setTitle('');
-    if (fileRef.current) fileRef.current.value = '';
-    setMsg({ tone: 'success', text: '업로드되었습니다.' });
-    refresh();
+    try {
+      const res = await fetch('/api/gallery', { method: 'POST', body: fd });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok) { setMsg({ tone: 'danger', text: d.error || '업로드에 실패했습니다.' }); return; }
+      setTitle('');
+      if (fileRef.current) fileRef.current.value = '';
+      setMsg({ tone: 'success', text: '업로드되었습니다.' });
+      refresh();
+    } catch {
+      setMsg({ tone: 'danger', text: '네트워크 오류로 업로드하지 못했습니다.' });
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (

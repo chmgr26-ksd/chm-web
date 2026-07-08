@@ -16,10 +16,20 @@ export async function PATCH(req) {
   if (!name) {
     return NextResponse.json({ error: '이름은 필수입니다.' }, { status: 400 });
   }
+  if (name.length > 100 || (phone && phone.length > 30)) {
+    return NextResponse.json({ error: '입력이 너무 깁니다.' }, { status: 400 });
+  }
 
-  await prisma.user.update({
-    where: { id: session.user.id },
-    data: { name, phone },
-  });
+  try {
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { name, phone },
+    });
+  } catch (e) {
+    if (e?.code === 'P2025') {
+      return NextResponse.json({ error: '계정을 찾을 수 없습니다. 다시 로그인해 주세요.' }, { status: 401 });
+    }
+    throw e;
+  }
   return NextResponse.json({ ok: true, name });
 }

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { signIn, getSession } from 'next-auth/react';
 import { AuthCard, Field, Input, Button, Alert } from '@chm/design-system';
+import { can } from '@/lib/rbac';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -17,17 +18,21 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
     setLoading(true);
-    const res = await signIn('credentials', { email, password: pw, redirect: false });
-    if (res?.error) {
+    try {
+      const res = await signIn('credentials', { email, password: pw, redirect: false });
+      if (res?.error) {
+        setError('이메일 또는 비밀번호가 올바르지 않습니다.');
+        return;
+      }
+      // 권한에 따라 이동: 직원·관리자 → 대시보드, 일반 → 홈
+      const session = await getSession();
+      router.push(can(session?.user, 'dashboard:access') ? '/dashboard' : '/');
+      router.refresh();
+    } catch {
+      setError('네트워크 오류로 로그인하지 못했습니다. 잠시 후 다시 시도해 주세요.');
+    } finally {
       setLoading(false);
-      setError('이메일 또는 비밀번호가 올바르지 않습니다.');
-      return;
     }
-    // 권한에 따라 이동: 직원·관리자 → 대시보드, 일반 → 홈
-    const session = await getSession();
-    const role = session?.user?.role;
-    router.push(role === 'ADMIN' || role === 'STAFF' ? '/dashboard' : '/');
-    router.refresh();
   };
 
   return (

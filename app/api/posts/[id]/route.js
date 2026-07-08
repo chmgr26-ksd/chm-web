@@ -22,10 +22,12 @@ export async function PATCH(req, { params }) {
   const data = {};
   if (typeof body.title === 'string') {
     if (!body.title.trim()) return NextResponse.json({ error: '제목을 입력해 주세요.' }, { status: 400 });
+    if (body.title.trim().length > 191) return NextResponse.json({ error: '제목은 191자 이하여야 합니다.' }, { status: 400 });
     data.title = body.title.trim();
   }
   if (typeof body.body === 'string') {
     if (!body.body.trim()) return NextResponse.json({ error: '내용을 입력해 주세요.' }, { status: 400 });
+    if (body.body.trim().length > 20000) return NextResponse.json({ error: '내용은 20000자 이하여야 합니다.' }, { status: 400 });
     data.body = body.body.trim();
   }
   if (body.category !== undefined) {
