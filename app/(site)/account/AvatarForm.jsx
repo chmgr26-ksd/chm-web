@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { Avatar, Button, Alert } from '@chm/design-system';
+import { avatarColor } from '@/lib/avatarColor';
 
 // 중앙을 정사각형으로 잘라 지정 크기 JPEG Blob으로 변환(브라우저 처리 → 서버 부담 없음).
 async function toSquareJpeg(file, size = 256, quality = 0.85) {
@@ -72,7 +73,7 @@ export default function AvatarForm({ name, image }) {
 
   return (
     <div className="flex items-center gap-4">
-      <Avatar name={name} src={image || undefined} value="trust" size="xl" />
+      <Avatar name={name} src={image || undefined} value={avatarColor(name)} size="xl" />
       <div className="flex min-w-0 flex-col gap-2">
         {msg && <Alert tone={msg.tone}>{msg.text}</Alert>}
         <div className="flex gap-2">
