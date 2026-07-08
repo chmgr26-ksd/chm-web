@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
-import { rateLimit, clientIp } from '@/lib/rateLimit';
+import { rateLimit } from '@/lib/rateLimit';
 
 // 비밀번호 변경 — 현재 비밀번호 확인 후 변경.
 export async function POST(req) {
@@ -10,8 +10,8 @@ export async function POST(req) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 });
   }
-  // 현재 비밀번호 무차별 시도 방지 — IP+계정당 분당 5회.
-  const rl = rateLimit(`pw:${session.user.id}:${clientIp(req)}`, { max: 5, windowMs: 60_000 });
+  // 현재 비밀번호 무차별 시도 방지 — 계정당 분당 5회(세션 필요 → 사용자 ID로 키잉).
+  const rl = rateLimit(`pw:${session.user.id}`, { max: 5, windowMs: 60_000 });
   if (!rl.ok) {
     return NextResponse.json({ error: '요청이 많습니다. 잠시 후 다시 시도해 주세요.' }, { status: 429 });
   }

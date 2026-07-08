@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { Container, Badge, EmptyState, Button } from '@chm/design-system';
@@ -23,6 +24,7 @@ function fmtDate(d) {
 
 export default async function AccountPage() {
   const session = await auth();
+  if (!session?.user?.id) redirect('/login'); // 미들웨어 우회/삭제계정 엣지케이스 방어(500 방지)
   const [dbUser, inquiries] = await Promise.all([
     prisma.user.findUnique({ where: { id: session.user.id } }),
     prisma.inquiry.findMany({ where: { userId: session.user.id }, orderBy: { createdAt: 'desc' } }),

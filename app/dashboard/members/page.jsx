@@ -40,7 +40,11 @@ export default async function MembersPage() {
   const [users, roleLogs] = await Promise.all([
     prisma.user.findMany({
       orderBy: { createdAt: 'desc' },
-      include: { _count: { select: { inquiries: true } } },
+      // passwordHash 등 민감 컬럼을 서버 메모리로 로드하지 않도록 필요한 필드만 선택.
+      select: {
+        id: true, name: true, email: true, phone: true, role: true, createdAt: true,
+        _count: { select: { inquiries: true } },
+      },
     }),
     prisma.roleChangeLog.findMany({ orderBy: { createdAt: 'desc' }, take: 20 }),
   ]);

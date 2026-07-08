@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { rateLimit, clientIp } from '@/lib/rateLimit';
+import { rateLimitByIp } from '@/lib/rateLimit';
 
 // 페이지뷰 기록(공개). 봇/비정상 경로는 제외. 실패해도 무시.
 export async function POST(req) {
   // 삽입 폭주 방지 — IP당 분당 60회(정상 탐색은 충분).
-  const rl = rateLimit(`track:${clientIp(req)}`, { max: 60, windowMs: 60_000 });
+  const rl = rateLimitByIp(req, 'track', { max: 60, windowMs: 60_000 });
   if (!rl.ok) return NextResponse.json({ ok: false });
 
   const body = await req.json().catch(() => ({}));

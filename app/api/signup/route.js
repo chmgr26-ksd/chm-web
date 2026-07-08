@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
-import { rateLimit, clientIp } from '@/lib/rateLimit';
+import { rateLimitByIp } from '@/lib/rateLimit';
 
 export async function POST(req) {
   // 남용 방지 — IP당 분당 5회.
-  const rl = rateLimit(`signup:${clientIp(req)}`, { max: 5, windowMs: 60_000 });
+  const rl = rateLimitByIp(req, 'signup', { max: 5, windowMs: 60_000 });
   if (!rl.ok) {
     return NextResponse.json({ error: '요청이 많습니다. 잠시 후 다시 시도해 주세요.' }, { status: 429 });
   }

@@ -11,10 +11,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     ...authConfig.callbacks,
     // Edge용 동기 jwt(역할 주입)를 실행한 뒤, Node 런타임에서 최신 역할을 DB로 재확인.
-    // → 관리자가 권한을 변경/회수하면 다음 요청부터 즉시 반영(강등 계정 방치 제거).
+    // → 관리자가 권한을 변경/회수하면 최대 60초 내 반영(강등 계정 방치 제거).
+    // 매 요청 DB 왕복은 대시보드 레이아웃 auth()의 응답 flush를 지연시켜 스트림 잘림을
+    // 재유발할 수 있으므로, 로그인/명시적 갱신이거나 마지막 확인 후 60초 경과 시에만 조회.
     async jwt(params) {
       const token = authConfig.callbacks.jwt(params);
-      if (token?.id) {
+      if (!token?.id) return token;
+      const now = Date.now();
+      const forced = !!params.user || params.trigger === 'signIn' || params.trigger === 'update';
+      const stale = !token.roleCheckedAt || now - token.roleCheckedAt > 60_000;
+      if (forced || stale) {
         try {
           const fresh = await prisma.user.findUnique({
             where: { id: token.id },
@@ -22,6 +28,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           });
           // 삭제된 계정 → 역할 제거(RBAC의 can/isLoggedIn이 거부). 없으면 최신 역할 반영.
           token.role = fresh ? fresh.role : undefined;
+          token.roleCheckedAt = now;
         } catch {
           /* DB 일시 오류 → 기존 토큰 유지(가용성 우선) */
         }

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { notifyAdmins } from '@/lib/mailer';
-import { rateLimit, clientIp } from '@/lib/rateLimit';
+import { rateLimitByIp } from '@/lib/rateLimit';
 
 // 참여신청 폼 → 문의 접수(공개 엔드포인트). 폼의 type 키를 enum으로 매핑.
 const TYPE_MAP = { repair: 'REPAIR', edu: 'EDU', vol: 'VOL' };
@@ -23,7 +23,7 @@ function notifyNewInquiry({ type, name, phone, area, message }) {
 
 export async function POST(req) {
   // 스팸·메일 폭탄 방지 — IP당 분당 5회.
-  const rl = rateLimit(`inquiry:${clientIp(req)}`, { max: 5, windowMs: 60_000 });
+  const rl = rateLimitByIp(req, 'inquiry', { max: 5, windowMs: 60_000 });
   if (!rl.ok) {
     return NextResponse.json({ error: '요청이 많습니다. 잠시 후 다시 시도해 주세요.' }, { status: 429 });
   }
