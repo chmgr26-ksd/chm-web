@@ -24,12 +24,13 @@ function fmtDate(d) {
 
 export default async function AccountPage() {
   const session = await auth();
-  if (!session?.user?.id) redirect('/login'); // 미들웨어 우회/삭제계정 엣지케이스 방어(500 방지)
+  if (!session?.user?.id) redirect('/login'); // 미들웨어 우회/엣지케이스 방어(500 방지)
   const [dbUser, inquiries] = await Promise.all([
     prisma.user.findUnique({ where: { id: session.user.id } }),
     prisma.inquiry.findMany({ where: { userId: session.user.id }, orderBy: { createdAt: 'desc' } }),
   ]);
-  const user = dbUser || session.user; // DB 최신값 우선
+  if (!dbUser) redirect('/login'); // 계정이 삭제된 stale 세션 → 오래된 정보 노출 방지
+  const user = dbUser;
 
   return (
     <>

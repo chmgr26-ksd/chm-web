@@ -10,10 +10,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   callbacks: {
     ...authConfig.callbacks,
-    // Edge용 동기 jwt(역할 주입)를 실행한 뒤, Node 런타임에서 최신 역할을 DB로 재확인.
-    // → 관리자가 권한을 변경/회수하면 최대 60초 내 반영(강등 계정 방치 제거).
-    // 매 요청 DB 왕복은 대시보드 레이아웃 auth()의 응답 flush를 지연시켜 스트림 잘림을
-    // 재유발할 수 있으므로, 로그인/명시적 갱신이거나 마지막 확인 후 60초 경과 시에만 조회.
+    // Edge용 동기 jwt(역할 주입) 실행 후, Node 런타임에서 최신 역할을 DB로 재확인해
+    // 권한 변경/회수를 즉시 반영한다(강등 계정 방치 제거). 상한은 세션 maxAge(8h).
+    // 참고: Next14 RSC의 auth()는 쿠키를 다시 쓰지 못해 roleCheckedAt(TTL)이 세션 내내
+    // 로그인 시점에 고정된다 → 로그인 후 60초 동안만 조회를 건너뛰고 이후에는 매 요청
+    // 인덱스 PK(select role) 1회 조회(웜 커넥션·경량). 역할 값 자체는 항상 ≤60초 신선.
+    // 조회는 대시보드 셸의 무거운 집계(page.jsx로 분리)와 달리 flush 경로 부담이 작다.
     async jwt(params) {
       const token = authConfig.callbacks.jwt(params);
       if (!token?.id) return token;

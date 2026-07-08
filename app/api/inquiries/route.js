@@ -52,7 +52,16 @@ export async function POST(req) {
   const session = await auth();
   const userId = session?.user?.id || null;
 
-  await prisma.inquiry.create({ data: { type, name, phone, area, message, userId } });
+  try {
+    await prisma.inquiry.create({ data: { type, name, phone, area, message, userId } });
+  } catch (e) {
+    // 세션은 유효하나 사용자 행이 삭제된 경우 FK 위반(P2003) → 익명 신청으로 재시도.
+    if (e?.code === 'P2003' && userId) {
+      await prisma.inquiry.create({ data: { type, name, phone, area, message, userId: null } });
+    } else {
+      throw e;
+    }
+  }
 
   // 관리자 알림 메일 — fire-and-forget(접수 응답을 지연/실패시키지 않음).
   notifyNewInquiry({ type, name, phone, area, message }).catch((e) =>

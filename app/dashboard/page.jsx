@@ -65,7 +65,8 @@ export default async function DashboardPage({ searchParams }) {
         {recent.length === 0 ? (
           <EmptyState
             title={page > 1 ? '이 페이지에는 신청이 없습니다' : '아직 접수된 신청이 없습니다'}
-            description={page > 1 ? '이전 페이지를 확인해 주세요.' : '공개 사이트의 참여 신청 폼으로 문의가 접수되면 여기에 표시됩니다.'}
+            description={page > 1 ? '범위를 벗어난 페이지입니다.' : '공개 사이트의 참여 신청 폼으로 문의가 접수되면 여기에 표시됩니다.'}
+            action={page > 1 ? <Button as={Link} href="/dashboard" tone="ink" variant="soft" size="sm">첫 페이지로</Button> : undefined}
           />
         ) : (
           <>
