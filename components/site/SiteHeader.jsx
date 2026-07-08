@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { Button, NoticeBar, Container, Avatar } from '@chm/design-system';
 import { can, ROLE_LABEL } from '@/lib/rbac';
+import { avatarColor } from '@/lib/avatarColor';
 import { NAV } from './constants';
 
 export default function SiteHeader() {
@@ -59,7 +60,7 @@ export default function SiteHeader() {
                   </Link>
                 )}
                 <Link href="/account" className="flex items-center gap-1.5 rounded-chm-md px-1.5 py-1 text-body-sm text-ink-600 hover:bg-ink-100" title="마이페이지">
-                  <Avatar name={user?.name || '회원'} value="trust" size="sm" />
+                  <Avatar name={user?.name || '회원'} src={user?.image || undefined} value={avatarColor(user?.name || '회원')} size="sm" />
                   <span className="max-w-[7rem] truncate font-semibold text-ink-800">{user?.name}</span>
                 </Link>
                 <button type="button" onClick={logout} className="rounded-chm-md px-2.5 py-2 text-body-sm font-semibold text-ink-500 hover:bg-ink-100 hover:text-ink-800">
@@ -115,7 +116,7 @@ export default function SiteHeader() {
               {status === 'authenticated' ? (
                 <>
                   <div className="flex items-center gap-2 px-3 py-2 text-body-sm text-ink-600">
-                    <Avatar name={user?.name || '회원'} value="trust" size="sm" />
+                    <Avatar name={user?.name || '회원'} src={user?.image || undefined} value={avatarColor(user?.name || '회원')} size="sm" />
                     <span className="font-semibold text-ink-800">{user?.name}</span>
                     <span className="text-caption text-ink-500">
                       {ROLE_LABEL[user?.role] || '회원'}
