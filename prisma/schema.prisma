@@ -38,6 +38,8 @@ model User {
   name         String
   phone        String?
   role         Role     @default(USER)
+  avatar          Bytes?    // 프로필 사진(정사각형 JPEG, 클라이언트 리사이즈). 없으면 이니셜 표시.
+  avatarUpdatedAt DateTime? // 사진 변경 시각 — 세션 image URL 캐시버스트용.
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

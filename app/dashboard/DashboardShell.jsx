@@ -25,7 +25,7 @@ export default function DashboardShell({ user, children }) {
             footer={
               <div className="flex items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-2">
-                  <Avatar name={user?.name || '사용자'} value="trust" size="sm" />
+                  <Avatar name={user?.name || '사용자'} src={user?.image || undefined} value="trust" size="sm" />
                   <div className="min-w-0">
                     <div className="truncate text-body-sm font-semibold text-ink-800">{user?.name}</div>
                     <div className="text-caption text-ink-500">{roleLabel}</div>
@@ -61,7 +61,7 @@ export default function DashboardShell({ user, children }) {
             actions={
               <div className="flex items-center gap-3">
                 <a href="/" className="text-body-sm font-semibold text-ink-600 hover:text-primary">사이트로</a>
-                <Avatar name={user?.name || '사용자'} value="trust" size="sm" />
+                <Avatar name={user?.name || '사용자'} src={user?.image || undefined} value="trust" size="sm" />
               </div>
             }
           >

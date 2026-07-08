@@ -15,7 +15,12 @@ const BG = {
 };
 
 function initials(name = '') {
-  const parts = name.trim().split(/\s+/);
+  const trimmed = name.trim();
+  if (!trimmed) return '';
+  // 한글 이름은 성(첫 글자)만 — 앞 두 글자(성+이름 첫 글자)는 의미가 약함.
+  if (/[가-힣]/.test(trimmed[0])) return trimmed[0];
+  // 영문 등: 한 단어면 앞 2글자, 여러 단어면 각 단어 첫 글자.
+  const parts = trimmed.split(/\s+/);
   if (parts.length === 1) return parts[0].slice(0, 2);
   return (parts[0][0] || '') + (parts[parts.length - 1][0] || '');
 }

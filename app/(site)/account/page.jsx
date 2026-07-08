@@ -7,6 +7,7 @@ import { can, ROLE_LABEL } from '@/lib/rbac';
 import PageBanner from '../../../components/site/PageBanner';
 import ProfileForm from './ProfileForm';
 import PasswordForm from './PasswordForm';
+import AvatarForm from './AvatarForm';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: '마이페이지', robots: { index: false, follow: false } };
@@ -26,11 +27,16 @@ export default async function AccountPage() {
   const session = await auth();
   if (!session?.user?.id) redirect('/login'); // 미들웨어 우회/엣지케이스 방어(500 방지)
   const [dbUser, inquiries] = await Promise.all([
-    prisma.user.findUnique({ where: { id: session.user.id } }),
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+      // avatar 블롭은 로드하지 않음(URL만 필요) — 필요한 필드만 선택.
+      select: { id: true, name: true, email: true, phone: true, role: true, avatarUpdatedAt: true },
+    }),
     prisma.inquiry.findMany({ where: { userId: session.user.id }, orderBy: { createdAt: 'desc' } }),
   ]);
   if (!dbUser) redirect('/login'); // 계정이 삭제된 stale 세션 → 오래된 정보 노출 방지
   const user = dbUser;
+  const avatarUrl = dbUser.avatarUpdatedAt ? `/api/users/${dbUser.id}/avatar?v=${dbUser.avatarUpdatedAt.getTime()}` : null;
 
   return (
     <>
@@ -45,6 +51,9 @@ export default async function AccountPage() {
           {/* 내 정보 */}
           <div className="rounded-chm-lg border border-border p-6">
             <h2 className="mb-4 text-h4 font-bold text-ink-850">내 정보</h2>
+            <div className="mb-5">
+              <AvatarForm name={user.name} image={avatarUrl} />
+            </div>
             <dl className="flex flex-col gap-3 text-body-sm">
               <div className="flex justify-between gap-4">
                 <dt className="text-ink-500">이름</dt>

@@ -26,10 +26,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         try {
           const fresh = await prisma.user.findUnique({
             where: { id: token.id },
-            select: { role: true },
+            select: { role: true, avatarUpdatedAt: true },
           });
           // 삭제된 계정 → 역할 제거(RBAC의 can/isLoggedIn이 거부). 없으면 최신 역할 반영.
           token.role = fresh ? fresh.role : undefined;
+          // 프로필 사진 URL(있을 때만) — 변경시각으로 캐시버스트.
+          token.picture = fresh?.avatarUpdatedAt
+            ? `/api/users/${token.id}/avatar?v=${fresh.avatarUpdatedAt.getTime()}`
+            : null;
           token.roleCheckedAt = now;
         } catch {
           /* DB 일시 오류 → 기존 토큰 유지(가용성 우선) */

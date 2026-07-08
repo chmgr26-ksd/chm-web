@@ -44,6 +44,7 @@ export const authConfig = {
       if (session.user) {
         session.user.role = token.role;
         session.user.id = token.id;
+        session.user.image = token.picture ?? null;
       }
       return session;
     },
