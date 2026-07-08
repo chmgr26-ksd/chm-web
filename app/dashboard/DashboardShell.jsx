@@ -23,6 +23,7 @@ export default function DashboardShell({ user, children }) {
       <AppShell
         sidebar={
           <Sidebar
+            logoHref="/dashboard"
             footer={
               <div className="flex items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-2">

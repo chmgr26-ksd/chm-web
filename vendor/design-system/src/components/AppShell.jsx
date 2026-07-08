@@ -25,8 +25,8 @@ export function AppShell({ sidebar, topbar, className, children, ...props }) {
   );
 }
 
-/** Sidebar — 좌측 고정 내비게이션 컨테이너. */
-export function Sidebar({ footer, className, children, ...props }) {
+/** Sidebar — 좌측 고정 내비게이션 컨테이너. logoHref 지정 시 로고 클릭으로 이동. */
+export function Sidebar({ footer, logoHref, className, children, ...props }) {
   return (
     <aside
       className={cn(
@@ -36,7 +36,13 @@ export function Sidebar({ footer, className, children, ...props }) {
       {...props}
     >
       <div className="flex h-16 items-center border-b border-border px-5">
-        <Logo variant="full" size={26} />
+        {logoHref ? (
+          <a href={logoHref} aria-label="홈으로" className="inline-flex items-center rounded-chm-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+            <Logo variant="full" size={26} />
+          </a>
+        ) : (
+          <Logo variant="full" size={26} />
+        )}
       </div>
       <nav className="flex-1 overflow-y-auto p-3">{children}</nav>
       {footer && <div className="border-t border-border p-3">{footer}</div>}
