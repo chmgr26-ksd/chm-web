@@ -8,8 +8,10 @@ import {
 } from '@chm/design-system';
 import { POST_CATEGORY } from '@/lib/posts';
 import PostActions from './PostActions';
+import Pager from '../Pager';
 
 export const dynamic = 'force-dynamic';
+const PAGE_SIZE = 20;
 
 function fmtDate(d) {
   const dt = new Date(d);
@@ -17,13 +19,18 @@ function fmtDate(d) {
   return `${dt.getFullYear()}.${p(dt.getMonth() + 1)}.${p(dt.getDate())}`;
 }
 
-export default async function PostsAdminPage() {
+export default async function PostsAdminPage({ searchParams }) {
   const session = await auth();
   if (!can(session?.user, 'posts:manage')) {
     return (<><PageHeader title="소식 관리" /><EmptyState title="권한 없음" description="소식 관리는 직원·관리자만 접근할 수 있습니다." /></>);
   }
 
-  const posts = await prisma.post.findMany({ orderBy: { createdAt: 'desc' } });
+  const page = Math.max(1, parseInt(searchParams?.page ?? '1', 10) || 1);
+  const [total, posts] = await Promise.all([
+    prisma.post.count(),
+    prisma.post.findMany({ orderBy: { createdAt: 'desc' }, skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE }),
+  ]);
+  const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
     <>
@@ -34,11 +41,12 @@ export default async function PostsAdminPage() {
       />
       {posts.length === 0 ? (
         <EmptyState
-          title="작성된 소식이 없습니다"
-          description="새 소식을 작성하면 공개 사이트의 소식 페이지에 노출됩니다."
-          action={<Button as={Link} href="/dashboard/posts/new" tone="primary" size="sm">새 소식 작성</Button>}
+          title={page > 1 ? '이 페이지에는 소식이 없습니다' : '작성된 소식이 없습니다'}
+          description={page > 1 ? '이전 페이지를 확인해 주세요.' : '새 소식을 작성하면 공개 사이트의 소식 페이지에 노출됩니다.'}
+          action={<Button as={Link} href={page > 1 ? '/dashboard/posts' : '/dashboard/posts/new'} tone="primary" size="sm">{page > 1 ? '처음으로' : '새 소식 작성'}</Button>}
         />
       ) : (
+        <>
         <div className="overflow-x-auto rounded-chm-lg border border-border">
           <Table>
             <THead>
@@ -65,6 +73,8 @@ export default async function PostsAdminPage() {
             </TBody>
           </Table>
         </div>
+        <Pager page={page} pageCount={pageCount} basePath="/dashboard/posts" />
+        </>
       )}
     </>
   );

@@ -6,8 +6,10 @@ import {
 } from '@chm/design-system';
 import { can, ROLE_LABEL } from '@/lib/rbac';
 import RoleSelect from './RoleSelect';
+import Pager from '../Pager';
 
 export const dynamic = 'force-dynamic';
+const PAGE_SIZE = 20;
 
 const ROLE_VALUE = { ADMIN: 'innovation', STAFF: 'trust', USER: 'cooperation' };
 
@@ -23,7 +25,7 @@ function fmtDateTime(d) {
   return `${dt.getFullYear()}.${p(dt.getMonth() + 1)}.${p(dt.getDate())} ${p(dt.getHours())}:${p(dt.getMinutes())}`;
 }
 
-export default async function MembersPage() {
+export default async function MembersPage({ searchParams }) {
   const session = await auth();
   const me = session.user;
 
@@ -37,9 +39,13 @@ export default async function MembersPage() {
     );
   }
 
-  const [users, roleLogs] = await Promise.all([
+  const page = Math.max(1, parseInt(searchParams?.page ?? '1', 10) || 1);
+  const [total, users, roleLogs] = await Promise.all([
+    prisma.user.count(),
     prisma.user.findMany({
       orderBy: { createdAt: 'desc' },
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
       // passwordHash 등 민감 컬럼을 서버 메모리로 로드하지 않도록 필요한 필드만 선택.
       select: {
         id: true, name: true, email: true, phone: true, role: true, createdAt: true,
@@ -48,6 +54,7 @@ export default async function MembersPage() {
     }),
     prisma.roleChangeLog.findMany({ orderBy: { createdAt: 'desc' }, take: 20 }),
   ]);
+  const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
     <>
@@ -90,6 +97,8 @@ export default async function MembersPage() {
           </TBody>
         </Table>
       </div>
+
+      <Pager page={page} pageCount={pageCount} basePath="/dashboard/members" />
 
       {/* 권한 변경 이력(감사 로그) */}
       <div className="mt-10">

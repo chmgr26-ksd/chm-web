@@ -8,10 +8,12 @@ import {
 } from '@chm/design-system';
 import { fmtEventRange } from '@/lib/datetime';
 import EventActions from './EventActions';
+import Pager from '../Pager';
 
 export const dynamic = 'force-dynamic';
+const PAGE_SIZE = 20;
 
-export default async function EventsAdminPage() {
+export default async function EventsAdminPage({ searchParams }) {
   const session = await auth();
   if (!can(session?.user, 'events:manage')) {
     return (
@@ -23,7 +25,12 @@ export default async function EventsAdminPage() {
   }
 
   const now = new Date();
-  const events = await prisma.event.findMany({ orderBy: { startAt: 'desc' }, take: 200 });
+  const page = Math.max(1, parseInt(searchParams?.page ?? '1', 10) || 1);
+  const [total, events] = await Promise.all([
+    prisma.event.count(),
+    prisma.event.findMany({ orderBy: { startAt: 'desc' }, skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE }),
+  ]);
+  const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
     <>
@@ -33,8 +40,13 @@ export default async function EventsAdminPage() {
       </div>
 
       {events.length === 0 ? (
-        <EmptyState title="등록된 행사가 없습니다" description="위 ‘새 행사’로 행사 안내를 등록해 주세요." />
+        <EmptyState
+          title={page > 1 ? '이 페이지에는 행사가 없습니다' : '등록된 행사가 없습니다'}
+          description={page > 1 ? '이전 페이지를 확인해 주세요.' : '위 ‘새 행사’로 행사 안내를 등록해 주세요.'}
+          action={page > 1 ? <Button as={Link} href="/dashboard/events" variant="soft" tone="ink" size="sm">처음으로</Button> : undefined}
+        />
       ) : (
+        <>
         <div className="overflow-x-auto rounded-chm-lg border border-border">
           <Table>
             <THead>
@@ -62,6 +74,8 @@ export default async function EventsAdminPage() {
             </TBody>
           </Table>
         </div>
+        <Pager page={page} pageCount={pageCount} basePath="/dashboard/events" />
+        </>
       )}
     </>
   );
