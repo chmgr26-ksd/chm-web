@@ -115,10 +115,12 @@ model Post {
 model PageView {
   id        String   @id @default(cuid())
   path      String
+  referrer  String?  // 외부 유입 도메인(내부/직접 방문은 null)
   createdAt DateTime @default(now())
 
   @@index([createdAt])
   @@index([path])
+  @@index([referrer])
 }
 
 // 갤러리 이미지 — 바이너리를 DB(LONGBLOB)에 저장(배포에도 보존). 업로드 크기 제한.
