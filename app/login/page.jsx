@@ -56,6 +56,9 @@ export default function LoginPage() {
             <Field label="비밀번호" htmlFor="pw">
               <Input id="pw" type="password" autoComplete="current-password" placeholder="••••••••" value={pw} onChange={(e) => setPw(e.target.value)} />
             </Field>
+            <div className="-mt-1 text-right">
+              <Link href="/forgot-password" className="text-body-sm font-medium text-ink-500 hover:text-primary">비밀번호를 잊으셨나요?</Link>
+            </div>
             <Button type="submit" size="lg" block loading={loading}>로그인</Button>
           </form>
         </AuthCard>

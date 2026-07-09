@@ -45,6 +45,22 @@ model User {
 
   handledInquiries Inquiry[] @relation("InquiryHandler")
   inquiries        Inquiry[] @relation("InquiryOwner")
+  passwordResets   PasswordResetToken[]
+}
+
+// 비밀번호 재설정 토큰 — 원본은 메일로만 보내고 DB엔 sha256 해시만 저장. 1시간 만료·1회용.
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique // sha256(원본 토큰)
+  expiresAt DateTime
+  usedAt    DateTime? // 사용(소비)되면 기록 → 재사용 차단
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 model Inquiry {
