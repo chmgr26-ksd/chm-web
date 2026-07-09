@@ -19,9 +19,8 @@ export default function DashboardShell({ user, children }) {
   };
 
   return (
-    <div style={{ height: '100vh', overflow: 'hidden' }}>
-      <AppShell
-        sidebar={
+    <AppShell
+      sidebar={
           <Sidebar
             logoHref="/dashboard"
             footer={
@@ -73,6 +72,5 @@ export default function DashboardShell({ user, children }) {
       >
         {children}
       </AppShell>
-    </div>
   );
 }
