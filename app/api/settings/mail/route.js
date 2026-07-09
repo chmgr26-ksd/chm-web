@@ -62,10 +62,20 @@ export async function PATCH(req) {
     data.smtpPassEnc = encrypt(String(body.smtpPassword));
   }
 
-  await prisma.appSetting.upsert({
-    where: { id: 'singleton' },
-    update: data,
-    create: { id: 'singleton', ...data },
-  });
+  // Prisma upsert는 동시 '최초 생성'에 원자적이지 않다(두 요청이 동시에 없는 행을
+  // 만들면 한쪽이 PK 'singleton' 유니크 충돌 P2002). 진 쪽은 이미 행이 존재하므로 update로 재시도.
+  try {
+    await prisma.appSetting.upsert({
+      where: { id: 'singleton' },
+      update: data,
+      create: { id: 'singleton', ...data },
+    });
+  } catch (e) {
+    if (e?.code === 'P2002') {
+      await prisma.appSetting.update({ where: { id: 'singleton' }, data });
+    } else {
+      throw e;
+    }
+  }
   return NextResponse.json({ ok: true });
 }

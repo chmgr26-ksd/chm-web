@@ -19,30 +19,37 @@ export async function PATCH(req, { params }) {
     return NextResponse.json({ error: '잘못된 역할입니다.' }, { status: 400 });
   }
 
-  const target = await prisma.user.findUnique({
-    where: { id: params.id },
-    select: { role: true, email: true },
-  });
-  if (!target) {
+  // read-modify-write(현재 역할 읽기 → 다르면 변경+감사로그)를 하나의 트랜잭션에서
+  // 대상 행을 FOR UPDATE로 잠근 뒤 수행. 동시 권한 변경이 끼어들어 감사 로그의
+  // fromRole이 실제 이전 값과 어긋나거나 이중 기록되는 것을 방지한다(트랜잭션은 짧게 유지).
+  let outcome;
+  try {
+    outcome = await prisma.$transaction(async (tx) => {
+      const rows = await tx.$queryRaw`SELECT role, email FROM \`User\` WHERE id = ${params.id} FOR UPDATE`;
+      const target = rows[0];
+      if (!target) return { status: 404 };
+      if (target.role !== role) {
+        await tx.user.update({ where: { id: params.id }, data: { role } });
+        await tx.roleChangeLog.create({
+          data: {
+            actorId: session.user.id,
+            actorEmail: session.user.email,
+            targetId: params.id,
+            targetEmail: target.email,
+            fromRole: target.role,
+            toRole: role,
+          },
+        });
+      }
+      return { status: 200 };
+    });
+  } catch (e) {
+    console.error('[users:role] 변경 실패:', e?.message || e);
+    return NextResponse.json({ error: '변경에 실패했습니다.' }, { status: 500 });
+  }
+
+  if (outcome.status === 404) {
     return NextResponse.json({ error: '회원을 찾을 수 없습니다.' }, { status: 404 });
   }
-
-  // 실제 변경이 있을 때만 갱신 + 감사 로그(원자적).
-  if (target.role !== role) {
-    await prisma.$transaction([
-      prisma.user.update({ where: { id: params.id }, data: { role } }),
-      prisma.roleChangeLog.create({
-        data: {
-          actorId: session.user.id,
-          actorEmail: session.user.email,
-          targetId: params.id,
-          targetEmail: target.email,
-          fromRole: target.role,
-          toRole: role,
-        },
-      }),
-    ]);
-  }
-
   return NextResponse.json({ ok: true });
 }
