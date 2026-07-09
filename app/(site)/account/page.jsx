@@ -8,6 +8,7 @@ import PageBanner from '../../../components/site/PageBanner';
 import ProfileForm from './ProfileForm';
 import PasswordForm from './PasswordForm';
 import AvatarForm from './AvatarForm';
+import DeleteAccount from './DeleteAccount';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: '마이페이지', robots: { index: false, follow: false } };
@@ -117,6 +118,9 @@ export default async function AccountPage() {
               <PasswordForm />
             </div>
           </div>
+
+          {/* 회원 탈퇴 */}
+          <DeleteAccount />
         </Container>
       </section>
     </>

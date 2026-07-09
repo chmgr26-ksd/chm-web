@@ -53,3 +53,26 @@ export async function PATCH(req, { params }) {
   }
   return NextResponse.json({ ok: true });
 }
+
+// 회원 삭제 — members:manage(관리자). 본인은 여기서 삭제 불가(마이페이지 탈퇴 사용).
+// 연관 데이터는 FK 규칙으로 처리(재설정토큰 Cascade, 문의 SetNull, 감사로그·소식 비정규화 보존).
+// 삭제자는 항상 관리자이고 본인 삭제가 막혀 있으므로 '관리자 0명'이 되는 일은 없다.
+export async function DELETE(req, { params }) {
+  const session = await auth();
+  if (!can(session?.user, 'members:manage')) {
+    return NextResponse.json({ error: '관리자만 삭제할 수 있습니다.' }, { status: 403 });
+  }
+  if (params.id === session.user.id) {
+    return NextResponse.json({ error: '본인 계정은 여기서 삭제할 수 없습니다. 마이페이지에서 탈퇴해 주세요.' }, { status: 400 });
+  }
+
+  try {
+    await prisma.user.delete({ where: { id: params.id } });
+  } catch (e) {
+    if (e?.code === 'P2025') {
+      return NextResponse.json({ error: '회원을 찾을 수 없습니다.' }, { status: 404 });
+    }
+    throw e;
+  }
+  return NextResponse.json({ ok: true });
+}

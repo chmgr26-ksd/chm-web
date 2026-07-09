@@ -6,6 +6,7 @@ import {
 } from '@chm/design-system';
 import { can, ROLE_LABEL } from '@/lib/rbac';
 import RoleSelect from './RoleSelect';
+import DeleteUser from './DeleteUser';
 import Pager from '../Pager';
 
 export const dynamic = 'force-dynamic';
@@ -72,6 +73,7 @@ export default async function MembersPage({ searchParams }) {
               <TH>가입일</TH>
               <TH>신청</TH>
               <TH>권한</TH>
+              <TH align="right">관리</TH>
             </TR>
           </THead>
           <TBody>
@@ -91,6 +93,9 @@ export default async function MembersPage({ searchParams }) {
                   ) : (
                     <RoleSelect id={u.id} value={u.role} />
                   )}
+                </TD>
+                <TD align="right">
+                  {u.id !== me.id && <DeleteUser id={u.id} name={u.name} />}
                 </TD>
               </TR>
             ))}
