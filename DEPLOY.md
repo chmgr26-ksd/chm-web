@@ -68,7 +68,7 @@
 **대시보드 → 알림 설정** UI(비번 암호화 저장) 또는 환경변수로 설정:
 `SMTP_HOST`·`SMTP_PORT`(465/587)·`SMTP_USER`·`SMTP_PASS`·`SMTP_FROM`(선택)·`NOTIFY_EMAIL`(선택, 미설정 시 관리자 전체).
 
-> **Gmail로 설정하려면 → [docs/email-gmail-setup.md](docs/email-gmail-setup.md)** (앱 비밀번호 발급 필요)
+> 제공사별 설정 가이드: **[Gmail](docs/email-gmail-setup.md)**(앱 비밀번호) · **[네이버](docs/email-naver-setup.md)**(IMAP/SMTP 사용 켜기)
 
 ### 미포함(후속 증분)
 - **후원 결제**: PG(토스페이먼츠/PortOne) 계약·키 필요 — 스키마(`Donation`)만 스캐폴드됨.
