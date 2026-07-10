@@ -13,7 +13,8 @@ function fmtDate(d) {
   return `${dt.getFullYear()}.${p(dt.getMonth() + 1)}.${p(dt.getDate())}`;
 }
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const post = await prisma.post.findUnique({ where: { id: params.id } });
   if (!post || !post.published) return { title: '소식' };
   const desc = (post.body || '').replace(/\s+/g, ' ').trim().slice(0, 150);
@@ -31,7 +32,8 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default async function NewsDetailPage({ params }) {
+export default async function NewsDetailPage(props) {
+  const params = await props.params;
   const item = await prisma.post.findUnique({ where: { id: params.id } });
   if (!item || !item.published) notFound();
   const cat = POST_CATEGORY[item.category] || { label: item.category, value: 'trust' };

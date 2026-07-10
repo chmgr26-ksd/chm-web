@@ -15,7 +15,8 @@ const imgHeaders = (type) => ({
   'Content-Security-Policy': "default-src 'none'; sandbox",
 });
 
-export async function GET(req, { params }) {
+export async function GET(req, props) {
+  const params = await props.params;
   const wantThumb = new URL(req.url).searchParams.get('v') === 'thumb';
 
   if (wantThumb) {
@@ -34,7 +35,8 @@ export async function GET(req, { params }) {
 }
 
 // 이미지 설명(제목) 수정 — gallery:manage.
-export async function PATCH(req, { params }) {
+export async function PATCH(req, props) {
+  const params = await props.params;
   const session = await auth();
   if (!can(session?.user, 'gallery:manage')) {
     return NextResponse.json({ error: '권한이 없습니다.' }, { status: 403 });
@@ -48,11 +50,12 @@ export async function PATCH(req, { params }) {
     if (e?.code === 'P2025') return NextResponse.json({ error: '이미지를 찾을 수 없습니다.' }, { status: 404 });
     throw e;
   }
-  revalidatePath('/gallery');  return NextResponse.json({ ok: true });
+  revalidatePath('/gallery');return NextResponse.json({ ok: true });
 }
 
 // 이미지 삭제 — gallery:manage.
-export async function DELETE(req, { params }) {
+export async function DELETE(req, props) {
+  const params = await props.params;
   const session = await auth();
   if (!can(session?.user, 'gallery:manage')) {
     return NextResponse.json({ error: '권한이 없습니다.' }, { status: 403 });
@@ -63,5 +66,5 @@ export async function DELETE(req, { params }) {
     if (e?.code === 'P2025') return NextResponse.json({ error: '이미지를 찾을 수 없습니다.' }, { status: 404 });
     throw e;
   }
-  revalidatePath('/gallery');  return NextResponse.json({ ok: true });
+  revalidatePath('/gallery');return NextResponse.json({ ok: true });
 }

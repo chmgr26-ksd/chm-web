@@ -32,7 +32,8 @@ function buildQs({ q, status, type, page }) {
   return str ? `/dashboard/inquiries?${str}` : '/dashboard/inquiries';
 }
 
-export default async function InquiriesPage({ searchParams }) {
+export default async function InquiriesPage(props) {
+  const searchParams = await props.searchParams;
   const page = Math.max(1, parseInt(searchParams?.page ?? '1', 10) || 1);
   const q = (searchParams?.q ?? '').toString().trim().slice(0, 100);
   const status = STATUSES.includes(searchParams?.status) ? searchParams.status : '';

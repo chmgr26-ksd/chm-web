@@ -14,7 +14,8 @@ function fmtDate(d) {
   return `${dt.getFullYear()}.${p(dt.getMonth() + 1)}.${p(dt.getDate())}`;
 }
 
-export default async function NewsPage({ searchParams }) {
+export default async function NewsPage(props) {
+  const searchParams = await props.searchParams;
   const page = Math.max(1, parseInt(searchParams?.page ?? '1', 10) || 1);
 
   // 목록은 본문(TEXT) 없이 필요한 필드만 조회 + 페이지네이션(무제한 findMany 제거).

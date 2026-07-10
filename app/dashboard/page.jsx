@@ -19,7 +19,8 @@ function fmtDate(d) {
   return `${dt.getFullYear()}.${p(dt.getMonth() + 1)}.${p(dt.getDate())} ${p(dt.getHours())}:${p(dt.getMinutes())}`;
 }
 
-export default async function DashboardPage({ searchParams }) {
+export default async function DashboardPage(props) {
+  const searchParams = await props.searchParams;
   const page = Math.max(1, parseInt(searchParams?.page ?? '1', 10) || 1);
 
   const [total, byStatus, byType, recent] = await Promise.all([

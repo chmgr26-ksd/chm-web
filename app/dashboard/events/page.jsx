@@ -13,7 +13,8 @@ import Pager from '../Pager';
 export const dynamic = 'force-dynamic';
 const PAGE_SIZE = 20;
 
-export default async function EventsAdminPage({ searchParams }) {
+export default async function EventsAdminPage(props) {
+  const searchParams = await props.searchParams;
   const session = await auth();
   if (!can(session?.user, 'events:manage')) {
     return (

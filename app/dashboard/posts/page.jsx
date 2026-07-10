@@ -19,7 +19,8 @@ function fmtDate(d) {
   return `${dt.getFullYear()}.${p(dt.getMonth() + 1)}.${p(dt.getDate())}`;
 }
 
-export default async function PostsAdminPage({ searchParams }) {
+export default async function PostsAdminPage(props) {
+  const searchParams = await props.searchParams;
   const session = await auth();
   if (!can(session?.user, 'posts:manage')) {
     return (<><PageHeader title="소식 관리" /><EmptyState title="권한 없음" description="소식 관리는 직원·관리자만 접근할 수 있습니다." /></>);

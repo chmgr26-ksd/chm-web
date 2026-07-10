@@ -12,7 +12,8 @@ function revalidatePost(id) {
 }
 
 // 소식 수정 — posts:manage. 부분 갱신(발행 토글 포함).
-export async function PATCH(req, { params }) {
+export async function PATCH(req, props) {
+  const params = await props.params;
   const session = await auth();
   if (!can(session?.user, 'posts:manage')) {
     return NextResponse.json({ error: '권한이 없습니다.' }, { status: 403 });
@@ -42,11 +43,12 @@ export async function PATCH(req, { params }) {
     if (e?.code === 'P2025') return NextResponse.json({ error: '글을 찾을 수 없습니다.' }, { status: 404 });
     throw e;
   }
-  revalidatePost(params.id);  return NextResponse.json({ ok: true });
+  revalidatePost(params.id);return NextResponse.json({ ok: true });
 }
 
 // 소식 삭제 — posts:manage.
-export async function DELETE(req, { params }) {
+export async function DELETE(req, props) {
+  const params = await props.params;
   const session = await auth();
   if (!can(session?.user, 'posts:manage')) {
     return NextResponse.json({ error: '권한이 없습니다.' }, { status: 403 });
@@ -57,5 +59,5 @@ export async function DELETE(req, { params }) {
     if (e?.code === 'P2025') return NextResponse.json({ error: '글을 찾을 수 없습니다.' }, { status: 404 });
     throw e;
   }
-  revalidatePost(params.id);  return NextResponse.json({ ok: true });
+  revalidatePost(params.id);return NextResponse.json({ ok: true });
 }

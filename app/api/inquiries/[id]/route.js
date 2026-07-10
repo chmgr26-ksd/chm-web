@@ -6,7 +6,8 @@ import { can } from '@/lib/rbac';
 const STATUSES = ['NEW', 'CONTACTED', 'SCHEDULED', 'DONE', 'CANCELED'];
 
 // 문의 상태 변경 — inquiry:manage 권한(직원·관리자).
-export async function PATCH(req, { params }) {
+export async function PATCH(req, props) {
+  const params = await props.params;
   const session = await auth();
   if (!can(session?.user, 'inquiry:manage')) {
     return NextResponse.json({ error: '권한이 없습니다.' }, { status: 403 });

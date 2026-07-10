@@ -8,7 +8,8 @@ export const metadata = { title: '갤러리', description: 'CHM Group의 현장�
 
 const PAGE_SIZE = 12;
 
-export default async function GalleryPage({ searchParams }) {
+export default async function GalleryPage(props) {
+  const searchParams = await props.searchParams;
   const page = Math.max(1, parseInt(searchParams?.page ?? '1', 10) || 1);
 
   // 페이지당 이미지 수 제한 → 한 번에 로드되는 /api/gallery 요청 수를 줄여 성능 개선.

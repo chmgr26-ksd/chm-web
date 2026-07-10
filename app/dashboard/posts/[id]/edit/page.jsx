@@ -7,7 +7,8 @@ import PostForm from '../../PostForm';
 
 export const dynamic = 'force-dynamic';
 
-export default async function EditPostPage({ params }) {
+export default async function EditPostPage(props) {
+  const params = await props.params;
   const session = await auth();
   if (!can(session?.user, 'posts:manage')) {
     return (<><PageHeader title="소식 수정" /><EmptyState title="권한 없음" description="직원·관리자만 수정할 수 있습니다." /></>);

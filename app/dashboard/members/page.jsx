@@ -26,7 +26,8 @@ function fmtDateTime(d) {
   return `${dt.getFullYear()}.${p(dt.getMonth() + 1)}.${p(dt.getDate())} ${p(dt.getHours())}:${p(dt.getMinutes())}`;
 }
 
-export default async function MembersPage({ searchParams }) {
+export default async function MembersPage(props) {
+  const searchParams = await props.searchParams;
   const session = await auth();
   const me = session.user;
 

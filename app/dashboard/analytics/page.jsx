@@ -13,7 +13,8 @@ const PERIODS = [
   { days: 90, label: '90일' },
 ];
 
-export default async function AnalyticsPage({ searchParams }) {
+export default async function AnalyticsPage(props) {
+  const searchParams = await props.searchParams;
   const days = PERIODS.some((p) => p.days === Number(searchParams?.days)) ? Number(searchParams.days) : 7;
   const weekly = days === 90; // 90일은 주 단위 버킷(막대 과밀 방지)
   const bucketDays = weekly ? 7 : 1;

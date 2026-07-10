@@ -4,7 +4,8 @@ import { prisma } from '@/lib/prisma';
 import { can, isValidRole } from '@/lib/rbac';
 
 // 회원 권한 변경 — members:manage 권한(관리자), 본인은 변경 불가. 변경 시 감사 로그 기록.
-export async function PATCH(req, { params }) {
+export async function PATCH(req, props) {
+  const params = await props.params;
   const session = await auth();
   if (!can(session?.user, 'members:manage')) {
     return NextResponse.json({ error: '관리자만 변경할 수 있습니다.' }, { status: 403 });
@@ -57,7 +58,8 @@ export async function PATCH(req, { params }) {
 // 회원 삭제 — members:manage(관리자). 본인은 여기서 삭제 불가(마이페이지 탈퇴 사용).
 // 연관 데이터는 FK 규칙으로 처리(재설정토큰 Cascade, 문의 SetNull, 감사로그·소식 비정규화 보존).
 // 삭제자는 항상 관리자이고 본인 삭제가 막혀 있으므로 '관리자 0명'이 되는 일은 없다.
-export async function DELETE(req, { params }) {
+export async function DELETE(req, props) {
+  const params = await props.params;
   const session = await auth();
   if (!can(session?.user, 'members:manage')) {
     return NextResponse.json({ error: '관리자만 삭제할 수 있습니다.' }, { status: 403 });

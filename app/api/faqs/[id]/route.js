@@ -4,7 +4,8 @@ import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { can } from '@/lib/rbac';
 
-export async function PATCH(req, { params }) {
+export async function PATCH(req, props) {
+  const params = await props.params;
   const session = await auth();
   if (!can(session?.user, 'faqs:manage')) {
     return NextResponse.json({ error: '권한이 없습니다.' }, { status: 403 });
@@ -27,10 +28,11 @@ export async function PATCH(req, { params }) {
     if (e?.code === 'P2025') return NextResponse.json({ error: 'FAQ를 찾을 수 없습니다.' }, { status: 404 });
     throw e;
   }
-  revalidatePath('/faq');  return NextResponse.json({ ok: true });
+  revalidatePath('/faq');return NextResponse.json({ ok: true });
 }
 
-export async function DELETE(req, { params }) {
+export async function DELETE(req, props) {
+  const params = await props.params;
   const session = await auth();
   if (!can(session?.user, 'faqs:manage')) {
     return NextResponse.json({ error: '권한이 없습니다.' }, { status: 403 });
@@ -41,5 +43,5 @@ export async function DELETE(req, { params }) {
     if (e?.code === 'P2025') return NextResponse.json({ error: 'FAQ를 찾을 수 없습니다.' }, { status: 404 });
     throw e;
   }
-  revalidatePath('/faq');  return NextResponse.json({ ok: true });
+  revalidatePath('/faq');return NextResponse.json({ ok: true });
 }

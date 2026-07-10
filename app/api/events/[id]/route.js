@@ -11,7 +11,8 @@ function parseDate(v) {
 }
 
 // 이벤트 수정 — events:manage. 부분 갱신(발행 토글 포함).
-export async function PATCH(req, { params }) {
+export async function PATCH(req, props) {
+  const params = await props.params;
   const session = await auth();
   if (!can(session?.user, 'events:manage')) {
     return NextResponse.json({ error: '권한이 없습니다.' }, { status: 403 });
@@ -56,7 +57,8 @@ export async function PATCH(req, { params }) {
 }
 
 // 이벤트 삭제 — events:manage.
-export async function DELETE(req, { params }) {
+export async function DELETE(req, props) {
+  const params = await props.params;
   const session = await auth();
   if (!can(session?.user, 'events:manage')) {
     return NextResponse.json({ error: '권한이 없습니다.' }, { status: 403 });

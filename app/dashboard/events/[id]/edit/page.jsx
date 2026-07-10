@@ -8,7 +8,8 @@ import EventForm from '../../EventForm';
 
 export const dynamic = 'force-dynamic';
 
-export default async function EditEventPage({ params }) {
+export default async function EditEventPage(props) {
+  const params = await props.params;
   const session = await auth();
   if (!can(session?.user, 'events:manage')) {
     return (

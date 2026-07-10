@@ -3,7 +3,8 @@ import { prisma } from '@/lib/prisma';
 import { sniffImage } from '@/lib/imageSniff';
 
 // 프로필 사진 서빙(공개). 없으면 404 → UI는 이니셜로 폴백.
-export async function GET(req, { params }) {
+export async function GET(req, props) {
+  const params = await props.params;
   const u = await prisma.user.findUnique({
     where: { id: params.id },
     select: { avatar: true },

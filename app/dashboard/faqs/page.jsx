@@ -8,7 +8,8 @@ import Pager from '../Pager';
 export const dynamic = 'force-dynamic';
 const PAGE_SIZE = 20;
 
-export default async function FaqsAdminPage({ searchParams }) {
+export default async function FaqsAdminPage(props) {
+  const searchParams = await props.searchParams;
   const session = await auth();
   if (!can(session?.user, 'faqs:manage')) {
     return (<><PageHeader title="FAQ 관리" /><EmptyState title="권한 없음" description="FAQ 관리는 직원·관리자만 접근할 수 있습니다." /></>);

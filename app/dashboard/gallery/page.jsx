@@ -8,7 +8,8 @@ import Pager from '../Pager';
 export const dynamic = 'force-dynamic';
 const PAGE_SIZE = 24;
 
-export default async function GalleryAdminPage({ searchParams }) {
+export default async function GalleryAdminPage(props) {
+  const searchParams = await props.searchParams;
   const session = await auth();
   if (!can(session?.user, 'gallery:manage')) {
     return (<><PageHeader title="갤러리 관리" /><EmptyState title="권한 없음" description="갤러리 관리는 직원·관리자만 접근할 수 있습니다." /></>);
