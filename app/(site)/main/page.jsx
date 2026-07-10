@@ -2,12 +2,14 @@ import Link from 'next/link';
 import {
   Container, Button, PageHero, StatBand, ValueDotStrip,
 } from '@chm/design-system';
-import { CONTACT } from '../../components/site/constants';
+import { CONTACT } from '@/components/site/constants';
 import { prisma } from '@/lib/prisma';
 import { POST_CATEGORY } from '@/lib/posts';
 
-// 최근 소식을 DB에서 읽되 홈은 정적 유지(ISR, 5분마다 재생성).
+// 최근 소식을 DB에서 읽되 메인은 정적 유지(ISR, 5분마다 재생성).
 export const revalidate = 300;
+
+export const metadata = { title: '메인' };
 
 function fmtDate(d) {
   const dt = new Date(d);
@@ -28,7 +30,7 @@ const STEPS = [
   { n: 4, value: 'sustainability', title: '정기 점검', desc: '수리 이후에도 주기적으로 집 상태를 살핍니다.' },
 ];
 
-export default async function HomePage() {
+export default async function MainPage() {
   const recentPosts = await prisma.post.findMany({
     where: { published: true },
     orderBy: { createdAt: 'desc' },

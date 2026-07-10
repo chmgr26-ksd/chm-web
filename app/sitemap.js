@@ -6,7 +6,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://forestgreen-sheep-
 export const revalidate = 3600;
 
 export default async function sitemap() {
-  const staticPaths = ['', '/about', '/business', '/news', '/events', '/gallery', '/faq', '/location', '/apply'];
+  const staticPaths = ['', '/main', '/about', '/business', '/news', '/events', '/gallery', '/faq', '/location', '/apply'];
   const staticRoutes = staticPaths.map((p) => ({
     url: `${SITE_URL}${p || '/'}`,
     changeFrequency: 'weekly',

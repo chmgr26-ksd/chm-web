@@ -13,7 +13,8 @@ export const CONTACT = {
 };
 
 export const NAV = [
-  { href: '/', label: '홈' },
+  // '/'는 랜딩 페이지(로고 클릭으로 이동). 기존 홈은 '/main'으로 이동하며 라벨은 '메인'.
+  { href: '/main', label: '메인' },
   { href: '/about', label: '소개' },
   { href: '/business', label: '사업 안내' },
   { href: '/news', label: '소식' },

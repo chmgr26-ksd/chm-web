@@ -17,7 +17,9 @@ export default function SiteFooter() {
         <div>
           <h4 className="mb-4 text-body-sm font-bold text-white">메뉴</h4>
           <ul className="flex flex-col gap-2.5 text-body-sm">
-            {NAV.filter((n) => n.href !== '/').map((n) => (
+            {/* NAV에서 '/'(랜딩)는 로고로 이동하므로 원래 제외했으나, 이제 NAV 첫 항목은
+                별도 페이지인 '/main'이라 그대로 노출한다. */}
+            {NAV.map((n) => (
               <li key={n.href}>
                 <Link href={n.href} className="text-ink-300 hover:text-white">{n.label}</Link>
               </li>
