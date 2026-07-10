@@ -16,7 +16,9 @@ export default function SiteFooter() {
 
         <div>
           <h4 className="mb-4 text-body-sm font-bold text-white">메뉴</h4>
-          <ul className="flex flex-col gap-2.5 text-body-sm">
+          {/* 항목이 10개라 1열이면 다른 칼럼보다 과하게 길어짐 → 2열로 분할.
+              열 폭은 내용에 맞추고(max-content) 사이 간격만 고정. */}
+          <ul className="grid grid-cols-[max-content_max-content] gap-x-10 gap-y-2.5 text-body-sm">
             {/* NAV에서 '/'(랜딩)는 로고로 이동하므로 원래 제외했으나, 이제 NAV 첫 항목은
                 별도 페이지인 '/main'이라 그대로 노출한다. */}
             {NAV.map((n) => (
