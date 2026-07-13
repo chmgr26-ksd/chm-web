@@ -48,6 +48,14 @@ export default async function MainPage() {
         actions={<>
           <Button as={Link} href="/apply" tone="cta" size="lg">집수리 신청</Button>
           <Button as={Link} href="/business" variant="outline" tone="primary" size="lg">사업 소개 보기</Button>
+          {/* '표준 단가·책임 시공' 배지 — w-full로 버튼 아래 줄바꿈 배치. */}
+          <div className="mt-2 flex w-full max-w-sm items-center gap-3.5 rounded-chm-lg border border-border bg-surface p-4 shadow-chm-sm">
+            <span className="grid h-11 w-11 flex-none place-items-center rounded-chm-md bg-cta-soft text-body-lg font-bold text-cta">✓</span>
+            <div>
+              <div className="text-body-sm font-bold text-ink-850">표준 단가 · 책임 시공</div>
+              <div className="text-caption text-ink-500">견적부터 사후 점검까지 투명하게</div>
+            </div>
+          </div>
         </>}
         media={
           // PageHero의 media 래퍼가 justify-end라 폭 미지정 시 내용 크기로 축소됨 → 폭을 명시.
@@ -62,14 +70,6 @@ export default async function MainPage() {
                 loading="lazy"
                 className="aspect-[4/3] w-full object-cover"
               />
-            </div>
-            {/* 배지는 사진 아래에 배치(겹침 방지). */}
-            <div className="mt-3 flex items-center gap-3.5 rounded-chm-lg border border-border bg-surface p-4 shadow-chm-sm">
-              <span className="grid h-11 w-11 flex-none place-items-center rounded-chm-md bg-cta-soft text-body-lg font-bold text-cta">✓</span>
-              <div>
-                <div className="text-body-sm font-bold text-ink-850">표준 단가 · 책임 시공</div>
-                <div className="text-caption text-ink-500">견적부터 사후 점검까지 투명하게</div>
-              </div>
             </div>
           </div>
         }
