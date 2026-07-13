@@ -50,7 +50,7 @@ export default async function MainPage() {
           <Button as={Link} href="/business" variant="outline" tone="primary" size="lg">사업 소개 보기</Button>
         </>}
         media={
-          <div className="relative">
+          <div>
             <div className="overflow-hidden rounded-chm-lg border border-border">
               <img
                 src={siteImageUrl('main-field', versions)}
@@ -61,8 +61,9 @@ export default async function MainPage() {
                 className="aspect-[4/3] w-full object-cover"
               />
             </div>
-            <div className="absolute -bottom-5 -left-4 flex items-center gap-3.5 rounded-chm-lg border border-border bg-surface p-4 shadow-chm-lg">
-              <span className="grid h-11 w-11 place-items-center rounded-chm-md bg-cta-soft text-body-lg font-bold text-cta">✓</span>
+            {/* 배지는 사진 아래에 배치(겹침 방지). */}
+            <div className="mt-3 flex items-center gap-3.5 rounded-chm-lg border border-border bg-surface p-4 shadow-chm-sm">
+              <span className="grid h-11 w-11 flex-none place-items-center rounded-chm-md bg-cta-soft text-body-lg font-bold text-cta">✓</span>
               <div>
                 <div className="text-body-sm font-bold text-ink-850">표준 단가 · 책임 시공</div>
                 <div className="text-caption text-ink-500">견적부터 사후 점검까지 투명하게</div>
