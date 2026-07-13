@@ -13,6 +13,19 @@ const nextConfig = {
   // 원리: 콘텐츠 해시가 붙은 정적 자산(/_next/static/*)은 Next 기본값(1년 immutable)을
   //   그대로 두고, HTML 문서 등 나머지는 "매 요청 재검증"으로 강제.
   //   → CDN이 삭제된 청크를 참조하는 오래된 HTML을 서빙하지 못함(ChunkLoadError 방지).
+  // Sentry(@sentry/browser) 번들 경량화 — 빌드타임 트리셰이킹 플래그.
+  //   __SENTRY_DEBUG__=false  → 디버그 로거 코드 제거(프로덕션에서 불필요)
+  //   __SENTRY_TRACING__=false → 성능 트레이싱 코드 제거(tracesSampleRate:0으로 미사용)
+  //   두 기능 모두 사용하지 않으므로 동적 로드되는 sentry 청크만 순수 감량됨.
+  webpack: (config, { webpack }) => {
+    config.plugins.push(
+      new webpack.DefinePlugin({
+        __SENTRY_DEBUG__: false,
+        __SENTRY_TRACING__: false,
+      }),
+    );
+    return config;
+  },
   async headers() {
     return [
       {

@@ -12,11 +12,11 @@ export default function SentryClient() {
     import('@sentry/browser')
       .then((Sentry) => {
         if (cancelled || Sentry.getClient?.()) return;
+        // tracesSampleRate:0 = 트레이싱 미사용(빌드타임 __SENTRY_TRACING__=false로 코드도 제거됨).
+        // Replay 통합은 로드하지 않으므로 관련 옵션도 두지 않음(에러 캡처만 수행).
         Sentry.init({
           dsn,
           tracesSampleRate: 0,
-          replaysSessionSampleRate: 0,
-          replaysOnErrorSampleRate: 0,
           environment: process.env.NODE_ENV,
         });
       })
