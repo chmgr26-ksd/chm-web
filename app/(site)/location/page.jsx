@@ -20,8 +20,14 @@ export default function LocationPage() {
       />
       <section className="bg-surface">
         <Container size="xl" className="grid gap-8 py-16 md:grid-cols-[1.4fr_1fr] md:items-start">
-          <div className="flex aspect-[16/10] items-center justify-center rounded-chm-lg border border-dashed border-ink-300 bg-surface-warm">
-            <span className="font-mono text-caption text-ink-500">지도 영역 — 카카오맵/네이버지도 연동 예정</span>
+          <div className="overflow-hidden rounded-chm-lg border border-border">
+            <iframe
+              title="CHM Group 위치 — 대전광역시 유성구 어은동"
+              src="https://maps.google.com/maps?q=%EB%8C%80%EC%A0%84%EA%B4%91%EC%97%AD%EC%8B%9C%20%EC%9C%A0%EC%84%B1%EA%B5%AC%20%EC%96%B4%EC%9D%80%EB%8F%99&z=15&hl=ko&output=embed"
+              className="aspect-[16/10] w-full border-0"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
           </div>
           <div className="flex flex-col gap-4">
             {cards.map((c) => (

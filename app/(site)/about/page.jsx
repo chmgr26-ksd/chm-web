@@ -102,8 +102,15 @@ export default function AboutPage() {
                 </div>
               ))}
             </div>
-            <div className="mt-3.5 flex aspect-[16/7] items-center justify-center rounded-chm-md border border-dashed border-ink-300 bg-surface-warm">
-              <span className="font-mono text-caption text-ink-500">단체 사진 — 팀 · 파트너 워크숍</span>
+            <div className="mt-3.5 overflow-hidden rounded-chm-md border border-border">
+              <img
+                src="/about/team.jpg"
+                alt="구즉동 집수리교실 수료 단체 사진 — 참가 주민과 함께"
+                width={406}
+                height={284}
+                loading="lazy"
+                className="aspect-[3/2] w-full object-cover"
+              />
             </div>
           </div>
         </Container>

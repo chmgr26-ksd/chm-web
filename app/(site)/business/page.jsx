@@ -55,8 +55,15 @@ export default function BusinessPage() {
                 ))}
               </div>
             </div>
-            <div className="flex aspect-[4/3] items-center justify-center rounded-chm-lg border border-dashed border-ink-300 bg-surface-warm">
-              <span className="font-mono text-caption text-ink-500">현장 사진 — 수리 전후 비교</span>
+            <div className="overflow-hidden rounded-chm-lg border border-border">
+              <img
+                src="/business/field.jpg"
+                alt="집수리교실 현장 — 화장실 타일 시공 실습"
+                width={274}
+                height={274}
+                loading="lazy"
+                className="aspect-[4/3] w-full object-cover"
+              />
             </div>
           </div>
         </Container>
