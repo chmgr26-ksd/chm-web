@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Container, Button } from '@chm/design-system';
 import PageBanner from '../../../components/site/PageBanner';
+import { getSiteImageVersions, siteImageUrl } from '@/lib/siteContent';
 
 export const metadata = { title: '사업 안내', description: '집수리 서비스·집수리 교실·마을관리사업단 — CHM Group의 사업 영역과 성장 단계를 소개합니다.' };
 
@@ -25,7 +26,8 @@ const PHASES = [
   { phase: 'PHASE 04', value: 'sustainability', title: '로컬커뮤니티', desc: '지역 기반 통합 관리 플랫폼으로 공동체 구축' },
 ];
 
-export default function BusinessPage() {
+export default async function BusinessPage() {
+  const versions = await getSiteImageVersions();
   return (
     <>
       <PageBanner
@@ -57,7 +59,7 @@ export default function BusinessPage() {
             </div>
             <div className="overflow-hidden rounded-chm-lg border border-border">
               <img
-                src="/business/field.jpg"
+                src={siteImageUrl('business-field', versions)}
                 alt="집수리교실 현장 — 화장실 타일 시공 실습"
                 width={274}
                 height={274}

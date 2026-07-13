@@ -174,7 +174,27 @@ model AppSetting {
   smtpUser       String?
   smtpPassEnc    String?  @db.Text // AES-256-GCM 암호문(base64)
   smtpFrom       String?
+  // 공개 사이트 연락처/기관 정보 — 비우면 constants.js 기본값으로 폴백.
+  // 주소(contactAddress) 변경 시 오시는 길 지도(구글맵)에도 반영됨.
+  contactPhone         String?
+  contactEmail         String?
+  contactAddress       String? // 지도·짧은 표기용(예: 대전광역시 유성구 어은동)
+  contactAddressDetail String? @db.Text // 상세 주소 표기
+  contactHours         String? @db.Text
+  contactRep           String?
+  companyKo            String?
+  companyEn            String?
   updatedAt      DateTime @updatedAt
+}
+
+// 관리자가 교체 가능한 사이트 이미지 — key별 blob. 없으면 public/ 기본 파일로 폴백.
+// key: about-team | business-field | landing-hero | main-field
+model SiteImage {
+  key       String   @id
+  mimeType  String
+  size      Int
+  data      Bytes
+  updatedAt DateTime @updatedAt
 }
 
 // RBAC 감사 로그 — 회원 권한 변경 이력(누가·누구를·무엇으로).

@@ -1,6 +1,7 @@
 import { Container } from '@chm/design-system';
 import PageBanner from '../../../components/site/PageBanner';
 import { VALUES } from '../../../components/site/constants';
+import { getSiteImageVersions, siteImageUrl } from '@/lib/siteContent';
 
 export const metadata = { title: '소개', description: '지역과 함께 성장하는 생활환경 관리 전문기업 CHM Group의 비전과 6대 핵심가치를 소개합니다.' };
 
@@ -16,7 +17,8 @@ const PARTNERS = [
   { name: '로컬커뮤니티랩 사회적협동조합', role: '마을조사연구 · 마을자치회 교육' },
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const versions = await getSiteImageVersions();
   return (
     <>
       <PageBanner
@@ -104,7 +106,7 @@ export default function AboutPage() {
             </div>
             <div className="mt-3.5 overflow-hidden rounded-chm-md border border-border">
               <img
-                src="/about/team.jpg"
+                src={siteImageUrl('about-team', versions)}
                 alt="구즉동 집수리교실 수료 단체 사진 — 참가 주민과 함께"
                 width={406}
                 height={284}

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import {
   Container, Button, PageHero, StatBand, ValueDotStrip,
 } from '@chm/design-system';
-import { CONTACT } from '@/components/site/constants';
+import { getContact, getSiteImageVersions, siteImageUrl } from '@/lib/siteContent';
 import { prisma } from '@/lib/prisma';
 import { POST_CATEGORY } from '@/lib/posts';
 
@@ -36,6 +36,8 @@ export default async function MainPage() {
     orderBy: { createdAt: 'desc' },
     take: 3,
   });
+  const c = await getContact();
+  const versions = await getSiteImageVersions();
   return (
     <>
       {/* ── 히어로(신뢰형) ── */}
@@ -49,8 +51,15 @@ export default async function MainPage() {
         </>}
         media={
           <div className="relative">
-            <div className="flex aspect-[4/3] items-center justify-center rounded-chm-lg border border-dashed border-ink-300 bg-surface-cool">
-              <span className="font-mono text-caption text-ink-500">현장 사진 — 집수리 작업 모습</span>
+            <div className="overflow-hidden rounded-chm-lg border border-border">
+              <img
+                src={siteImageUrl('main-field', versions)}
+                alt="집수리교실 현장 — 집수리 작업 모습"
+                width={300}
+                height={225}
+                loading="lazy"
+                className="aspect-[4/3] w-full object-cover"
+              />
             </div>
             <div className="absolute -bottom-5 -left-4 flex items-center gap-3.5 rounded-chm-lg border border-border bg-surface p-4 shadow-chm-lg">
               <span className="grid h-11 w-11 place-items-center rounded-chm-md bg-cta-soft text-body-lg font-bold text-cta">✓</span>
@@ -170,10 +179,10 @@ export default async function MainPage() {
               집수리 신청
             </Link>
             <a
-              href={CONTACT.phoneHref}
+              href={c.phoneHref}
               className="inline-flex h-12 items-center rounded-chm-lg border-[1.5px] border-white/60 px-6 text-body-lg font-bold text-white transition-colors hover:bg-white/10"
             >
-              전화 문의 {CONTACT.phone}
+              전화 문의 {c.phone}
             </a>
           </div>
         </Container>

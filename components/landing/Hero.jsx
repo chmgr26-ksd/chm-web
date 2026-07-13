@@ -4,7 +4,7 @@ import { motion } from 'motion/react';
 
 // 랜딩 히어로 — chm-group-design/src/components/Hero.tsx 이식.
 // 원본은 fixed 헤더를 피하려 pt-32였으나, 이 앱의 SiteHeader는 sticky라 상단 여백을 줄임.
-export default function Hero() {
+export default function Hero({ heroUrl = '/landing/hero.jpg' }) {
   return (
     <section className="relative overflow-hidden bg-chm-bg-alt pb-20 pt-16 lg:pb-28 lg:pt-24">
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -70,7 +70,7 @@ export default function Hero() {
           >
             <div className="absolute inset-0 translate-x-4 translate-y-4 transform rounded-3xl bg-chm-primary/10" />
             <img
-              src="/landing/hero.jpg"
+              src={heroUrl}
               alt="주민 기술자가 집수리 작업을 하는 모습"
               width={1408}
               height={768}

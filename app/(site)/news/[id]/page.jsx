@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { Container, Button } from '@chm/design-system';
 import { prisma } from '@/lib/prisma';
 import { POST_CATEGORY } from '@/lib/posts';
-import { CONTACT } from '../../../../components/site/constants';
+import { getContact } from '@/lib/siteContent';
 
 export const revalidate = 120;
 
@@ -36,6 +36,7 @@ export default async function NewsDetailPage(props) {
   const params = await props.params;
   const item = await prisma.post.findUnique({ where: { id: params.id } });
   if (!item || !item.published) notFound();
+  const c = await getContact();
   const cat = POST_CATEGORY[item.category] || { label: item.category, value: 'trust' };
 
   return (
@@ -53,7 +54,7 @@ export default async function NewsDetailPage(props) {
 
         <div className="mt-10 flex flex-wrap items-center gap-3">
           <Button as={Link} href="/apply" tone="cta" size="lg">참여 신청하기</Button>
-          <a href={CONTACT.phoneHref} className="text-body-sm font-semibold text-ink-600 hover:text-primary">전화 문의 {CONTACT.phone}</a>
+          <a href={c.phoneHref} className="text-body-sm font-semibold text-ink-600 hover:text-primary">전화 문의 {c.phone}</a>
         </div>
       </Container>
     </section>

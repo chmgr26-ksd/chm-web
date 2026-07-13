@@ -1,14 +1,15 @@
 import { Container } from '@chm/design-system';
 import PageBanner from '../../../components/site/PageBanner';
-import { CONTACT } from '../../../components/site/constants';
+import { getContact, mapEmbedUrl } from '@/lib/siteContent';
 
 export const metadata = { title: '오시는 길', description: 'CHM Group 위치·연락처·운영 시간 안내. 대전광역시 유성구 어은동.' };
 
-export default function LocationPage() {
+export default async function LocationPage() {
+  const c = await getContact();
   const cards = [
-    { label: '주소', lines: [CONTACT.addressDetail] },
-    { label: '연락처', lines: [CONTACT.phone, CONTACT.email] },
-    { label: '운영 시간', lines: ['평일 09:00 – 18:00', '주말·공휴일 휴무 (긴급 수리는 전화 문의)'] },
+    { label: '주소', lines: [c.addressDetail] },
+    { label: '연락처', lines: [c.phone, c.email] },
+    { label: '운영 시간', lines: [c.hours] },
   ];
 
   return (
@@ -22,8 +23,8 @@ export default function LocationPage() {
         <Container size="xl" className="grid gap-8 py-16 md:grid-cols-[1.4fr_1fr] md:items-start">
           <div className="overflow-hidden rounded-chm-lg border border-border">
             <iframe
-              title="CHM Group 위치 — 대전광역시 유성구 어은동"
-              src="https://maps.google.com/maps?q=%EB%8C%80%EC%A0%84%EA%B4%91%EC%97%AD%EC%8B%9C%20%EC%9C%A0%EC%84%B1%EA%B5%AC%20%EC%96%B4%EC%9D%80%EB%8F%99&z=15&hl=ko&output=embed"
+              title={`CHM Group 위치 — ${c.address}`}
+              src={mapEmbedUrl(c.address)}
               className="aspect-[16/10] w-full border-0"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
