@@ -50,7 +50,8 @@ export default async function MainPage() {
           <Button as={Link} href="/business" variant="outline" tone="primary" size="lg">사업 소개 보기</Button>
         </>}
         media={
-          <div>
+          // PageHero의 media 래퍼가 justify-end라 폭 미지정 시 내용 크기로 축소됨 → w-full로 프레임을 채움.
+          <div className="w-full">
             <div className="overflow-hidden rounded-chm-lg border border-border">
               <img
                 src={siteImageUrl('main-field', versions)}
