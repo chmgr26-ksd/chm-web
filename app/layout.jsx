@@ -1,7 +1,28 @@
+import localFont from 'next/font/local';
 import '@chm/design-system/tokens.css';
 import './globals.css';
 import Providers from '../components/site/Providers';
 import SentryClient from '../components/site/SentryClient';
+
+// 웹폰트 셀프호스팅 — next/font/local이 빌드 시 최적화·preload하고 런타임 CDN 의존을 제거.
+// 노출한 CSS 변수를 globals.css(DS 토큰)·tailwind preset의 폰트 스택 맨 앞에 연결한다.
+const pretendard = localFont({
+  src: './fonts/PretendardVariable.woff2',
+  variable: '--font-pretendard',
+  display: 'swap',
+  weight: '45 920', // 가변 폰트 전체 굵기 범위
+  style: 'normal',
+});
+
+const montserrat = localFont({
+  src: [
+    { path: './fonts/Montserrat-600.woff2', weight: '600', style: 'normal' },
+    { path: './fonts/Montserrat-700.woff2', weight: '700', style: 'normal' },
+    { path: './fonts/Montserrat-800.woff2', weight: '800', style: 'normal' },
+  ],
+  variable: '--font-montserrat',
+  display: 'swap',
+});
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://forestgreen-sheep-120944.hostingersite.com';
 const SITE_DESC =
@@ -38,20 +59,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="ko">
+    <html lang="ko" className={`${pretendard.variable} ${montserrat.variable}`}>
       <body className="min-h-screen bg-ink-50 text-ink-800 antialiased">
-        {/* 웹폰트 — Pretendard(본문/제목) + Montserrat(숫자·영문 라벨).
-            DS 토큰이 실제 패밀리명("Pretendard"/"Montserrat")을 참조하므로
-            패밀리명을 보존하는 CDN 스타일시트로 로드. Next가 <head>로 hoist함. */}
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
-        />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap"
-        />
         <SentryClient />
         <Providers>{children}</Providers>
       </body>

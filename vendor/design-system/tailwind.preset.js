@@ -90,10 +90,11 @@ module.exports = {
         border: 'var(--chm-border)',
       },
       fontFamily: {
-        sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui',
+        // 'var(--font-*)'는 앱이 next/font로 주입하는 셀프호스팅 폰트. 없으면 리터럴명·시스템으로 폴백.
+        sans: ['var(--font-pretendard)', 'Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui',
                'Apple SD Gothic Neo', 'Noto Sans KR', 'sans-serif'],
         mono: ['JetBrains Mono', 'SFMono-Regular', 'Menlo', 'monospace'],
-        display: ['Montserrat', 'Pretendard', 'sans-serif'],
+        display: ['var(--font-montserrat)', 'Montserrat', 'Pretendard', 'sans-serif'],
       },
       fontSize: {
         display:  ['3rem',      { lineHeight: '1.15', fontWeight: '700' }],

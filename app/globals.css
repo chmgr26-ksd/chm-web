@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 셀프호스팅 폰트(next/font)를 DS 토큰 폰트 스택 맨 앞에 연결.
+   var(--font-*)는 layout의 <html> className으로 주입된다. tokens.css 이후 로드되어 override됨. */
+:root {
+  --chm-font-sans: var(--font-pretendard), "Pretendard", -apple-system, BlinkMacSystemFont,
+    system-ui, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --chm-font-display: var(--font-montserrat), "Montserrat", var(--chm-font-sans);
+}
+
 @layer base {
   html { font-family: var(--chm-font-sans); }
   /* 한글이 어절(단어) 단위로 줄바꿈되도록 — 핸드오프 필수 규칙.
