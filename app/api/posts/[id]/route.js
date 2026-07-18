@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { can } from '@/lib/rbac';
@@ -9,6 +9,7 @@ function revalidatePost(id) {
   revalidatePath('/news');
   revalidatePath(`/news/${id}`);
   revalidatePath('/');
+  revalidateTag('posts'); // 랜딩 공지 롤러/히어로(getRecentNotices) 캐시 갱신
 }
 
 // 소식 수정 — posts:manage. 부분 갱신(발행 토글 포함).

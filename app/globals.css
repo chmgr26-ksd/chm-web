@@ -10,6 +10,12 @@
   --chm-font-display: var(--font-montserrat), "Montserrat", var(--chm-font-sans);
 }
 
+/* 공지 배너(NoticeHero) 진행바 애니메이션 — scaleX 0→1. */
+@keyframes chm-hprog {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
 @layer base {
   html { font-family: var(--chm-font-sans); }
   /* 한글이 어절(단어) 단위로 줄바꿈되도록 — 핸드오프 필수 규칙.
