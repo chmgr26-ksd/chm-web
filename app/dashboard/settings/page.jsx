@@ -4,6 +4,7 @@ import { PageHeader, EmptyState } from '@chm/design-system';
 import MailSettingsForm from './MailSettingsForm';
 import ContactSettingsForm from './ContactSettingsForm';
 import SiteImagesForm from './SiteImagesForm';
+import NoticeHeroForm from './NoticeHeroForm';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,6 +42,10 @@ export default async function SettingsPage() {
 
       <Section title="사이트 이미지" description="랜딩·메인·소개·사업 페이지의 대표 이미지를 교체합니다.">
         <SiteImagesForm />
+      </Section>
+
+      <Section title="공지 배너(랜딩 최상단)" description="랜딩 상단 자동순환 배너·공지 롤러의 전환 간격, 그라디언트 톤, 설명 발췌 길이, 자동재생·롤러 표시를 조정합니다.">
+        <NoticeHeroForm />
       </Section>
 
       <Section title="알림 이메일" description="문의가 접수되면 발송할 이메일 알림(발신 계정·수신자)을 관리합니다.">

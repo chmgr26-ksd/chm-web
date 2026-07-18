@@ -2,24 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { NOTICE_HERO_DEFAULTS, slideGradient } from '@/lib/noticeHero';
 
 // 알림마당 랜딩 상단 — 자동 순환 히어로 배너(좌) + 공지 롤러(우).
 // design_handoff_notice_landing/NoticeLanding.dc.html의 Section 2를 이식하되,
 // 색상은 기존 랜딩 웜 팔레트(앰버)로 맞추고, 콘텐츠는 실제 공지(Post)로 연동한다.
+// 전환 간격·그라디언트 톤·발췌 길이·자동재생·롤러표시는 config(관리자 설정)로 제어.
 
-const HERO_MS = 5000; // 배너 자동 전환 간격
-const ROLL_MS = 3000; // 공지 롤러 이동 간격
-const ROWH = 56;      // 롤러 한 행 높이(px)
-const VIS = 4;        // 롤러 동시 표시 행 수 (VIS*ROWH = 뷰포트 224px)
-
-// 슬라이드별 웜 그라디언트(앰버/오렌지 계열) — 미묘한 변주로 단조로움 방지.
-const WARM = [
-  ['#b45309', '#f59e0b'],
-  ['#9a3412', '#ea580c'],
-  ['#a16207', '#eab308'],
-  ['#92400e', '#d97706'],
-  ['#7c2d12', '#c2410c'],
-];
+const ROWH = 56; // 롤러 한 행 높이(px)
+const VIS = 4;   // 롤러 동시 표시 행 수 (VIS*ROWH = 뷰포트 224px)
 
 // 공지가 하나도 없을 때 배너 폴백(기관 소개 메시지).
 const FALLBACK = [
@@ -44,24 +35,33 @@ function CatChip({ value, label }) {
   );
 }
 
-export default function NoticeHero({ notices = [] }) {
+export default function NoticeHero({ notices = [], config }) {
+  const cfg = config || NOTICE_HERO_DEFAULTS;
+  const heroMs = cfg.heroInterval * 1000;
+  const rollMs = cfg.rollInterval * 1000;
+
   const slides = notices.length ? notices.slice(0, 5) : FALLBACK;
 
   const [hero, setHero] = useState(0);
-  const [playing, setPlaying] = useState(true);
+  const [playing, setPlaying] = useState(cfg.autoplay);
 
-  // 배너 자동 전환 — hero/​playing 변경 시 타이머 리셋(수동 이동 후 5초 보장).
+  // 배너 자동 전환 — hero/​playing 변경 시 타이머 리셋(수동 이동 후 간격 보장).
   useEffect(() => {
     if (!playing || slides.length <= 1) return undefined;
-    const t = setInterval(() => setHero((h) => (h + 1) % slides.length), HERO_MS);
+    const t = setInterval(() => setHero((h) => (h + 1) % slides.length), heroMs);
     return () => clearInterval(t);
-  }, [playing, slides.length, hero]);
+  }, [playing, slides.length, hero, heroMs]);
 
   const go = (i) => setHero((i + slides.length) % slides.length);
   const cur = slides[hero];
+  const curDesc =
+    cur.excerpt && cur.excerpt.length > cfg.excerptLen
+      ? `${cur.excerpt.slice(0, cfg.excerptLen)}…`
+      : cur.excerpt;
 
   // ── 공지 롤러 ──
-  const canRoll = notices.length > VIS;
+  // autoplay이고 표시행보다 많을 때만 자동 스크롤(+복제 구간). 아니면 정적 표시.
+  const canRoll = cfg.autoplay && notices.length > VIS;
   const [roll, setRoll] = useState(0);
   const [rollTrans, setRollTrans] = useState(true);
 
@@ -70,9 +70,9 @@ export default function NoticeHero({ notices = [] }) {
     const t = setInterval(() => {
       setRollTrans(true);
       setRoll((r) => r + 1);
-    }, ROLL_MS);
+    }, rollMs);
     return () => clearInterval(t);
-  }, [canRoll]);
+  }, [canRoll, rollMs]);
 
   // 끝(복제 구간)에 도달하면 트랜지션 없이 0으로 리셋 → 무한 루프.
   useEffect(() => {
@@ -97,14 +97,13 @@ export default function NoticeHero({ notices = [] }) {
           {/* 배경 슬라이드 스택(크로스페이드) */}
           <div className="absolute inset-0">
             {slides.map((s, i) => {
-              const [a, b] = WARM[i % WARM.length];
               return (
                 <div
                   key={s.id ?? `f${i}`}
                   className="absolute inset-0 transition-opacity duration-700 ease-in-out"
                   style={{
                     opacity: i === hero ? 1 : 0,
-                    background: `linear-gradient(135deg, ${a}, ${b})`,
+                    background: slideGradient(cfg.gradient, s.value, i),
                   }}
                 >
                   <div
@@ -139,9 +138,9 @@ export default function NoticeHero({ notices = [] }) {
             >
               {cur.title}
             </h2>
-            {cur.excerpt ? (
+            {curDesc ? (
               <p className="m-0 hidden max-w-[560px] text-[15px] leading-[1.55] text-white/90 sm:block sm:text-[16px]">
-                {cur.excerpt}
+                {curDesc}
               </p>
             ) : null}
             <Link
@@ -223,13 +222,14 @@ export default function NoticeHero({ notices = [] }) {
               transformOrigin: 'left',
               transform: 'scaleX(0)',
               background: 'rgba(255,255,255,.85)',
-              animation: `chm-hprog ${HERO_MS}ms linear forwards`,
+              animation: `chm-hprog ${heroMs}ms linear forwards`,
               animationPlayState: playing && slides.length > 1 ? 'running' : 'paused',
             }}
           />
         </div>
 
-        {/* ── 2b. 공지 롤러(자동 세로 스크롤) ── */}
+        {/* ── 2b. 공지 롤러(자동 세로 스크롤) — 관리자 설정으로 표시 여부 제어 ── */}
+        {cfg.showRoller ? (
         <aside className="flex w-full flex-col overflow-hidden rounded-2xl border border-chm-border bg-white shadow-lg lg:w-[388px] lg:flex-shrink-0">
           <div className="flex items-center justify-between px-[22px] pb-[14px] pt-5">
             <div className="flex items-baseline gap-[9px]">
@@ -297,6 +297,7 @@ export default function NoticeHero({ notices = [] }) {
             </Link>
           </div>
         </aside>
+        ) : null}
       </div>
     </section>
   );

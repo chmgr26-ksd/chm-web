@@ -184,6 +184,13 @@ model AppSetting {
   contactRep           String?
   companyKo            String?
   companyEn            String?
+  // 랜딩 공지 배너(NoticeHero) 설정 — 비우면 lib/noticeHero.js 기본값으로 폴백.
+  noticeHeroInterval Int?     // 배너 전환 간격(초, 3~10)
+  noticeRollInterval Int?     // 공지 롤러 이동 간격(초, 2~6)
+  noticeGradient     String?  // 그라디언트 톤 프리셋 key(amber|sunset|gold|brand)
+  noticeExcerptLen   Int?     // 배너 설명 발췌 길이(자, 40~160)
+  noticeAutoplay     Boolean? // 자동 전환/롤링
+  noticeShowRoller   Boolean? // 우측 공지 롤러 표시
   updatedAt      DateTime @updatedAt
 }
 
