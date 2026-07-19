@@ -5,7 +5,7 @@ export const CONTACT = {
   phoneHref: 'tel:01022203330',
   email: 'smbadboy@naver.com',
   address: '대전광역시 유성구 유성대로 780',
-  addressDetail: '대전광역시 유성구 유성대로 780 청영빌딩 6층',
+  addressDetail: '대전광역시 유성구 유성대로 780 청영빌딩 4층',
   hours: '평일 09:00 – 18:00 · 주말·공휴일 휴무 (긴급 수리는 전화 문의)',
   rep: '김수동',
   companyKo: '(주)씨에이치엠그룹',
