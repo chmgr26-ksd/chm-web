@@ -2,7 +2,7 @@ import { Container } from '@chm/design-system';
 import PageBanner from '../../../components/site/PageBanner';
 import { getContact, mapEmbedUrl } from '@/lib/siteContent';
 
-export const metadata = { title: '오시는 길', description: 'CHM Group 위치·연락처·운영 시간 안내. 대전광역시 유성구 어은동.' };
+export const metadata = { title: '오시는 길', description: 'CHM Group 위치·연락처·운영 시간 안내. 대전광역시 유성구 유성대로 780 청영빌딩.' };
 
 export default async function LocationPage() {
   const c = await getContact();
@@ -17,7 +17,7 @@ export default async function LocationPage() {
       <PageBanner
         eyebrow="Location"
         title="오시는 길"
-        description="대전 유성구, 어은동·궁동 저층 주거지 한가운데에 있습니다."
+        description="대전 유성구 유성대로 780, 청영빌딩에 있습니다."
       />
       <section className="bg-surface">
         <Container size="xl" className="grid gap-8 py-16 md:grid-cols-[1.4fr_1fr] md:items-start">
