@@ -1,6 +1,6 @@
 import { Container, Accordion, AccordionItem, EmptyState } from '@chm/design-system';
 import { prisma } from '@/lib/prisma';
-import PageBanner from '../../../components/site/PageBanner';
+import PageBanner from '@/components/site/PageBanner';
 
 export const revalidate = 300;
 export const metadata = { title: '자주 묻는 질문', description: 'CHM Group 집수리·교실·자원봉사에 대해 자주 묻는 질문과 답변입니다.' };

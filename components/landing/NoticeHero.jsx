@@ -144,7 +144,7 @@ export default function NoticeHero({ notices = [], config }) {
               </p>
             ) : null}
             <Link
-              href={cur.id ? `/news/${cur.id}` : '/news'}
+              href={cur.id ? `/news/${cur.id}` : '/news/notices'}
               className="mt-5 inline-flex h-11 items-center gap-2 rounded-[10px] border-[1.5px] border-white/70 px-5 text-[15px] font-bold text-white transition-colors hover:bg-white/10"
             >
               자세히 보기 <span className="text-[18px]">→</span>
@@ -236,7 +236,7 @@ export default function NoticeHero({ notices = [], config }) {
               <h3 className="m-0 text-[19px] font-extrabold text-chm-text">공지사항</h3>
               <span className="text-[12.5px] font-bold text-chm-primary">NOTICE</span>
             </div>
-            <Link href="/news" className="flex items-center gap-[3px] text-[13px] text-chm-text-muted hover:text-chm-primary">
+            <Link href="/news/notices" className="flex items-center gap-[3px] text-[13px] text-chm-text-muted hover:text-chm-primary">
               전체보기 <span className="text-[15px]">＋</span>
             </Link>
           </div>
@@ -290,7 +290,7 @@ export default function NoticeHero({ notices = [], config }) {
               집수리 신청
             </Link>
             <Link
-              href="/news"
+              href="/news/notices"
               className="flex h-11 items-center justify-center gap-1.5 rounded-[10px] bg-chm-bg-alt text-[14px] font-bold text-chm-primary transition-colors hover:bg-chm-border"
             >
               전체 소식

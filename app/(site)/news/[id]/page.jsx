@@ -42,7 +42,7 @@ export default async function NewsDetailPage(props) {
   return (
     <section className="bg-surface">
       <Container size="md" className="py-16">
-        <Link href="/news" className="mb-8 inline-block text-body-sm font-bold text-primary hover:underline">← 목록으로</Link>
+        <Link href="/news/notices" className="mb-8 inline-block text-body-sm font-bold text-primary hover:underline">← 목록으로</Link>
 
         <span className={`inline-block rounded-chm-full bg-${cat.value}-500 px-3 py-1 text-caption font-bold text-white`}>{cat.label}</span>
         <h1 className="mt-4 text-h1 font-bold leading-tight tracking-tight text-ink-850">{item.title}</h1>

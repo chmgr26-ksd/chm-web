@@ -5,6 +5,17 @@ const nextConfig = {
   reactStrictMode: true,
   // 상위 디렉토리의 lockfile로 workspace root를 오추론하는 것 방지(파일 트레이싱 기준을 이 앱으로 고정).
   outputFileTracingRoot: __dirname,
+  // 네비게이션 개편에 따른 URL 이전 — 기존 링크·검색엔진 보존(301).
+  async redirects() {
+    return [
+      { source: '/main', destination: '/', permanent: true },
+      { source: '/gallery', destination: '/archive', permanent: true },
+      { source: '/gallery/:path*', destination: '/archive/:path*', permanent: true },
+      { source: '/faq', destination: '/support/faq', permanent: true },
+      { source: '/events', destination: '/news/education', permanent: true },
+      { source: '/news', destination: '/news/notices', permanent: true },
+    ];
+  },
   // 참고: 예전에 config.cache=false로 webpack 영속 캐시를 껐으나, 이는 캐시를
   //   메모리에 유지시켜 제약된 빌드 환경(Hostinger)에서 OOM 위험을 높였고,
   //   원래 목적(ChunkLoadError)은 CDN 캐싱이 원인으로 판명됨 + prebuild(rm -rf .next)가

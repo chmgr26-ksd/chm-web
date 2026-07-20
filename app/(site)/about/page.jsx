@@ -1,9 +1,17 @@
-import { Container } from '@chm/design-system';
+import { Container, StatBand } from '@chm/design-system';
 import PageBanner from '../../../components/site/PageBanner';
 import { VALUES } from '../../../components/site/constants';
 import { getSiteImageVersions, siteImageUrl } from '@/lib/siteContent';
 
 export const metadata = { title: '소개', description: '지역과 함께 성장하는 생활환경 관리 전문기업 CHM Group의 비전과 6대 핵심가치를 소개합니다.' };
+
+// (구 '메인' 페이지에서 이관) 이용 절차 — 신청부터 정기 점검까지.
+const STEPS = [
+  { n: 1, value: 'selfreliance', title: '신청·문의', desc: '홈페이지나 전화로 필요한 수리를 알려주세요.' },
+  { n: 2, value: 'trust', title: '방문 견적', desc: '이웃 기술자가 방문해 표준 단가로 견적을 드립니다.' },
+  { n: 3, value: 'cooperation', title: '수리 시공', desc: '약속한 일정에 책임 시공하고 결과를 확인받습니다.' },
+  { n: 4, value: 'sustainability', title: '정기 점검', desc: '수리 이후에도 주기적으로 집 상태를 살핍니다.' },
+];
 
 const TEAM = [
   { initial: '김', value: 'selfreliance', name: '김수동', role: '대표', desc: '사업 총괄 · BM 수립 — 前 안녕센터 사무국장, 現 LCL사회적협동조합 이사장. 충남대 LINC+ · 리빙랩 사업 참여' },
@@ -25,6 +33,17 @@ export default async function AboutPage() {
         eyebrow="About us"
         title={<>지역과 함께 성장하는<br />생활환경 관리 전문기업</>}
         description="(주)씨에이치엠그룹은 저층 주거지 집수리에서 출발해 점포관리·에너지·생활서비스로 확장하며, 지역의 삶과 경제를 연결하는 플랫폼을 만들어 갑니다."
+      />
+
+      {/* ── 문제 제기 통계 (구 '메인'에서 이관) ── */}
+      <StatBand
+        title={"낡아가는 동네,\n수리는 미뤄지고 있습니다"}
+        description="대전 저층 주거지 조사 결과, 작은 수리조차 맡길 곳이 없어 안전 문제로 이어지고 있습니다."
+        stats={[
+          { value: '79,884', unit: '동', label: '대전 노후 저층주택 수', accent: 'selfreliance' },
+          { value: '66.7', unit: '%', label: '노후주택 비율(증가 추세)', accent: 'community' },
+          { value: '48.8', unit: '%', label: '경수리에 어려움을 겪는 주민', accent: 'trust' },
+        ]}
       />
 
       {/* ── 미션 / 비전 ── */}
@@ -68,6 +87,28 @@ export default async function AboutPage() {
                   <span className="font-display text-overline font-bold tracking-wide text-ink-500">{v.eng}</span>
                 </div>
                 <p className="text-body-sm leading-normal text-ink-600">{v.desc}</p>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* ── 이용 절차 (구 '메인'에서 이관) ── */}
+      <section className="bg-surface">
+        <Container size="xl" className="grid gap-14 py-20 md:grid-cols-[0.9fr_1.6fr]">
+          <div>
+            <div className="mb-2.5 font-display text-caption font-bold uppercase tracking-[0.14em] text-primary">How it works</div>
+            <h2 className="mb-3.5 text-h2 font-bold tracking-tight text-ink-850">신청부터 점검까지,<br />이렇게 진행됩니다</h2>
+            <p className="text-body leading-normal text-ink-600">일회성 수리로 끝내지 않습니다. 수리 후에도 정기 점검으로 우리 집 상태를 계속 관리합니다.</p>
+          </div>
+          <div className="grid gap-5 sm:grid-cols-2">
+            {STEPS.map((s) => (
+              <div key={s.n} className="flex items-start gap-4 rounded-chm-lg border border-border p-6">
+                <span className={`grid h-9 w-9 flex-none place-items-center rounded-full bg-${s.value}-500 text-body-sm font-bold text-white`}>{s.n}</span>
+                <div>
+                  <div className="mb-1.5 text-body-lg font-bold text-ink-850">{s.title}</div>
+                  <div className="text-body-sm leading-normal text-ink-600">{s.desc}</div>
+                </div>
               </div>
             ))}
           </div>

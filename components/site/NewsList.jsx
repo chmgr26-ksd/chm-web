@@ -2,10 +2,10 @@ import Link from 'next/link';
 import { Container, EmptyState, Button } from '@chm/design-system';
 import { prisma } from '@/lib/prisma';
 import { POST_CATEGORY } from '@/lib/posts';
-import PageBanner from '../../../components/site/PageBanner';
+import PageBanner from '@/components/site/PageBanner';
 
-export const metadata = { title: '소식', description: '모집 공고, 행사 안내, 활동 소식을 전합니다.' };
-
+// 소식 목록 공용 — 카테고리 그룹으로 필터(공지사항 / 교육 활동 소식).
+// 상세는 공용 /news/[id] 사용.
 const PAGE_SIZE = 12;
 
 function fmtDate(d) {
@@ -14,15 +14,12 @@ function fmtDate(d) {
   return `${dt.getFullYear()}.${p(dt.getMonth() + 1)}.${p(dt.getDate())}`;
 }
 
-export default async function NewsPage(props) {
-  const searchParams = await props.searchParams;
-  const page = Math.max(1, parseInt(searchParams?.page ?? '1', 10) || 1);
-
-  // 목록은 본문(TEXT) 없이 필요한 필드만 조회 + 페이지네이션(무제한 findMany 제거).
+export default async function NewsList({ eyebrow, title, description, categories, basePath, page = 1 }) {
+  const where = { published: true, category: { in: categories } };
   const [total, posts] = await Promise.all([
-    prisma.post.count({ where: { published: true } }),
+    prisma.post.count({ where }),
     prisma.post.findMany({
-      where: { published: true },
+      where,
       orderBy: { createdAt: 'desc' },
       select: { id: true, category: true, title: true, createdAt: true },
       skip: (page - 1) * PAGE_SIZE,
@@ -33,14 +30,14 @@ export default async function NewsPage(props) {
 
   return (
     <>
-      <PageBanner eyebrow="News" title="소식" description="모집 공고, 행사 안내, 활동 소식을 전합니다." />
+      <PageBanner eyebrow={eyebrow} title={title} description={description} />
       <section className="bg-surface">
         <Container size="xl" className="py-16">
           {posts.length === 0 ? (
             <EmptyState
               title={page > 1 ? '이 페이지에는 소식이 없습니다' : '등록된 소식이 없습니다'}
               description={page > 1 ? '범위를 벗어난 페이지입니다.' : '곧 새로운 소식으로 찾아뵙겠습니다.'}
-              action={page > 1 ? <Button as={Link} href="/news" variant="soft" tone="ink" size="sm">처음으로</Button> : undefined}
+              action={page > 1 ? <Button as={Link} href={basePath} variant="soft" tone="ink" size="sm">처음으로</Button> : undefined}
             />
           ) : (
             <>
@@ -63,9 +60,9 @@ export default async function NewsPage(props) {
 
               {pageCount > 1 && (
                 <div className="mt-8 flex items-center justify-center gap-3">
-                  <Button as={Link} href={`/news?page=${page - 1}`} variant="soft" tone="ink" size="sm" disabled={page <= 1}>← 이전</Button>
+                  <Button as={Link} href={`${basePath}?page=${page - 1}`} variant="soft" tone="ink" size="sm" disabled={page <= 1}>← 이전</Button>
                   <span className="text-body-sm text-ink-600">{page} / {pageCount}</span>
-                  <Button as={Link} href={`/news?page=${page + 1}`} variant="soft" tone="ink" size="sm" disabled={page >= pageCount}>다음 →</Button>
+                  <Button as={Link} href={`${basePath}?page=${page + 1}`} variant="soft" tone="ink" size="sm" disabled={page >= pageCount}>다음 →</Button>
                 </div>
               )}
             </>

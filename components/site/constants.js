@@ -12,15 +12,41 @@ export const CONTACT = {
   companyEn: 'CHM Group Co., Ltd.',
 };
 
+// 후기 모집 구글 폼 URL — 실제 폼 주소로 교체 필요(관리자 제공).
+export const REVIEW_FORM_URL = 'https://forms.gle/';
+
+// 메인 네비게이션 — 일부는 하위메뉴(children)를 가진다.
+// '/'는 랜딩(로고 클릭). '메인' 페이지는 삭제(콘텐츠는 '소개'로 이관).
 export const NAV = [
-  // '/'는 랜딩 페이지(로고 클릭으로 이동). 기존 홈은 '/main'으로 이동하며 라벨은 '메인'.
-  { href: '/main', label: '메인' },
   { href: '/about', label: '소개' },
   { href: '/business', label: '사업 안내' },
-  { href: '/news', label: '소식' },
-  { href: '/events', label: '행사' },
-  { href: '/gallery', label: '갤러리' },
-  { href: '/faq', label: 'FAQ' },
+  {
+    label: '소식',
+    href: '/news/notices',
+    children: [
+      { href: '/news/notices', label: '공지사항' },
+      { href: '/news/education', label: '교육 활동 소식' },
+    ],
+  },
+  { href: '/archive', label: '활동 아카이브' },
+  {
+    label: '후기',
+    href: '/reviews/class',
+    children: [
+      { href: '/reviews/class', label: '집수리 교실 후기' },
+      { href: '/reviews/experience', label: '집수리 체험 후기' },
+      { href: REVIEW_FORM_URL, label: '후기 모집 (참여하기)', external: true },
+    ],
+  },
+  { href: '/resources', label: '자료실' },
+  {
+    label: '문의 사항',
+    href: '/support/faq',
+    children: [
+      { href: '/support/faq', label: 'FAQ' },
+      { href: '/support/qna', label: 'QNA' },
+    ],
+  },
   { href: '/location', label: '오시는 길' },
 ];
 

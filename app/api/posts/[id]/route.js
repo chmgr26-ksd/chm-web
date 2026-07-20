@@ -6,7 +6,8 @@ import { can } from '@/lib/rbac';
 import { isValidCategory } from '@/lib/posts';
 
 function revalidatePost(id) {
-  revalidatePath('/news');
+  revalidatePath('/news/notices');
+  revalidatePath('/news/education');
   revalidatePath(`/news/${id}`);
   revalidatePath('/');
   revalidateTag('posts'); // 랜딩 공지 롤러/히어로(getRecentNotices) 캐시 갱신
