@@ -7,7 +7,7 @@ export default async function SiteFooter() {
   const CONTACT = await getContact();
   return (
     <footer className="bg-surface-dark text-ink-300">
-      <Container size="xl" className="grid gap-10 py-14 md:grid-cols-[1.4fr_1fr_1fr]">
+      <Container size="xl" className="grid gap-10 py-14 md:grid-cols-[1.2fr_2fr_1fr]">
         <div>
           <Logo variant="full" size={28} inverse />
           <p className="mt-4 max-w-sm text-body-sm leading-relaxed text-ink-400">
@@ -18,18 +18,37 @@ export default async function SiteFooter() {
 
         <div>
           <h4 className="mb-4 text-body-sm font-bold text-white">메뉴</h4>
-          {/* 항목이 10개라 1열이면 다른 칼럼보다 과하게 길어짐 → 2열로 분할.
-              열 폭은 내용에 맞추고(max-content) 사이 간격만 고정. */}
-          <ul className="grid grid-cols-[max-content_max-content] gap-x-10 gap-y-2.5 text-body-sm">
-            {/* 최상위 메뉴만 노출(하위메뉴는 헤더 드롭다운). 각 항목의 href는 대표 하위 경로. */}
-            {NAV.map((n) => (
-              <li key={n.href}>
-                <Link href={n.href} className="text-ink-300 hover:text-white">{n.label}</Link>
-              </li>
-            ))}
-            <li><Link href="/apply" className="text-ink-300 hover:text-white">참여 신청</Link></li>
-            <li><Link href="/login" className="text-ink-400 hover:text-white">로그인 · 회원</Link></li>
-          </ul>
+          {/* 상단 네비(NAV)와 동일 구조 — 하위메뉴까지 사이트맵으로 노출. */}
+          <div className="grid grid-cols-2 gap-x-8 gap-y-5 text-body-sm sm:grid-cols-3">
+            {NAV.map((n) =>
+              n.children ? (
+                <div key={n.label}>
+                  <Link href={n.href} className="mb-2 block font-bold text-white hover:text-ink-200">{n.label}</Link>
+                  <ul className="flex flex-col gap-1.5">
+                    {n.children.map((c) =>
+                      c.external ? (
+                        <li key={c.href}>
+                          <a href={c.href} target="_blank" rel="noopener noreferrer" className="text-ink-400 hover:text-white">{c.label} ↗</a>
+                        </li>
+                      ) : (
+                        <li key={c.href}>
+                          <Link href={c.href} className="text-ink-300 hover:text-white">{c.label}</Link>
+                        </li>
+                      )
+                    )}
+                  </ul>
+                </div>
+              ) : (
+                <div key={n.href}>
+                  <Link href={n.href} className="font-bold text-white hover:text-ink-200">{n.label}</Link>
+                </div>
+              )
+            )}
+          </div>
+          <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 border-t border-white/10 pt-4 text-body-sm">
+            <Link href="/apply" className="text-ink-300 hover:text-white">참여 신청</Link>
+            <Link href="/login" className="text-ink-400 hover:text-white">로그인 · 회원</Link>
+          </div>
         </div>
 
         <div>
