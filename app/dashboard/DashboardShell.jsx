@@ -44,6 +44,7 @@ export default function DashboardShell({ user, children }) {
               <SidebarItem href="/dashboard/events" active={pathname.startsWith('/dashboard/events')}>행사 관리</SidebarItem>
               <SidebarItem href="/dashboard/faqs" active={pathname.startsWith('/dashboard/faqs')}>FAQ 관리</SidebarItem>
               <SidebarItem href="/dashboard/gallery" active={pathname.startsWith('/dashboard/gallery')}>아카이브 관리</SidebarItem>
+              <SidebarItem href="/dashboard/resources" active={pathname.startsWith('/dashboard/resources')}>자료실 관리</SidebarItem>
             </SidebarSection>
             <SidebarSection label="후기 관리">
               <SidebarItem href="/dashboard/reviews/class" active={pathname.startsWith('/dashboard/reviews/class')}>집수리 교실 후기</SidebarItem>

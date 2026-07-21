@@ -276,3 +276,20 @@ model ReviewImage {
 
   @@index([reviewId, sortOrder])
 }
+
+// 자료실 문서 — 서식·간행물 등 다운로드 파일(PDF/HWP(X)/Office). 바이너리를 DB에 저장.
+model Resource {
+  id          String   @id @default(cuid())
+  title       String
+  description String?  @db.Text
+  filename    String   // 원본 파일명(다운로드 시 사용)
+  ext         String   // 소문자 확장자(pdf, docx, hwpx …) — 아이콘/표기용
+  mimeType    String
+  size        Int
+  data        Bytes
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([published, createdAt])
+}
