@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Field, Input, Textarea, Switch, Button, Alert } from '@chm/design-system';
 import { prepareUpload } from '@/lib/clientImage';
@@ -25,14 +25,103 @@ async function uploadImage(reviewId, file, { role, sortOrder = 0, thumbRatio = n
   return d;
 }
 
-// ── 신규 후기 작성 폼 ──
+// ── 교실 후기: 작성 시 사진 스테이징(등록 전 미리 담아두기, 최대 6장) ──
+function StagedClassPhotos({ staged, setStaged, disabled }) {
+  const fileRef = useRef(null);
+  const add = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    setStaged((prev) => {
+      const room = MAX_PHOTOS - prev.length;
+      const next = files.slice(0, room).map((file) => ({ file, url: URL.createObjectURL(file) }));
+      return [...prev, ...next];
+    });
+    if (fileRef.current) fileRef.current.value = '';
+  };
+  const removeAt = (i) => setStaged((prev) => {
+    URL.revokeObjectURL(prev[i].url);
+    return prev.filter((_, idx) => idx !== i);
+  });
+  const full = staged.length >= MAX_PHOTOS;
+  return (
+    <div className="flex flex-col gap-2">
+      <span className="text-caption font-semibold text-ink-600">사진 {staged.length}/{MAX_PHOTOS} · 담은 순서대로 롤링됩니다</span>
+      {staged.length > 0 && (
+        <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+          {staged.map((s, i) => (
+            <div key={s.url} className="group relative overflow-hidden rounded-chm-md border border-border">
+              <img src={s.url} alt="" className="aspect-[4/3] w-full object-cover" />
+              <span className="absolute left-1 top-1 rounded bg-black/60 px-1 text-caption text-white">{i + 1}</span>
+              <button type="button" disabled={disabled} onClick={() => removeAt(i)} className="absolute inset-x-0 bottom-0 bg-black/45 py-0.5 text-caption text-white opacity-0 transition hover:text-danger-300 group-hover:opacity-100">삭제</button>
+            </div>
+          ))}
+        </div>
+      )}
+      <label className={`inline-flex w-fit cursor-pointer items-center gap-2 rounded-chm-md border border-dashed border-border px-3 py-2 text-body-sm ${full || disabled ? 'cursor-not-allowed opacity-50' : 'hover:border-primary hover:text-primary'}`}>
+        <input ref={fileRef} type="file" accept="image/*" multiple disabled={full || disabled} onChange={add} className="hidden" />
+        {full ? '최대 장수 도달' : '＋ 사진 선택'}
+      </label>
+    </div>
+  );
+}
+
+// ── 체험 후기: 작성 시 Before/After 스테이징 ──
+function StagedBASlot({ label, item, onPick, onClear, disabled }) {
+  const fileRef = useRef(null);
+  const pick = (e) => {
+    const file = e.target.files?.[0];
+    if (file) onPick({ file, url: URL.createObjectURL(file) });
+    if (fileRef.current) fileRef.current.value = '';
+  };
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span className="text-caption font-semibold text-ink-600">{label}</span>
+      <div className="relative overflow-hidden rounded-chm-md border border-border bg-surface-muted">
+        {item ? <img src={item.url} alt={label} className="aspect-[4/3] w-full object-cover" />
+          : <div className="grid aspect-[4/3] w-full place-items-center text-caption text-ink-400">미등록</div>}
+      </div>
+      <div className="flex gap-1.5">
+        <label className={`flex-1 cursor-pointer rounded-chm-md border border-dashed border-border px-2 py-1.5 text-center text-caption ${disabled ? 'opacity-50' : 'hover:border-primary hover:text-primary'}`}>
+          <input ref={fileRef} type="file" accept="image/*" disabled={disabled} onChange={pick} className="hidden" />
+          {item ? '교체' : '사진 선택'}
+        </label>
+        {item && <Button size="sm" variant="soft" tone="danger" onClick={onClear} disabled={disabled}>삭제</Button>}
+      </div>
+    </div>
+  );
+}
+
+// ── 신규 후기 작성 폼(글 + 사진을 한 번에 등록) ──
 function NewReviewForm({ type, onCreated }) {
   const [title, setTitle] = useState('');
   const [authorName, setAuthorName] = useState('');
   const [body, setBody] = useState('');
   const [published, setPublished] = useState(true);
+  const [staged, setStaged] = useState([]);        // 교실: [{file,url}]
+  const [before, setBefore] = useState(null);      // 체험: {file,url}
+  const [after, setAfter] = useState(null);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState(null);
+
+  // 언마운트 시에만 남은 미리보기 objectURL 정리 — ref로 최신 값을 추적(deps 없이).
+  const liveRef = useRef({ staged, before, after });
+  liveRef.current = { staged, before, after };
+  useEffect(() => () => {
+    const { staged: s, before: b, after: a } = liveRef.current;
+    s.forEach((x) => URL.revokeObjectURL(x.url));
+    if (b) URL.revokeObjectURL(b.url);
+    if (a) URL.revokeObjectURL(a.url);
+  }, []);
+
+  const reset = () => {
+    staged.forEach((s) => URL.revokeObjectURL(s.url));
+    if (before) URL.revokeObjectURL(before.url);
+    if (after) URL.revokeObjectURL(after.url);
+    setTitle(''); setAuthorName(''); setBody(''); setPublished(true);
+    setStaged([]); setBefore(null); setAfter(null);
+  };
+  const clearBefore = () => { if (before) URL.revokeObjectURL(before.url); setBefore(null); };
+  const clearAfter = () => { if (after) URL.revokeObjectURL(after.url); setAfter(null); };
 
   const submit = async (e) => {
     e.preventDefault();
@@ -41,14 +130,27 @@ function NewReviewForm({ type, onCreated }) {
     setSaving(true);
     try {
       const res = await fetch('/api/reviews', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type, title, body, authorName, published }),
       });
       const d = await res.json().catch(() => ({}));
       if (!res.ok) { setMsg({ tone: 'danger', text: d.error || '등록에 실패했습니다.' }); return; }
-      setTitle(''); setAuthorName(''); setBody(''); setPublished(true);
-      onCreated();
+
+      // 후기 생성 성공 → 스테이징한 사진 순차 업로드. 사진 실패해도 글은 이미 저장됨.
+      try {
+        if (type === 'CLASS') {
+          for (let i = 0; i < staged.length; i++) {
+            await uploadImage(d.id, staged[i].file, { role: 'PHOTO', sortOrder: i, thumbRatio: 4 / 3 });
+          }
+        } else {
+          if (before) await uploadImage(d.id, before.file, { role: 'BEFORE', thumbRatio: 4 / 3 });
+          if (after) await uploadImage(d.id, after.file, { role: 'AFTER', thumbRatio: 4 / 3 });
+        }
+      } catch (imgErr) {
+        setMsg({ tone: 'danger', text: `후기는 등록됐지만 일부 사진 업로드에 실패했습니다: ${imgErr.message}. 아래 목록에서 다시 추가해 주세요.` });
+        reset(); onCreated(); return;
+      }
+      reset(); onCreated();
     } catch {
       setMsg({ tone: 'danger', text: '네트워크 오류로 등록하지 못했습니다.' });
     } finally {
@@ -57,9 +159,8 @@ function NewReviewForm({ type, onCreated }) {
   };
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-3 rounded-chm-lg border border-border bg-surface-warm p-5">
+    <form onSubmit={submit} className="flex flex-col gap-4 rounded-chm-lg border border-border bg-surface-warm p-5">
       <div className="text-body-sm font-bold text-ink-800">새 후기 작성</div>
-      <div className="text-caption text-ink-500">먼저 글을 등록한 뒤, 아래 목록에서 사진을 추가합니다.</div>
       {msg && <Alert tone={msg.tone}>{msg.text}</Alert>}
       <div className="grid gap-3 sm:grid-cols-[2fr_1fr]">
         <Field label="제목" required>
@@ -72,6 +173,19 @@ function NewReviewForm({ type, onCreated }) {
       <Field label="내용" required hint="줄바꿈은 그대로 표시됩니다">
         <Textarea rows={5} value={body} onChange={(e) => setBody(e.target.value)} placeholder={type === 'CLASS' ? '교실 참여 후기를 입력하세요' : '작업 전·후 상황과 설명을 입력하세요'} />
       </Field>
+
+      <div className="rounded-chm-md border border-border bg-surface p-3">
+        <div className="mb-2 text-caption font-semibold text-ink-700">{type === 'CLASS' ? '사진 (좌측 자동 롤링, 1~6장)' : 'Before / After 사진'}</div>
+        {type === 'CLASS'
+          ? <StagedClassPhotos staged={staged} setStaged={setStaged} disabled={saving} />
+          : (
+            <div className="grid grid-cols-2 gap-3">
+              <StagedBASlot label="Before (수리 전)" item={before} onPick={setBefore} onClear={clearBefore} disabled={saving} />
+              <StagedBASlot label="After (수리 후)" item={after} onPick={setAfter} onClear={clearAfter} disabled={saving} />
+            </div>
+          )}
+      </div>
+
       <div className="flex items-center justify-between gap-3">
         <label className="flex items-center gap-2 text-body-sm text-ink-700">
           <Switch checked={published} onChange={(e) => setPublished(e.target.checked)} />
