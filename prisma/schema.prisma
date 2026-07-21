@@ -232,3 +232,47 @@ model Donation {
   @@index([status])
   @@index([createdAt])
 }
+
+// 후기 유형: 집수리 교실 후기(사진 롤링 + 내용) / 집수리 체험 후기(Before·After + 설명)
+enum ReviewType {
+  CLASS      // 집수리 교실 후기
+  EXPERIENCE // 집수리 체험 후기
+}
+
+// 후기 이미지 역할: 교실 후기 롤링 사진 / 체험 후기 전·후
+enum ReviewImageRole {
+  PHOTO  // 교실 후기 롤링 사진(1~6장)
+  BEFORE // 체험 전
+  AFTER  // 체험 후
+}
+
+// 후기 — 관리자가 등록. 유형에 따라 표현 방식이 다르다(교실: 사진 롤링, 체험: Before/After).
+model Review {
+  id         String        @id @default(cuid())
+  type       ReviewType
+  title      String
+  body       String        @db.Text
+  authorName String?       // 참가자/작성자 이름(선택)
+  published  Boolean       @default(true)
+  images     ReviewImage[]
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  @@index([type, published, createdAt])
+}
+
+// 후기 이미지 — 바이너리를 DB에 저장(갤러리와 동일 방식). 후기 삭제 시 함께 삭제.
+model ReviewImage {
+  id        String          @id @default(cuid())
+  reviewId  String
+  review    Review          @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  role      ReviewImageRole @default(PHOTO)
+  sortOrder Int             @default(0) // 교실 후기 롤링 순서
+  mimeType  String
+  size      Int
+  data      Bytes
+  thumb     Bytes?          // 관리 목록용 썸네일
+  createdAt DateTime        @default(now())
+
+  @@index([reviewId, sortOrder])
+}

@@ -1,25 +1,46 @@
-import { Container, Button } from '@chm/design-system';
+import { Container, Button, EmptyState } from '@chm/design-system';
 import PageBanner from '@/components/site/PageBanner';
+import ReviewCarousel from '@/components/site/ReviewCarousel';
 import { REVIEW_FORM_URL } from '@/components/site/constants';
+import { prisma } from '@/lib/prisma';
 
 export const metadata = { title: '집수리 교실 후기', description: '집수리 교실 참가자들의 생생한 후기입니다.' };
+export const dynamic = 'force-dynamic';
 
-// 집수리 교실 후기 — 골격(향후 후기 데이터 연동). 후기 모집은 구글 폼으로.
-export default function ClassReviewsPage() {
+export default async function ClassReviewsPage() {
+  const reviews = await prisma.review.findMany({
+    where: { type: 'CLASS', published: true },
+    orderBy: { createdAt: 'desc' },
+    include: { images: { where: { role: 'PHOTO' }, select: { id: true }, orderBy: { sortOrder: 'asc' } } },
+  });
+
   return (
     <>
       <PageBanner eyebrow="Reviews" title="집수리 교실 후기" description="집수리 교실 참가자들의 생생한 후기입니다." />
       <section className="bg-surface">
-        <Container size="md" className="py-16">
-          <div className="rounded-chm-xl border border-border bg-surface-muted p-8 text-center">
-            <h2 className="text-h4 font-bold text-ink-850">후기를 모으고 있습니다</h2>
-            <p className="mx-auto mt-3 max-w-xl text-body text-ink-600">
-              집수리 교실에 참여하셨다면 소중한 후기를 남겨주세요. 등록된 후기는 이 페이지에 순차적으로 소개됩니다.
-            </p>
+        <Container size="xl" className="py-16">
+          {reviews.length === 0 ? (
+            <EmptyState title="등록된 후기가 없습니다" description="곧 참가자들의 후기로 찾아뵙겠습니다." />
+          ) : (
+            <div className="flex flex-col gap-14">
+              {reviews.map((r) => (
+                <article key={r.id} className="grid items-center gap-8 md:grid-cols-2">
+                  <ReviewCarousel images={r.images} alt={r.title} />
+                  <div>
+                    <h2 className="text-h3 font-bold tracking-tight text-ink-850">{r.title}</h2>
+                    {r.authorName && <p className="mt-1.5 text-body-sm font-semibold text-primary">{r.authorName}</p>}
+                    <p className="mt-4 whitespace-pre-line text-body leading-relaxed text-ink-700">{r.body}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+
+          <div className="mt-16 rounded-chm-xl border border-border bg-surface-warm p-8 text-center">
+            <h2 className="text-h4 font-bold text-ink-850">집수리 교실에 참여하셨나요?</h2>
+            <p className="mx-auto mt-3 max-w-xl text-body text-ink-600">소중한 후기를 남겨주시면 이 페이지에 소개됩니다.</p>
             <div className="mt-6">
-              <Button as="a" href={REVIEW_FORM_URL} target="_blank" rel="noopener noreferrer" tone="cta">
-                후기 남기기 (구글 폼) ↗
-              </Button>
+              <Button as="a" href={REVIEW_FORM_URL} target="_blank" rel="noopener noreferrer" tone="cta">후기 남기기 (구글 폼) ↗</Button>
             </div>
           </div>
         </Container>

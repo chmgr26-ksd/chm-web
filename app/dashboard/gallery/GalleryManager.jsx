@@ -3,57 +3,7 @@
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Field, Input, Select, Button, Alert } from '@chm/design-system';
-
-// 해상도(사이즈) 프리셋 — 저장되는 원본의 최대 변, JPEG 품질.
-const SIZE_PRESETS = {
-  high: { label: '고화질 (1600px)', maxDim: 1600, quality: 0.9 },
-  standard: { label: '표준 (1200px)', maxDim: 1200, quality: 0.85 },
-  light: { label: '가벼움 (800px)', maxDim: 800, quality: 0.8 },
-};
-// 썸네일(그리드) 비율 — 중앙 크롭. null이면 원본 비율 유지.
-const RATIO_PRESETS = {
-  original: { label: '원본 비율', ar: null },
-  square: { label: '정사각형 1:1', ar: 1 },
-  landscape: { label: '가로 4:3', ar: 4 / 3 },
-  portrait: { label: '세로 3:4', ar: 3 / 4 },
-};
-const SIZE_OPTIONS = Object.entries(SIZE_PRESETS).map(([value, p]) => ({ value, label: p.label }));
-const RATIO_OPTIONS = Object.entries(RATIO_PRESETS).map(([value, p]) => ({ value, label: p.label }));
-
-// 브라우저에서 이미지를 리사이즈(+선택적 중앙 크롭)해 JPEG Blob 반환.
-// 서버 이미지 처리 불필요 → 메모리 안전. imageOrientation으로 EXIF 회전 반영.
-async function renderResized(file, { maxDim, quality, ratio = null }) {
-  const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
-  let sx = 0, sy = 0, sw = bitmap.width, sh = bitmap.height;
-
-  // 원하는 비율(width/height)로 중앙 크롭.
-  if (ratio) {
-    const srcAR = sw / sh;
-    if (srcAR > ratio) {
-      const newW = sh * ratio;
-      sx = (sw - newW) / 2;
-      sw = newW;
-    } else {
-      const newH = sw / ratio;
-      sy = (sh - newH) / 2;
-      sh = newH;
-    }
-  }
-
-  // 크롭 영역을 maxDim에 맞춰 축소(확대는 안 함).
-  let ow = sw, oh = sh;
-  if (ow > maxDim || oh > maxDim) {
-    const scale = Math.min(maxDim / ow, maxDim / oh);
-    ow = ow * scale;
-    oh = oh * scale;
-  }
-  const canvas = document.createElement('canvas');
-  canvas.width = Math.max(1, Math.round(ow));
-  canvas.height = Math.max(1, Math.round(oh));
-  canvas.getContext('2d').drawImage(bitmap, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
-  if (bitmap.close) bitmap.close();
-  return new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', quality));
-}
+import { SIZE_PRESETS, RATIO_PRESETS, SIZE_OPTIONS, RATIO_OPTIONS, renderResized } from '@/lib/clientImage';
 
 function GalleryItem({ img, onChanged }) {
   const [title, setTitle] = useState(img.title || '');
