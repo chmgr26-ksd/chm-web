@@ -3,14 +3,17 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Field, Input, Textarea, Select, Switch, Button, Alert } from '@chm/design-system';
-import { POST_CATEGORY, POST_CATEGORY_VALUES } from '@/lib/posts';
+import { POST_CATEGORY, POST_GROUPS, groupOfCategory } from '@/lib/posts';
 
-const CAT_OPTIONS = POST_CATEGORY_VALUES.map((v) => ({ value: v, label: POST_CATEGORY[v].label }));
-
-export default function PostForm({ post }) {
+export default function PostForm({ post, group }) {
   const router = useRouter();
   const editing = !!post;
-  const [category, setCategory] = useState(post?.category || 'NOTICE');
+  // 그룹(공지사항/교육 활동 소식) — 편집 시 글의 카테고리로 추정, 신규는 전달값.
+  const groupKey = editing ? groupOfCategory(post.category) : (POST_GROUPS[group] ? group : 'notices');
+  const grp = POST_GROUPS[groupKey];
+  const backHref = grp.href;
+  const CAT_OPTIONS = grp.cats.map((v) => ({ value: v, label: POST_CATEGORY[v].label }));
+  const [category, setCategory] = useState(post?.category || grp.defaultCat);
   const [title, setTitle] = useState(post?.title || '');
   const [body, setBody] = useState(post?.body || '');
   const [published, setPublished] = useState(post ? post.published : true);
@@ -30,7 +33,7 @@ export default function PostForm({ post }) {
       });
       const d = await res.json().catch(() => ({}));
       if (!res.ok) { setMsg({ tone: 'danger', text: d.error || '저장에 실패했습니다.' }); return; }
-      router.push('/dashboard/posts');
+      router.push(backHref);
       router.refresh();
     } catch {
       setMsg({ tone: 'danger', text: '네트워크 오류로 저장하지 못했습니다.' });
@@ -62,7 +65,7 @@ export default function PostForm({ post }) {
       </div>
       <div className="flex gap-3">
         <Button type="submit" tone="primary" loading={saving}>{editing ? '수정 저장' : '작성'}</Button>
-        <Button type="button" variant="ghost" tone="ink" onClick={() => router.push('/dashboard/posts')}>취소</Button>
+        <Button type="button" variant="ghost" tone="ink" onClick={() => router.push(backHref)}>취소</Button>
       </div>
     </form>
   );

@@ -3,9 +3,10 @@ import { revalidatePath } from 'next/cache';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { can } from '@/lib/rbac';
+import { sanitizeHtml, isBlankHtml } from '@/lib/sanitizeHtml';
 
 const TITLE_MAX = 191;
-const DESC_MAX = 2000;
+const DESC_MAX = 8000;
 
 // 자료 메타(제목·설명·공개) 수정 — resources:manage. 파일 교체는 삭제 후 재업로드.
 export async function PATCH(req, props) {
@@ -22,8 +23,8 @@ export async function PATCH(req, props) {
     data.title = title;
   }
   if (body.description !== undefined) {
-    const d = body.description.toString().trim();
-    data.description = d ? d.slice(0, DESC_MAX) : null;
+    const raw = body.description.toString();
+    data.description = isBlankHtml(raw) ? null : sanitizeHtml(raw, { maxLen: DESC_MAX });
   }
   if (body.published !== undefined) data.published = body.published !== false;
 

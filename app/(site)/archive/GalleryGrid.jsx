@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import RichText from '@/components/site/RichText';
 
 // 마소너리 그리드 + 라이트박스. 그리드는 썸네일(?v=thumb), 라이트박스는 원본을 표시.
 export default function GalleryGrid({ images }) {
@@ -80,11 +81,16 @@ export default function GalleryGrid({ images }) {
             <img
               src={`/api/gallery/${current.id}`}
               alt={current.title || 'CHM Group 갤러리 이미지'}
-              className="max-h-[84vh] max-w-[94vw] rounded-chm-md object-contain shadow-chm-xl"
+              className="max-h-[72vh] max-w-[94vw] rounded-chm-md object-contain shadow-chm-xl"
             />
-            <figcaption className="mt-3 text-center text-body-sm text-white/85">
+            <figcaption className="mt-3 max-w-2xl text-center text-body-sm text-white/85">
               {current.title ? `${current.title} · ` : ''}{index + 1} / {images.length}
             </figcaption>
+            {current.description && (
+              <div className="mt-3 max-h-[18vh] max-w-2xl overflow-y-auto px-2 text-white/90 [&_a]:text-white [&_h2]:text-white [&_h3]:text-white [&_h4]:text-white">
+                <RichText html={current.description} className="text-body-sm" />
+              </div>
+            )}
           </figure>
 
           {images.length > 1 && (

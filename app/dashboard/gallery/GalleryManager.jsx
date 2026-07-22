@@ -4,12 +4,14 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Field, Input, Select, Button, Alert } from '@chm/design-system';
 import { SIZE_PRESETS, RATIO_PRESETS, SIZE_OPTIONS, RATIO_OPTIONS, renderResized } from '@/lib/clientImage';
+import RichTextEditor from '@/components/dashboard/RichTextEditor';
 
 function GalleryItem({ img, onChanged }) {
   const [title, setTitle] = useState(img.title || '');
+  const [description, setDescription] = useState(img.description || '');
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
-  const dirty = title !== (img.title || '');
+  const dirty = title !== (img.title || '') || description !== (img.description || '');
 
   const save = async () => {
     setBusy(true);
@@ -18,7 +20,7 @@ function GalleryItem({ img, onChanged }) {
       const res = await fetch(`/api/gallery/${img.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title }),
+        body: JSON.stringify({ title, description }),
       });
       if (!res.ok) { const d = await res.json().catch(() => ({})); setErr(d.error || '저장 실패'); return; }
       onChanged();
@@ -48,7 +50,11 @@ function GalleryItem({ img, onChanged }) {
       <img src={`/api/gallery/${img.id}?v=thumb`} alt={img.title || ''} loading="lazy" className="aspect-square w-full object-cover" />
       <div className="flex flex-col gap-2 p-2.5">
         {err && <span className="text-caption text-danger-600">{err}</span>}
-        <Input size="sm" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="설명(선택)" />
+        <Input size="sm" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="제목/캡션(선택)" />
+        <div>
+          <span className="mb-1 block text-caption text-ink-500">설명</span>
+          <RichTextEditor value={img.description || ''} onChange={setDescription} placeholder="사진 설명을 입력하세요(선택)" minHeight={110} />
+        </div>
         <div className="flex gap-1.5">
           <Button size="sm" tone="primary" onClick={save} disabled={!dirty || busy} className="flex-1">저장</Button>
           <Button size="sm" variant="soft" tone="danger" onClick={remove} disabled={busy}>삭제</Button>
@@ -131,7 +137,7 @@ export default function GalleryManager({ images }) {
       {images.length === 0 ? (
         <div className="text-body-sm text-ink-500">등록된 사진이 없습니다.</div>
       ) : (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {images.map((img) => (
             <GalleryItem key={img.id} img={img} onChanged={refresh} />
           ))}

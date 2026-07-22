@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { can } from '@/lib/rbac';
+import { sanitizeHtml, isBlankHtml } from '@/lib/sanitizeHtml';
 
 // 이미지 바이너리 서빙(공개). 콘텐츠 해시가 아니므로 짧게 캐시.
 // ?v=thumb 이면 썸네일(있을 때)만 로드해 서빙 → 그리드 트래픽 경량화.
@@ -42,15 +43,23 @@ export async function PATCH(req, props) {
     return NextResponse.json({ error: '권한이 없습니다.' }, { status: 403 });
   }
   const body = await req.json().catch(() => ({}));
-  let title = (body.title ?? '').toString().trim() || null;
-  if (title && title.length > 191) title = title.slice(0, 191);
+  const data = {};
+  if (body.title !== undefined) {
+    let title = (body.title ?? '').toString().trim() || null;
+    if (title && title.length > 191) title = title.slice(0, 191);
+    data.title = title;
+  }
+  if (body.description !== undefined) {
+    const raw = (body.description ?? '').toString();
+    data.description = isBlankHtml(raw) ? null : sanitizeHtml(raw);
+  }
   try {
-    await prisma.galleryImage.update({ where: { id: params.id }, data: { title } });
+    await prisma.galleryImage.update({ where: { id: params.id }, data });
   } catch (e) {
     if (e?.code === 'P2025') return NextResponse.json({ error: '이미지를 찾을 수 없습니다.' }, { status: 404 });
     throw e;
   }
-  revalidatePath('/gallery');return NextResponse.json({ ok: true });
+  revalidatePath('/archive');return NextResponse.json({ ok: true });
 }
 
 // 이미지 삭제 — gallery:manage.
@@ -66,5 +75,5 @@ export async function DELETE(req, props) {
     if (e?.code === 'P2025') return NextResponse.json({ error: '이미지를 찾을 수 없습니다.' }, { status: 404 });
     throw e;
   }
-  revalidatePath('/gallery');return NextResponse.json({ ok: true });
+  revalidatePath('/archive');return NextResponse.json({ ok: true });
 }

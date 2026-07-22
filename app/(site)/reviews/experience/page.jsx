@@ -1,6 +1,7 @@
 import { Container, Button, EmptyState } from '@chm/design-system';
 import PageBanner from '@/components/site/PageBanner';
 import BeforeAfter from '@/components/site/BeforeAfter';
+import RichText from '@/components/site/RichText';
 import { REVIEW_FORM_URL } from '@/components/site/constants';
 import { prisma } from '@/lib/prisma';
 
@@ -32,7 +33,7 @@ export default async function ExperienceReviewsPage() {
                     <div>
                       <h2 className="text-h3 font-bold tracking-tight text-ink-850">{r.title}</h2>
                       {r.authorName && <p className="mt-1.5 text-body-sm font-semibold text-primary">{r.authorName}</p>}
-                      <p className="mt-4 whitespace-pre-line text-body leading-relaxed text-ink-700">{r.body}</p>
+                      <RichText html={r.body} className="mt-4 text-body leading-relaxed text-ink-700" />
                     </div>
                   </article>
                 );

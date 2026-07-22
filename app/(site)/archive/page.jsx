@@ -17,7 +17,7 @@ export default async function GalleryPage(props) {
     prisma.galleryImage.count(),
     prisma.galleryImage.findMany({
       orderBy: { createdAt: 'desc' },
-      select: { id: true, title: true },
+      select: { id: true, title: true, description: true },
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
     }),

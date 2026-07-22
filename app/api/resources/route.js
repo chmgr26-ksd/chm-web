@@ -4,10 +4,11 @@ import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { can } from '@/lib/rbac';
 import { sniffDocument, ALLOWED_LABEL } from '@/lib/fileSniff';
+import { sanitizeHtml, isBlankHtml } from '@/lib/sanitizeHtml';
 
 const MAX_BYTES = 20 * 1024 * 1024; // 20MB
 const TITLE_MAX = 191;
-const DESC_MAX = 2000;
+const DESC_MAX = 8000; // 리치 텍스트(HTML) 길이 상한
 
 // 자료실 문서 업로드 — resources:manage(직원·관리자). multipart/form-data(file, title, description?, published?).
 export async function POST(req) {
@@ -24,7 +25,8 @@ export async function POST(req) {
   }
   const file = form.get('file');
   let title = (form.get('title') || '').toString().trim();
-  let description = (form.get('description') || '').toString().trim() || null;
+  const rawDesc = (form.get('description') || '').toString();
+  const description = isBlankHtml(rawDesc) ? null : sanitizeHtml(rawDesc, { maxLen: DESC_MAX });
   const published = form.get('published') !== 'false';
 
   if (!file || typeof file === 'string') {
@@ -32,7 +34,6 @@ export async function POST(req) {
   }
   if (!title) title = (file.name || '자료').replace(/\.[a-z0-9]+$/i, '').slice(0, TITLE_MAX);
   if (title.length > TITLE_MAX) title = title.slice(0, TITLE_MAX);
-  if (description && description.length > DESC_MAX) description = description.slice(0, DESC_MAX);
 
   const declared = Number(req.headers.get('content-length') || 0);
   if (declared && declared > MAX_BYTES + 4096) {

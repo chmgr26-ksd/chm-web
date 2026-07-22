@@ -125,13 +125,14 @@ model PageView {
 
 // 갤러리 이미지 — 바이너리를 DB(LONGBLOB)에 저장(배포에도 보존). 업로드 크기 제한.
 model GalleryImage {
-  id        String   @id @default(cuid())
-  title     String?
-  mimeType  String
-  size      Int
-  data      Bytes
-  thumb     Bytes?   // 그리드용 썸네일(JPEG, 업로드 시 클라이언트에서 생성). 없으면 원본 폴백.
-  createdAt DateTime @default(now())
+  id          String   @id @default(cuid())
+  title       String?
+  description String?  @db.Text // 리치 텍스트(HTML) 설명 — 라이트박스에 표시.
+  mimeType    String
+  size        Int
+  data        Bytes
+  thumb       Bytes?   // 그리드용 썸네일(JPEG, 업로드 시 클라이언트에서 생성). 없으면 원본 폴백.
+  createdAt   DateTime @default(now())
 
   @@index([createdAt])
 }

@@ -2,8 +2,10 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Field, Input, Textarea, Switch, Button, Alert } from '@chm/design-system';
+import { Field, Input, Switch, Button, Alert } from '@chm/design-system';
 import { prepareUpload } from '@/lib/clientImage';
+import { isBlankHtml } from '@/lib/sanitizeHtml';
+import RichTextEditor from '@/components/dashboard/RichTextEditor';
 
 const MAX_PHOTOS = 6;
 
@@ -100,6 +102,7 @@ function NewReviewForm({ type, onCreated }) {
   const [staged, setStaged] = useState([]);        // 교실: [{file,url}]
   const [before, setBefore] = useState(null);      // 체험: {file,url}
   const [after, setAfter] = useState(null);
+  const [bodyKey, setBodyKey] = useState(0);       // 등록 후 에디터 리셋용
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState(null);
 
@@ -118,7 +121,7 @@ function NewReviewForm({ type, onCreated }) {
     if (before) URL.revokeObjectURL(before.url);
     if (after) URL.revokeObjectURL(after.url);
     setTitle(''); setAuthorName(''); setBody(''); setPublished(true);
-    setStaged([]); setBefore(null); setAfter(null);
+    setStaged([]); setBefore(null); setAfter(null); setBodyKey((k) => k + 1);
   };
   const clearBefore = () => { if (before) URL.revokeObjectURL(before.url); setBefore(null); };
   const clearAfter = () => { if (after) URL.revokeObjectURL(after.url); setAfter(null); };
@@ -126,7 +129,7 @@ function NewReviewForm({ type, onCreated }) {
   const submit = async (e) => {
     e.preventDefault();
     setMsg(null);
-    if (!title.trim() || !body.trim()) { setMsg({ tone: 'danger', text: '제목과 내용을 입력해 주세요.' }); return; }
+    if (!title.trim() || isBlankHtml(body)) { setMsg({ tone: 'danger', text: '제목과 내용을 입력해 주세요.' }); return; }
     setSaving(true);
     try {
       const res = await fetch('/api/reviews', {
@@ -170,8 +173,8 @@ function NewReviewForm({ type, onCreated }) {
           <Input value={authorName} onChange={(e) => setAuthorName(e.target.value)} placeholder="예: 참가자 이OO" />
         </Field>
       </div>
-      <Field label="내용" required hint="줄바꿈은 그대로 표시됩니다">
-        <Textarea rows={5} value={body} onChange={(e) => setBody(e.target.value)} placeholder={type === 'CLASS' ? '교실 참여 후기를 입력하세요' : '작업 전·후 상황과 설명을 입력하세요'} />
+      <Field label="내용" required hint="굵게·목록·링크 등 서식을 넣을 수 있습니다">
+        <RichTextEditor key={bodyKey} value="" onChange={setBody} placeholder={type === 'CLASS' ? '교실 참여 후기를 입력하세요' : '작업 전·후 상황과 설명을 입력하세요'} minHeight={150} />
       </Field>
 
       <div className="rounded-chm-md border border-border bg-surface p-3">
@@ -350,7 +353,7 @@ function ReviewCard({ type, review, onChanged }) {
   const dirty = title !== review.title || (authorName || '') !== (review.authorName || '') || body !== review.body || published !== review.published;
 
   const save = async () => {
-    if (!title.trim() || !body.trim()) { setMsg({ tone: 'danger', text: '제목과 내용을 입력해 주세요.' }); return; }
+    if (!title.trim() || isBlankHtml(body)) { setMsg({ tone: 'danger', text: '제목과 내용을 입력해 주세요.' }); return; }
     setBusy(true); setMsg(null);
     try {
       const res = await fetch(`/api/reviews/${review.id}`, {
@@ -380,7 +383,7 @@ function ReviewCard({ type, review, onChanged }) {
         <Field label="제목"><Input value={title} onChange={(e) => setTitle(e.target.value)} /></Field>
         <Field label="작성자(선택)"><Input value={authorName} onChange={(e) => setAuthorName(e.target.value)} /></Field>
       </div>
-      <Field label="내용"><Textarea rows={4} value={body} onChange={(e) => setBody(e.target.value)} /></Field>
+      <Field label="내용"><RichTextEditor value={review.body} onChange={setBody} minHeight={130} /></Field>
 
       <div className="rounded-chm-md border border-border bg-surface-warm p-3">
         {type === 'CLASS'

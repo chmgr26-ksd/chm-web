@@ -3,9 +3,10 @@ import { revalidatePath } from 'next/cache';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { can } from '@/lib/rbac';
+import { sanitizeHtml, isBlankHtml } from '@/lib/sanitizeHtml';
 
 const TITLE_MAX = 191;
-const BODY_MAX = 20000;
+const BODY_MAX = 40000;
 
 function revalidateReview(type) {
   revalidatePath(type === 'EXPERIENCE' ? '/reviews/experience' : '/reviews/class');
@@ -30,9 +31,9 @@ export async function PATCH(req, props) {
     data.title = title;
   }
   if (body.body !== undefined) {
-    const content = body.body.toString().trim();
-    if (!content || content.length > BODY_MAX) return NextResponse.json({ error: '내용을 확인해 주세요.' }, { status: 400 });
-    data.body = content;
+    const raw = body.body.toString();
+    if (isBlankHtml(raw)) return NextResponse.json({ error: '내용을 확인해 주세요.' }, { status: 400 });
+    data.body = sanitizeHtml(raw, { maxLen: BODY_MAX });
   }
   if (body.authorName !== undefined) {
     const a = body.authorName.toString().trim();

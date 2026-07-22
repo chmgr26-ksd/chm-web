@@ -2,8 +2,9 @@
 
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Field, Input, Textarea, Switch, Button, Alert } from '@chm/design-system';
+import { Field, Input, Switch, Button, Alert } from '@chm/design-system';
 import { ALLOWED_EXTS, ALLOWED_LABEL, extOf } from '@/lib/fileSniff';
+import RichTextEditor from '@/components/dashboard/RichTextEditor';
 
 const ACCEPT = ALLOWED_EXTS.map((e) => `.${e}`).join(',');
 
@@ -32,6 +33,7 @@ function UploadForm({ onDone }) {
   const [picked, setPicked] = useState(null); // { name, size }
   const [uploading, setUploading] = useState(false);
   const [msg, setMsg] = useState(null);
+  const [rteKey, setRteKey] = useState(0); // 업로드 성공 시 에디터 리셋용
 
   const onPick = (e) => {
     const f = e.target.files?.[0];
@@ -55,12 +57,12 @@ function UploadForm({ onDone }) {
       const fd = new FormData();
       fd.append('file', file);
       if (title.trim()) fd.append('title', title.trim());
-      if (description.trim()) fd.append('description', description.trim());
+      fd.append('description', description); // 서버에서 새니타이즈·빈값 처리
       fd.append('published', published ? 'true' : 'false');
       const res = await fetch('/api/resources', { method: 'POST', body: fd });
       const d = await res.json().catch(() => ({}));
       if (!res.ok) { setMsg({ tone: 'danger', text: d.error || '업로드에 실패했습니다.' }); return; }
-      setTitle(''); setDescription(''); setPublished(true); setPicked(null);
+      setTitle(''); setDescription(''); setPublished(true); setPicked(null); setRteKey((k) => k + 1);
       if (fileRef.current) fileRef.current.value = '';
       setMsg({ tone: 'success', text: '업로드되었습니다.' });
       onDone();
@@ -95,8 +97,8 @@ function UploadForm({ onDone }) {
           </label>
         </Field>
       </div>
-      <Field label="설명(선택)" hint="자료에 대한 안내를 입력하세요">
-        <Textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="예: 집수리 서비스 신청 시 작성하는 표준 서식입니다." />
+      <Field label="설명(선택)" hint="굵게·목록·링크 등 서식을 넣을 수 있습니다">
+        <RichTextEditor key={rteKey} value="" onChange={setDescription} placeholder="예: 집수리 서비스 신청 시 작성하는 표준 서식입니다." minHeight={130} />
       </Field>
       <div className="flex justify-end">
         <Button type="submit" tone="primary" loading={uploading}>업로드</Button>
@@ -150,7 +152,7 @@ function ResourceItem({ doc, onChanged }) {
         {!doc.published && <span className="flex-none rounded bg-ink-100 px-2 py-0.5 text-caption text-ink-500">비공개</span>}
       </div>
       <Field label="자료 제목"><Input value={title} onChange={(e) => setTitle(e.target.value)} /></Field>
-      <Field label="설명"><Textarea rows={2} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="설명(선택)" /></Field>
+      <Field label="설명"><RichTextEditor value={doc.description || ''} onChange={setDescription} placeholder="설명(선택)" minHeight={110} /></Field>
       <div className="flex items-center justify-between gap-3 border-t border-border pt-3">
         <label className="flex items-center gap-2 text-body-sm text-ink-700">
           <Switch checked={published} onChange={(e) => setPublished(e.target.checked)} />

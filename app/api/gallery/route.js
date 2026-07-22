@@ -4,6 +4,7 @@ import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { can } from '@/lib/rbac';
 import { sniffImage } from '@/lib/imageSniff';
+import { sanitizeHtml, isBlankHtml } from '@/lib/sanitizeHtml';
 
 const MAX_BYTES = 3 * 1024 * 1024; // 3MB
 const TITLE_MAX = 191; // title 컬럼 VARCHAR(191)
@@ -24,6 +25,8 @@ export async function POST(req) {
   const file = form.get('file');
   let title = (form.get('title') || '').toString().trim() || null;
   if (title && title.length > TITLE_MAX) title = title.slice(0, TITLE_MAX);
+  const rawDesc = (form.get('description') || '').toString();
+  const description = isBlankHtml(rawDesc) ? null : sanitizeHtml(rawDesc);
 
   if (!file || typeof file === 'string') {
     return NextResponse.json({ error: '이미지 파일을 선택해 주세요.' }, { status: 400 });
@@ -52,8 +55,8 @@ export async function POST(req) {
   }
 
   await prisma.galleryImage.create({
-    data: { title, mimeType, size: buf.length, data: buf, thumb },
+    data: { title, description, mimeType, size: buf.length, data: buf, thumb },
   });
-  revalidatePath('/gallery');
+  revalidatePath('/archive');
   return NextResponse.json({ ok: true });
 }
