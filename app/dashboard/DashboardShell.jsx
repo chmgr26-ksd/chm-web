@@ -38,6 +38,7 @@ export default function DashboardShell({ user, children }) {
           >
             <SidebarSection label="현황">
               <SidebarItem href="/dashboard" active={pathname === '/dashboard'}>대시보드</SidebarItem>
+              <SidebarItem href="/dashboard/inquiries" active={pathname.startsWith('/dashboard/inquiries')}>참여 신청 관리</SidebarItem>
               <SidebarItem href="/dashboard/analytics" active={pathname.startsWith('/dashboard/analytics')}>방문자 통계</SidebarItem>
             </SidebarSection>
             <SidebarSection label="소식 관리">
@@ -53,8 +54,8 @@ export default function DashboardShell({ user, children }) {
               <SidebarItem href="/dashboard/reviews/experience" active={pathname.startsWith('/dashboard/reviews/experience')}>집수리 체험 후기</SidebarItem>
             </SidebarSection>
             <SidebarSection label="문의 사항 관리">
-              <SidebarItem href="/dashboard/faqs" active={pathname.startsWith('/dashboard/faqs')}>FAQ</SidebarItem>
-              <SidebarItem href="/dashboard/inquiries" active={pathname.startsWith('/dashboard/inquiries')}>QNA</SidebarItem>
+              <SidebarItem href="/dashboard/faqs" active={pathname.startsWith('/dashboard/faqs')}>FAQ 관리</SidebarItem>
+              <SidebarItem href="/dashboard/qna" active={pathname.startsWith('/dashboard/qna')}>QNA 관리</SidebarItem>
             </SidebarSection>
             {canManageMembers && (
               <SidebarSection label="관리">

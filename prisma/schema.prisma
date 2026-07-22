@@ -294,3 +294,21 @@ model Resource {
 
   @@index([published, createdAt])
 }
+
+// QNA 게시판 — 방문자가 남기는 문의(질문) + 관리자 답변. 참여 신청(Inquiry)과 별개.
+model QnaPost {
+  id         String   @id @default(cuid())
+  authorName String   // 작성자 이름
+  contact    String?  // 연락처(이메일/전화, 선택)
+  title      String
+  body       String   @db.Text // 질문 내용(리치 텍스트 HTML)
+  answer     String?  @db.Text // 관리자 답변(리치 텍스트 HTML)
+  answered   Boolean  @default(false)
+  isPublic   Boolean  @default(false) // 답변을 공개 게시판에 노출할지
+  userId     String?  // 로그인 사용자 연결(선택, 비정규화)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([createdAt])
+  @@index([isPublic, answered, createdAt])
+}

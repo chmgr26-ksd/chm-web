@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Field, Input, Textarea, Select, Switch, Button, Alert } from '@chm/design-system';
+import { Field, Input, Select, Switch, Button, Alert } from '@chm/design-system';
 import { POST_CATEGORY, POST_GROUPS, groupOfCategory } from '@/lib/posts';
+import { isBlankHtml } from '@/lib/sanitizeHtml';
+import RichTextEditor from '@/components/dashboard/RichTextEditor';
 
 export default function PostForm({ post, group }) {
   const router = useRouter();
@@ -23,6 +25,7 @@ export default function PostForm({ post, group }) {
   const submit = async (e) => {
     e.preventDefault();
     setMsg(null);
+    if (!title.trim() || isBlankHtml(body)) { setMsg({ tone: 'danger', text: '제목과 내용을 입력해 주세요.' }); return; }
     setSaving(true);
     const url = editing ? `/api/posts/${post.id}` : '/api/posts';
     try {
@@ -53,8 +56,8 @@ export default function PostForm({ post, group }) {
           <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="소식 제목" />
         </Field>
       </div>
-      <Field label="내용" required hint="줄바꿈은 그대로 표시됩니다">
-        <Textarea rows={12} value={body} onChange={(e) => setBody(e.target.value)} placeholder="소식 내용을 입력하세요" />
+      <Field label="내용" required hint="굵게·목록·제목·링크 등 서식을 넣을 수 있습니다">
+        <RichTextEditor value={post?.body || ''} onChange={setBody} placeholder="소식 내용을 입력하세요" minHeight={260} />
       </Field>
       <div className="flex items-center gap-3 rounded-chm-lg border border-border p-4">
         <Switch checked={published} onChange={(e) => setPublished(e.target.checked)} />

@@ -62,7 +62,7 @@ export default async function InquiriesPage(props) {
 
   return (
     <>
-      <PageHeader title="QNA (문의 사항)" description="참여 신청·문의를 검색·필터하고 처리 상태를 관리합니다." />
+      <PageHeader title="참여 신청 관리" description="집수리·교육·자원봉사 참여 신청을 검색·필터하고 처리 상태를 관리합니다." />
 
       {/* 필터 바 — 서버 GET 폼(클라이언트 JS 불필요) */}
       <form method="get" className="mb-5 flex flex-wrap items-end gap-2">

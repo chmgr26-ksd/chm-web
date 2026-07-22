@@ -4,6 +4,9 @@ import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { can } from '@/lib/rbac';
 import { isValidCategory } from '@/lib/posts';
+import { sanitizeHtml, isBlankHtml } from '@/lib/sanitizeHtml';
+
+const BODY_MAX = 40000;
 
 function revalidatePost(id) {
   revalidatePath('/news/notices');
@@ -29,9 +32,8 @@ export async function PATCH(req, props) {
     data.title = body.title.trim();
   }
   if (typeof body.body === 'string') {
-    if (!body.body.trim()) return NextResponse.json({ error: '내용을 입력해 주세요.' }, { status: 400 });
-    if (body.body.trim().length > 20000) return NextResponse.json({ error: '내용은 20000자 이하여야 합니다.' }, { status: 400 });
-    data.body = body.body.trim();
+    if (isBlankHtml(body.body)) return NextResponse.json({ error: '내용을 입력해 주세요.' }, { status: 400 });
+    data.body = sanitizeHtml(body.body, { maxLen: BODY_MAX });
   }
   if (body.category !== undefined) {
     if (!isValidCategory(body.category)) return NextResponse.json({ error: '카테고리가 올바르지 않습니다.' }, { status: 400 });

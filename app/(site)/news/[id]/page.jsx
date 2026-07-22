@@ -2,8 +2,10 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Container, Button } from '@chm/design-system';
 import { prisma } from '@/lib/prisma';
-import { POST_CATEGORY } from '@/lib/posts';
+import { POST_CATEGORY, POST_GROUPS, groupOfCategory } from '@/lib/posts';
 import { getContact } from '@/lib/siteContent';
+import { htmlToText } from '@/lib/sanitizeHtml';
+import RichText from '@/components/site/RichText';
 
 export const revalidate = 120;
 
@@ -17,7 +19,7 @@ export async function generateMetadata(props) {
   const params = await props.params;
   const post = await prisma.post.findUnique({ where: { id: params.id } });
   if (!post || !post.published) return { title: '소식' };
-  const desc = (post.body || '').replace(/\s+/g, ' ').trim().slice(0, 150);
+  const desc = htmlToText(post.body).slice(0, 150);
   return {
     title: post.title,
     description: desc,
@@ -38,11 +40,12 @@ export default async function NewsDetailPage(props) {
   if (!item || !item.published) notFound();
   const c = await getContact();
   const cat = POST_CATEGORY[item.category] || { label: item.category, value: 'trust' };
+  const backHref = POST_GROUPS[groupOfCategory(item.category)].publicPath;
 
   return (
     <section className="bg-surface">
       <Container size="md" className="py-16">
-        <Link href="/news/notices" className="mb-8 inline-block text-body-sm font-bold text-primary hover:underline">← 목록으로</Link>
+        <Link href={backHref} className="mb-8 inline-block text-body-sm font-bold text-primary hover:underline">← 목록으로</Link>
 
         <span className={`inline-block rounded-chm-full bg-${cat.value}-500 px-3 py-1 text-caption font-bold text-white`}>{cat.label}</span>
         <h1 className="mt-4 text-h1 font-bold leading-tight tracking-tight text-ink-850">{item.title}</h1>
@@ -50,7 +53,7 @@ export default async function NewsDetailPage(props) {
 
         <div className="my-8 h-px bg-border" />
 
-        <p className="whitespace-pre-line text-body-lg leading-relaxed text-ink-700">{item.body}</p>
+        <RichText html={item.body} className="text-body-lg leading-relaxed text-ink-700" />
 
         <div className="mt-10 flex flex-wrap items-center gap-3">
           <Button as={Link} href="/apply" tone="cta" size="lg">참여 신청하기</Button>
