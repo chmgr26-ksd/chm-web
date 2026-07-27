@@ -23,8 +23,8 @@ export default async function LocationPage() {
         <Container size="xl" className="grid gap-8 py-16 md:grid-cols-[1.4fr_1fr] md:items-start">
           <div className="overflow-hidden rounded-chm-lg border border-border">
             <iframe
-              title={`CHM Group 위치 — ${c.address}`}
-              src={mapEmbedUrl(c.address)}
+              title={`CHM Group 위치 — ${c.addressDetail}`}
+              src={mapEmbedUrl(c.geo || c.address)}
               className="aspect-[16/10] w-full border-0"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
