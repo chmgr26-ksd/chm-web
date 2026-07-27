@@ -8,7 +8,7 @@ import { AuthCard, Field, Input, Button, Alert } from '@chm/design-system';
 
 export default function SignupPage() {
   const router = useRouter();
-  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', passwordConfirm: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -16,12 +16,21 @@ export default function SignupPage() {
   const onSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    if (form.password.length < 8) {
+      setError('비밀번호는 8자 이상이어야 합니다.');
+      return;
+    }
+    if (form.password !== form.passwordConfirm) {
+      setError('비밀번호가 일치하지 않습니다.');
+      return;
+    }
     setLoading(true);
     try {
+      const { passwordConfirm, ...payload } = form;
       const res = await fetch('/api/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -69,6 +78,14 @@ export default function SignupPage() {
             </Field>
             <Field label="비밀번호" required htmlFor="password" hint="8자 이상">
               <Input id="password" type="password" value={form.password} onChange={set('password')} placeholder="••••••••" autoComplete="new-password" />
+            </Field>
+            <Field
+              label="비밀번호 확인"
+              required
+              htmlFor="passwordConfirm"
+              error={form.passwordConfirm && form.password !== form.passwordConfirm ? '비밀번호가 일치하지 않습니다.' : undefined}
+            >
+              <Input id="passwordConfirm" type="password" value={form.passwordConfirm} onChange={set('passwordConfirm')} placeholder="••••••••" autoComplete="new-password" />
             </Field>
             <Button type="submit" size="lg" block loading={loading}>가입하기</Button>
           </form>
