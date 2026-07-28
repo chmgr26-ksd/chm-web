@@ -2,18 +2,21 @@ import { Container, Button, EmptyState } from '@chm/design-system';
 import PageBanner from '@/components/site/PageBanner';
 import BeforeAfter from '@/components/site/BeforeAfter';
 import RichText from '@/components/site/RichText';
-import { REVIEW_FORM_URL } from '@/components/site/constants';
+import { getContact } from '@/lib/siteContent';
 import { prisma } from '@/lib/prisma';
 
 export const metadata = { title: '집수리 체험 후기', description: '집수리 체험 전·후를 사진으로 확인하는 후기입니다.' };
 export const dynamic = 'force-dynamic';
 
 export default async function ExperienceReviewsPage() {
-  const reviews = await prisma.review.findMany({
-    where: { type: 'EXPERIENCE', published: true },
-    orderBy: { createdAt: 'desc' },
-    include: { images: { where: { role: { in: ['BEFORE', 'AFTER'] } }, select: { id: true, role: true } } },
-  });
+  const [reviews, { reviewFormUrl }] = await Promise.all([
+    prisma.review.findMany({
+      where: { type: 'EXPERIENCE', published: true },
+      orderBy: { createdAt: 'desc' },
+      include: { images: { where: { role: { in: ['BEFORE', 'AFTER'] } }, select: { id: true, role: true } } },
+    }),
+    getContact(),
+  ]);
 
   return (
     <>
@@ -45,7 +48,7 @@ export default async function ExperienceReviewsPage() {
             <h2 className="text-h4 font-bold text-ink-850">집수리 체험에 참여하셨나요?</h2>
             <p className="mx-auto mt-3 max-w-xl text-body text-ink-600">소중한 후기를 남겨주시면 이 페이지에 소개됩니다.</p>
             <div className="mt-6">
-              <Button as="a" href={REVIEW_FORM_URL} target="_blank" rel="noopener noreferrer" tone="cta">후기 남기기 (구글 폼) ↗</Button>
+              <Button as="a" href={reviewFormUrl} target="_blank" rel="noopener noreferrer" tone="cta">후기 남기기 (구글 폼) ↗</Button>
             </div>
           </div>
         </Container>

@@ -185,6 +185,7 @@ model AppSetting {
   contactRep           String?
   companyKo            String?
   companyEn            String?
+  reviewFormUrl        String? // 후기 모집 구글 폼 URL(헤더·푸터·후기 페이지). 비우면 constants 폴백.
   // 랜딩 공지 배너(NoticeHero) 설정 — 비우면 lib/noticeHero.js 기본값으로 폴백.
   noticeHeroInterval Int?     // 배너 전환 간격(초, 3~10)
   noticeRollInterval Int?     // 공지 롤러 이동 간격(초, 2~6)

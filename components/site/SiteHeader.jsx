@@ -7,9 +7,10 @@ import { useSession, signOut } from 'next-auth/react';
 import { Button, NoticeBar, Container, Avatar } from '@chm/design-system';
 import { can, ROLE_LABEL } from '@/lib/rbac';
 import { avatarColor } from '@/lib/avatarColor';
-import { NAV } from './constants';
+import { resolveNav } from './constants';
 
-export default function SiteHeader() {
+export default function SiteHeader({ reviewFormUrl }) {
+  const NAV = resolveNav(reviewFormUrl);
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [openSub, setOpenSub] = useState(null); // 모바일 아코디언에서 펼친 항목 label

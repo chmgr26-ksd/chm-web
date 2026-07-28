@@ -13,6 +13,7 @@ const ROWS = [
   { key: 'contactRep', label: '대표자' },
   { key: 'companyKo', label: '기관명(국문)' },
   { key: 'companyEn', label: '기관명(영문)' },
+  { key: 'reviewFormUrl', label: '후기 모집 구글 폼 URL', hint: '헤더·푸터·후기 페이지의 "후기 남기기" 링크에 사용 · https:// 로 시작', ph: 'https://forms.gle/...', full: true },
 ];
 
 export default function ContactSettingsForm() {
@@ -69,7 +70,7 @@ export default function ContactSettingsForm() {
             key={r.key}
             label={r.label}
             hint={r.hint}
-            className={r.area ? 'sm:col-span-2' : undefined}
+            className={r.area || r.full ? 'sm:col-span-2' : undefined}
           >
             {r.area ? (
               <Textarea rows={2} value={form[r.key] || ''} onChange={set(r.key)} placeholder={defaults[r.key] || ''} />

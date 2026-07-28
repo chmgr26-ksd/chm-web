@@ -1,10 +1,11 @@
 import Link from 'next/link';
 import { Container, Logo, ValueDotStrip } from '@chm/design-system';
-import { NAV } from './constants';
+import { resolveNav } from './constants';
 import { getContact } from '@/lib/siteContent';
 
 export default async function SiteFooter() {
   const CONTACT = await getContact();
+  const NAV = resolveNav(CONTACT.reviewFormUrl);
   return (
     <footer className="bg-surface-dark text-ink-300">
       <Container size="xl" className="grid gap-10 py-14 md:grid-cols-[1.2fr_2fr_1fr]">

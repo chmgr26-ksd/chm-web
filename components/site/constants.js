@@ -50,6 +50,18 @@ export const NAV = [
   { href: '/location', label: '오시는 길' },
 ];
 
+// NAV의 '후기 모집' 외부링크 href를 관리자 설정 후기폼 URL로 치환한 사본 반환.
+// 원본 항목은 항상 href===REVIEW_FORM_URL(플레이스홀더)이라 매칭이 안정적.
+// 설정값이 없으면(=REVIEW_FORM_URL) 원본 NAV를 그대로 반환(무변경).
+export function resolveNav(reviewFormUrl) {
+  const url = reviewFormUrl || REVIEW_FORM_URL;
+  if (url === REVIEW_FORM_URL) return NAV;
+  const swap = (item) => (item.href === REVIEW_FORM_URL ? { ...item, href: url } : item);
+  return NAV.map((item) =>
+    item.children ? { ...swap(item), children: item.children.map(swap) } : swap(item),
+  );
+}
+
 // 6대 핵심가치(성장 시퀀스) — DS value 키와 브랜드 컬러 매핑
 export const VALUES = [
   { key: 'selfreliance',   name: '자립',       eng: 'SELF-RELIANCE',  desc: '도움을 받는 주민에서 지역의 문제를 해결하는 주민으로. 기술 습득과 일자리로 경제적 자립을 이룹니다.' },
