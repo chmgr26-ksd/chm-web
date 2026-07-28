@@ -48,7 +48,7 @@ export default async function SiteFooter() {
           </div>
           <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 border-t border-white/10 pt-4 text-body-sm">
             <Link href="/apply" className="text-ink-300 hover:text-white">참여 신청</Link>
-            <Link href="/login" className="text-ink-400 hover:text-white">로그인 · 회원</Link>
+            <Link href="/login" className="text-ink-400 hover:text-white">로그인 · 회원가입</Link>
           </div>
         </div>
 
