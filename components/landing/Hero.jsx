@@ -4,7 +4,7 @@ import { motion } from 'motion/react';
 
 // 랜딩 히어로 — chm-group-design/src/components/Hero.tsx 이식.
 // 원본은 fixed 헤더를 피하려 pt-32였으나, 이 앱의 SiteHeader는 sticky라 상단 여백을 줄임.
-export default function Hero({ heroUrl = '/landing/hero.jpg', heroKind = 'image' }) {
+export default function Hero({ heroUrl = '/landing/hero.jpg', heroKind = 'image', heroPoster }) {
   return (
     <section className="relative overflow-hidden bg-chm-bg-alt pb-20 pt-16 lg:pb-28 lg:pt-24">
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -70,10 +70,11 @@ export default function Hero({ heroUrl = '/landing/hero.jpg', heroKind = 'image'
           >
             <div className="absolute inset-0 translate-x-4 translate-y-4 transform rounded-3xl bg-chm-primary/10" />
             {heroKind === 'video' ? (
-              /* poster는 정적 이미지라 업로드 영상과 불일치 → 생략하고 영상 자체 첫 프레임을 표시.
-                 무음 자동재생이라 로딩 직후 현재 영상의 첫 장면이 뜬다. preload=auto로 첫 프레임을 앞당김. */
+              /* poster는 업로드 시 캡처한 이 영상의 첫 프레임(heroPoster). 로딩 중 빈 화면 대신
+                 현재 영상의 장면이 즉시 표시된다. 캡처 실패 시 poster 없이 배경색만. */
               <video
                 src={heroUrl}
+                poster={heroPoster || undefined}
                 autoPlay
                 muted
                 loop

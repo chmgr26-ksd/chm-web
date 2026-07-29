@@ -22,6 +22,11 @@ export default async function LandingPage() {
       <Hero
         heroUrl={siteImageUrl('landing-hero', versions)}
         heroKind={isVideoMime(mimes['landing-hero']) ? 'video' : 'image'}
+        heroPoster={
+          isVideoMime(mimes['landing-hero']) && mimes['landing-hero-poster']
+            ? siteImageUrl('landing-hero-poster', versions)
+            : undefined
+        }
       />
       <MissionVision />
       <CoreValues />

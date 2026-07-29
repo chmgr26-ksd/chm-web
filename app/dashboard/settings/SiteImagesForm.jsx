@@ -12,6 +12,47 @@ const SLOTS = [
   { key: 'business-field', label: '사업 안내 · 현장 사진', page: '/business' },
 ];
 
+// 영상 파일의 첫 프레임을 캔버스로 캡처해 JPEG Blob 반환(실패 시 null).
+// <video poster>로 저장되어 로딩 중 빈 화면 대신 현재 영상의 장면이 표시된다.
+function captureVideoPoster(file) {
+  return new Promise((resolve) => {
+    let settled = false;
+    let url;
+    const done = (blob) => {
+      if (settled) return;
+      settled = true;
+      if (url) { try { URL.revokeObjectURL(url); } catch {} }
+      resolve(blob);
+    };
+    try {
+      url = URL.createObjectURL(file);
+      const v = document.createElement('video');
+      v.muted = true;
+      v.playsInline = true;
+      v.preload = 'auto';
+      const draw = () => {
+        const w = v.videoWidth, h = v.videoHeight;
+        if (!w || !h) return done(null);
+        try {
+          const c = document.createElement('canvas');
+          c.width = w; c.height = h;
+          c.getContext('2d').drawImage(v, 0, 0, w, h);
+          c.toBlob((b) => done(b), 'image/jpeg', 0.82);
+        } catch { done(null); }
+      };
+      v.onloadeddata = () => {
+        // 첫 프레임이 검은 화면일 수 있어 살짝 시크 후 캡처.
+        const t = Math.min(0.1, (isFinite(v.duration) ? v.duration : 1) / 2);
+        if (t > 0) { try { v.currentTime = t; } catch { draw(); } } else { draw(); }
+      };
+      v.onseeked = draw;
+      v.onerror = () => done(null);
+      setTimeout(() => done(null), 5000); // 안전 타임아웃
+      v.src = url;
+    } catch { done(null); }
+  });
+}
+
 function Slot({ slot, initialKind, onMsg }) {
   const [ver, setVer] = useState(() => 'init');
   const [kind, setKind] = useState(initialKind || 'image');
@@ -28,6 +69,10 @@ function Slot({ slot, initialKind, onMsg }) {
     try {
       const fd = new FormData();
       fd.append('file', file);
+      if (file.type?.startsWith('video/')) {
+        const poster = await captureVideoPoster(file);
+        if (poster) fd.append('poster', poster, 'poster.jpg');
+      }
       const res = await fetch(`/api/settings/site-image/${slot.key}`, { method: 'POST', body: fd });
       const d = await res.json().catch(() => ({}));
       if (!res.ok) { onMsg({ tone: 'danger', text: `${slot.label}: ${d.error || '업로드 실패'}` }); return; }
