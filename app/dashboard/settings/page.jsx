@@ -5,6 +5,7 @@ import MailSettingsForm from './MailSettingsForm';
 import ContactSettingsForm from './ContactSettingsForm';
 import SiteImagesForm from './SiteImagesForm';
 import NoticeHeroForm from './NoticeHeroForm';
+import { getSiteImageMimes, isVideoMime } from '@/lib/siteContent';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,6 +30,10 @@ export default async function SettingsPage() {
       </>
     );
   }
+  const mimes = await getSiteImageMimes();
+  const imageKinds = {};
+  for (const [k, m] of Object.entries(mimes)) imageKinds[k] = isVideoMime(m) ? 'video' : 'image';
+
   return (
     <div className="flex flex-col gap-10">
       <PageHeader
@@ -40,8 +45,8 @@ export default async function SettingsPage() {
         <ContactSettingsForm />
       </Section>
 
-      <Section title="사이트 이미지" description="랜딩·메인·소개·사업 페이지의 대표 이미지를 교체합니다.">
-        <SiteImagesForm />
+      <Section title="사이트 이미지" description="랜딩·메인·소개·사업 페이지의 대표 이미지를 교체합니다. 랜딩 히어로는 모션 GIF·영상(mp4·webm)도 넣을 수 있습니다.">
+        <SiteImagesForm initialKinds={imageKinds} />
       </Section>
 
       <Section title="공지 배너(랜딩 최상단)" description="랜딩 상단 자동순환 배너·공지 롤러의 전환 간격, 그라디언트 톤, 설명 발췌 길이, 자동재생·롤러 표시를 조정합니다.">

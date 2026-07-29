@@ -4,11 +4,12 @@ import sharp from 'sharp';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { can } from '@/lib/rbac';
-import { sniffImage } from '@/lib/imageSniff';
+import { sniffImage, sniffVideo } from '@/lib/imageSniff';
 import { SITE_IMAGE_SLOTS } from '@/lib/siteContent';
 
 // 사이트 이미지 교체/되돌리기 — settings:manage(관리자) 전용.
-const MAX_BYTES = 8 * 1024 * 1024; // 업로드 원본 상한(리사이즈 전)
+const IMAGE_MAX = 8 * 1024 * 1024;   // 정적 이미지 원본 상한(리사이즈 전)
+const MOTION_MAX = 12 * 1024 * 1024; // 모션 GIF·영상 상한(원본 보존 저장 · DB blob)
 
 export async function POST(req, props) {
   const params = await props.params;
@@ -31,29 +32,49 @@ export async function POST(req, props) {
     return NextResponse.json({ error: '이미지 파일을 선택해 주세요.' }, { status: 400 });
   }
   const raw = Buffer.from(await file.arrayBuffer());
-  if (raw.length > MAX_BYTES) {
-    return NextResponse.json({ error: '이미지는 8MB 이하만 업로드할 수 있습니다.' }, { status: 400 });
+  const imgType = sniffImage(raw);
+  const vidType = slot.motion ? sniffVideo(raw) : null;
+  // 모션 슬롯의 GIF는 애니메이션 보존을 위해 JPEG 변환 없이 원본 저장.
+  const keepRaw = vidType || (slot.motion && imgType === 'image/gif');
+
+  if (!imgType && !vidType) {
+    return NextResponse.json(
+      { error: slot.motion ? 'PNG·JPG·GIF·WEBP 이미지 또는 mp4·webm 영상만 업로드할 수 있습니다.' : 'PNG·JPG·GIF·WEBP 이미지만 업로드할 수 있습니다.' },
+      { status: 400 },
+    );
   }
-  if (!sniffImage(raw)) {
-    return NextResponse.json({ error: 'PNG·JPG·GIF·WEBP 이미지만 업로드할 수 있습니다.' }, { status: 400 });
+  const cap = keepRaw ? MOTION_MAX : IMAGE_MAX;
+  if (raw.length > cap) {
+    return NextResponse.json(
+      { error: keepRaw ? '모션 GIF·영상은 12MB 이하만 업로드할 수 있습니다.' : '이미지는 8MB 이하만 업로드할 수 있습니다.' },
+      { status: 400 },
+    );
   }
 
-  // 서버 리사이즈 — 최장변 1920px, JPEG q85(mozjpeg). 저장 blob 경량화.
   let data;
-  try {
-    data = await sharp(raw)
-      .rotate()
-      .resize(1920, 1920, { fit: 'inside', withoutEnlargement: true })
-      .jpeg({ quality: 85, mozjpeg: true, progressive: true })
-      .toBuffer();
-  } catch {
-    return NextResponse.json({ error: '이미지를 처리하지 못했습니다.' }, { status: 400 });
+  let mimeType;
+  if (keepRaw) {
+    // 영상·모션 GIF: 원본 바이트 그대로 저장(재인코딩 없음).
+    data = raw;
+    mimeType = vidType || 'image/gif';
+  } else {
+    // 정적 이미지: 서버 리사이즈 — 최장변 1920px, JPEG q85(mozjpeg). 저장 blob 경량화.
+    try {
+      data = await sharp(raw)
+        .rotate()
+        .resize(1920, 1920, { fit: 'inside', withoutEnlargement: true })
+        .jpeg({ quality: 85, mozjpeg: true, progressive: true })
+        .toBuffer();
+    } catch {
+      return NextResponse.json({ error: '이미지를 처리하지 못했습니다.' }, { status: 400 });
+    }
+    mimeType = 'image/jpeg';
   }
 
   await prisma.siteImage.upsert({
     where: { key },
-    update: { mimeType: 'image/jpeg', size: data.length, data },
-    create: { key, mimeType: 'image/jpeg', size: data.length, data },
+    update: { mimeType, size: data.length, data },
+    create: { key, mimeType, size: data.length, data },
   });
   revalidateTag('site-images');
   revalidatePath(slot.page);
