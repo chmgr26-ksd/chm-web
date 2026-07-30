@@ -39,7 +39,7 @@ export default function SiteHeader({ reviewFormUrl }) {
         <Container size="xl" className="flex h-[72px] items-center justify-between gap-6">
           <Link href="/" className="flex flex-none items-center" aria-label="CHM Group 홈" onClick={close}>
             {/* 공식 로고(원본 마스터) */}
-            <img src="/logo.png" alt="CHM Group — Community Housing Management" className="block h-[30px] w-auto sm:h-[34px]" />
+            <img src="/logo.png?v=2" alt="CHM Group — Community Housing Management" className="block h-[30px] w-auto sm:h-[34px]" />
           </Link>
 
           {/* 데스크톱 네비 (lg+) — 항목이 많아 lg 이상에서 표시 */}

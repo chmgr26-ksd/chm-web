@@ -38,7 +38,7 @@ export default function ForgotPasswordPage() {
       <div className="w-full max-w-md">
         <div className="mb-6 flex justify-center">
           <Link href="/" aria-label="CHM Group 홈">
-            <img src="/logo.png" alt="CHM Group" className="h-9 w-auto" />
+            <img src="/logo.png?v=2" alt="CHM Group" className="h-9 w-auto" />
           </Link>
         </div>
         <AuthCard
