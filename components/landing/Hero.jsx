@@ -1,10 +1,12 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'motion/react';
 
 // 랜딩 히어로 — chm-group-design/src/components/Hero.tsx 이식.
 // 원본은 fixed 헤더를 피하려 pt-32였으나, 이 앱의 SiteHeader는 sticky라 상단 여백을 줄임.
-export default function Hero({ heroUrl = '/landing/hero.jpg', heroKind = 'image', heroPoster }) {
+export default function Hero({ heroUrl = '/landing/hero.jpg', heroKind = 'image', heroPoster = '/landing/hero.jpg' }) {
+  const [videoReady, setVideoReady] = useState(false);
   return (
     <section className="relative overflow-hidden bg-chm-bg-alt pb-20 pt-16 lg:pb-28 lg:pt-24">
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -70,19 +72,28 @@ export default function Hero({ heroUrl = '/landing/hero.jpg', heroKind = 'image'
           >
             <div className="absolute inset-0 translate-x-4 translate-y-4 transform rounded-3xl bg-chm-primary/10" />
             {heroKind === 'video' ? (
-              /* poster는 업로드 시 캡처한 이 영상의 첫 프레임(heroPoster). 로딩 중 빈 화면 대신
-                 현재 영상의 장면이 즉시 표시된다. 캡처 실패 시 poster 없이 배경색만. */
-              <video
-                src={heroUrl}
-                poster={heroPoster || undefined}
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="auto"
-                aria-label="주민 기술자가 집수리 작업을 하는 모습"
-                className="relative aspect-[4/3] w-full rounded-3xl bg-chm-bg-alt object-cover shadow-xl"
-              />
+              // 로딩 중 빈 화면 방지: 포스터 이미지를 영상 뒤에 항상 깔고(업로드 시 캡처한 첫 프레임,
+              // 없으면 기본 이미지 폴백), 영상이 첫 프레임을 그릴 준비가 되면 그 위로 페이드인.
+              // poster 속성 대신 명시적 오버레이라 브라우저별 autoplay+poster 변덕에 영향받지 않는다.
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl shadow-xl">
+                <img
+                  src={heroPoster}
+                  alt="주민 기술자가 집수리 작업을 하는 모습"
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+                <video
+                  src={heroUrl}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="auto"
+                  onLoadedData={() => setVideoReady(true)}
+                  onPlaying={() => setVideoReady(true)}
+                  aria-label="주민 기술자가 집수리 작업을 하는 모습"
+                  className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
+                />
+              </div>
             ) : (
               <img
                 src={heroUrl}
