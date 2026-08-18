@@ -1,0 +1,202 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-19T00:00:00Z",
+  "title": "Design System: CHM Group",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "신뢰 블루 (Trust Blue)",
+        "canonical": "#2e75b6",
+        "tonalRamp": ["#142c45", "#1a3b5d", "#204c79", "#275f97", "#2e75b6", "#7baad8", "#cfe0f1", "#eaf2fa"]
+      },
+      "cta": {
+        "role": "secondary",
+        "displayName": "자립 오렌지 (Self-Reliance Orange)",
+        "canonical": "#f28c28",
+        "tonalRamp": ["#5a300b", "#7e4310", "#a95a15", "#d5741a", "#f28c28", "#f6b061", "#fce3c6", "#fef4e9"]
+      },
+      "cooperation": {
+        "role": "tertiary",
+        "displayName": "상생 그린 (Cooperation Green)",
+        "canonical": "#4caf50",
+        "tonalRamp": ["#183c1a", "#235526", "#2f7233", "#3d9141", "#4caf50", "#7bc47e", "#cfe9d0", "#edf7ed"]
+      },
+      "community": {
+        "role": "tertiary",
+        "displayName": "공동체 골드 (Community Gold)",
+        "canonical": "#f4c542",
+        "tonalRamp": ["#58440d", "#7d6113", "#a8831a", "#d9a81f", "#f4c542", "#f6d55c", "#fcefc2", "#fef9e9"]
+      },
+      "innovation": {
+        "role": "tertiary",
+        "displayName": "혁신 퍼플 (Innovation Purple)",
+        "canonical": "#7b4fa3",
+        "tonalRamp": ["#2b1c39", "#3e2851", "#52356c", "#664187", "#7b4fa3", "#a67dc6", "#dfceeb", "#f2ecf7"]
+      },
+      "sustainability": {
+        "role": "tertiary",
+        "displayName": "지속가능성 딥그린 (Sustainability Deep Green)",
+        "canonical": "#1f6e43",
+        "tonalRamp": ["#0b2717", "#103822", "#154a2e", "#1a5d39", "#1f6e43", "#67ad89", "#c7e0d2", "#e9f3ee"]
+      },
+      "ink-800": {
+        "role": "neutral",
+        "displayName": "워드마크 딥네이비 (Ink)",
+        "canonical": "#2c3540",
+        "tonalRamp": ["#1c232b", "#2c3540", "#3a4552", "#4e5d6c", "#6b7a8b", "#97a4b2", "#dde3ea", "#f6f8fa"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "통계 수치·대형 영문/숫자 강조 (Montserrat)." },
+      "headline": { "displayName": "Headline", "purpose": "페이지 H1." },
+      "title": { "displayName": "Title", "purpose": "섹션 제목 H2/H3." },
+      "body": { "displayName": "Body", "purpose": "기본 본문. 16px 하한." },
+      "label": { "displayName": "Label / Overline", "purpose": "eyebrow·태그·메타 라벨 (Montserrat, 대문자, 자간 넓게)." }
+    },
+    "shadows": [
+      { "name": "sm", "value": "0 1px 2px rgba(28,35,43,0.06), 0 1px 1px rgba(28,35,43,0.04)", "purpose": "입력·태그의 미세한 분리." },
+      { "name": "md", "value": "0 4px 12px rgba(28,35,43,0.08), 0 2px 4px rgba(28,35,43,0.05)", "purpose": "카드 기본 부양." },
+      { "name": "lg", "value": "0 12px 28px rgba(28,35,43,0.10), 0 4px 8px rgba(28,35,43,0.06)", "purpose": "hover·강조 카드." },
+      { "name": "xl", "value": "0 24px 48px rgba(28,35,43,0.14), 0 8px 16px rgba(28,35,43,0.08)", "purpose": "모달·오버레이." },
+      { "name": "ring", "value": "0 0 0 3px #a6c6e5", "purpose": "초점 링(trust-200)." }
+    ],
+    "motion": [
+      { "name": "ease-chm", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "상호작용 전환의 기본 이징." },
+      { "name": "duration-fast", "value": "120ms", "purpose": "즉각 반응(색 hover)." },
+      { "name": "duration-normal", "value": "200ms", "purpose": "기본 상태 전환." },
+      { "name": "duration-slow", "value": "320ms", "purpose": "부양·모달 등장." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "톤·1차 액션 버튼. 신뢰 블루 solid.",
+      "html": "<button class=\"ds-btn-primary\">자세히 보기</button>",
+      "css": ".ds-btn-primary { display:inline-flex; align-items:center; justify-content:center; height:40px; padding:0 16px; font-family:Pretendard,sans-serif; font-weight:600; font-size:16px; color:#ffffff; background:#2e75b6; border:none; border-radius:10px; cursor:pointer; transition:background 200ms cubic-bezier(0.16,1,0.3,1); } .ds-btn-primary:hover { background:#275f97; } .ds-btn-primary:active { background:#204c79; } .ds-btn-primary:focus-visible { outline:none; box-shadow:0 0 0 1px #ffffff, 0 0 0 3px #7baad8; }"
+    },
+    {
+      "name": "CTA Button",
+      "kind": "button",
+      "refersTo": "button-cta",
+      "description": "전환 전용 버튼(신청·문의). 자립 오렌지 solid. 한 화면에 하나.",
+      "html": "<button class=\"ds-btn-cta\">집수리 신청하기</button>",
+      "css": ".ds-btn-cta { display:inline-flex; align-items:center; justify-content:center; height:40px; padding:0 16px; font-family:Pretendard,sans-serif; font-weight:600; font-size:16px; color:#ffffff; background:#f28c28; border:none; border-radius:10px; cursor:pointer; transition:background 200ms cubic-bezier(0.16,1,0.3,1); } .ds-btn-cta:hover { background:#d5741a; } .ds-btn-cta:active { background:#a95a15; } .ds-btn-cta:focus-visible { outline:none; box-shadow:0 0 0 1px #ffffff, 0 0 0 3px #f6b061; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "2차 액션. 신뢰 블루 아웃라인.",
+      "html": "<button class=\"ds-btn-outline\">취소</button>",
+      "css": ".ds-btn-outline { display:inline-flex; align-items:center; justify-content:center; height:40px; padding:0 16px; font-family:Pretendard,sans-serif; font-weight:600; font-size:16px; color:#275f97; background:#ffffff; border:1px solid #2e75b6; border-radius:10px; cursor:pointer; transition:background 200ms cubic-bezier(0.16,1,0.3,1); } .ds-btn-outline:hover { background:#eaf2fa; } .ds-btn-outline:focus-visible { outline:none; box-shadow:0 0 0 1px #ffffff, 0 0 0 3px #7baad8; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "텍스트 입력 필드. 래퍼 전체가 초점에 반응.",
+      "html": "<label class=\"ds-input\"><input type=\"text\" placeholder=\"이름을 입력하세요\" /></label>",
+      "css": ".ds-input { display:flex; align-items:center; gap:8px; height:40px; padding:0 12px; background:#ffffff; border:1px solid #dde3ea; border-radius:10px; transition:box-shadow 200ms cubic-bezier(0.16,1,0.3,1), border-color 200ms cubic-bezier(0.16,1,0.3,1); } .ds-input:focus-within { border-color:#2e75b6; box-shadow:0 0 0 2px #7baad8; } .ds-input input { flex:1; min-width:0; border:none; background:transparent; font-family:Pretendard,sans-serif; font-size:16px; color:#2c3540; outline:none; } .ds-input input::placeholder { color:#97a4b2; }"
+    },
+    {
+      "name": "Elevated Card",
+      "kind": "card",
+      "refersTo": "card-elevated",
+      "description": "기본 콘텐츠 카드. 상단 accent 바로 6대 가치 색(예: 신뢰 블루) 표시, hover 시 부양.",
+      "html": "<div class=\"ds-card\"><h3 class=\"ds-card-title\">집수리 교실</h3><p class=\"ds-card-desc\">주민이 직접 배우고 익히는 생활 기술 교육 프로그램입니다.</p></div>",
+      "css": ".ds-card { position:relative; background:#ffffff; border-radius:14px; overflow:hidden; padding:24px; box-shadow:0 4px 12px rgba(28,35,43,0.08), 0 2px 4px rgba(28,35,43,0.05); transition:box-shadow 200ms cubic-bezier(0.16,1,0.3,1); } .ds-card::before { content:\"\"; position:absolute; inset-inline:0; top:0; height:4px; background:#2e75b6; } .ds-card:hover { box-shadow:0 12px 28px rgba(28,35,43,0.10), 0 4px 8px rgba(28,35,43,0.06); } .ds-card-title { margin:0; font-family:Pretendard,sans-serif; font-size:18px; font-weight:600; color:#2c3540; } .ds-card-desc { margin:6px 0 0; font-family:Pretendard,sans-serif; font-size:14px; line-height:1.6; color:#4e5d6c; }"
+    },
+    {
+      "name": "Nav Link",
+      "kind": "nav",
+      "refersTo": "navigation",
+      "description": "상·하단 공용 내비게이션 링크. hover/현재 상태에서 브랜드 블루.",
+      "html": "<a class=\"ds-nav-link\" href=\"#\">사업 안내</a>",
+      "css": ".ds-nav-link { display:inline-block; padding:8px 12px; font-family:Pretendard,sans-serif; font-size:16px; font-weight:500; color:#2c3540; text-decoration:none; border-radius:10px; transition:color 120ms cubic-bezier(0.16,1,0.3,1), background 120ms cubic-bezier(0.16,1,0.3,1); } .ds-nav-link:hover { color:#275f97; background:#eaf2fa; } .ds-nav-link[aria-current=\"page\"] { color:#2e75b6; font-weight:600; } .ds-nav-link:focus-visible { outline:none; box-shadow:0 0 0 2px #7baad8; }"
+    },
+    {
+      "name": "PageHero Spectrum",
+      "kind": "custom",
+      "refersTo": "PageHero",
+      "description": "마케팅 히어로. 상단 6색 브랜드 스펙트럼 라인이 시그니처.",
+      "html": "<section class=\"ds-hero\"><div class=\"ds-hero-spectrum\"><span></span><span></span><span></span><span></span><span></span><span></span></div><div class=\"ds-hero-body\"><span class=\"ds-hero-eyebrow\">사업 안내</span><h1 class=\"ds-hero-title\">마을을 연결합니다</h1><p class=\"ds-hero-desc\">지역 주민의 참여로 주거와 생활환경의 문제를 해결합니다.</p></div></section>",
+      "css": ".ds-hero { background:#ffffff; border-radius:14px; overflow:hidden; box-shadow:0 4px 12px rgba(28,35,43,0.08); } .ds-hero-spectrum { display:flex; height:6px; width:100%; } .ds-hero-spectrum span { flex:1; } .ds-hero-spectrum span:nth-child(1){background:#f28c28;} .ds-hero-spectrum span:nth-child(2){background:#2e75b6;} .ds-hero-spectrum span:nth-child(3){background:#4caf50;} .ds-hero-spectrum span:nth-child(4){background:#f4c542;} .ds-hero-spectrum span:nth-child(5){background:#7b4fa3;} .ds-hero-spectrum span:nth-child(6){background:#1f6e43;} .ds-hero-body { padding:32px 24px; } .ds-hero-eyebrow { display:block; font-family:Montserrat,Pretendard,sans-serif; font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#275f97; } .ds-hero-title { margin:12px 0 0; font-family:Pretendard,sans-serif; font-size:36px; font-weight:700; line-height:1.25; color:#2c3540; } .ds-hero-desc { margin:12px 0 0; font-family:Pretendard,sans-serif; font-size:17px; line-height:1.6; color:#4e5d6c; }"
+    },
+    {
+      "name": "StatBand",
+      "kind": "custom",
+      "refersTo": "StatBand",
+      "description": "다크 배경 위 대형 지표 밴드. 수치는 Montserrat, accent는 다크 대비용 밝은 톤.",
+      "html": "<section class=\"ds-statband\"><div class=\"ds-stat\"><div class=\"ds-stat-num\">128<span>가구</span></div><div class=\"ds-stat-label\">집수리 완료</div></div><div class=\"ds-stat\"><div class=\"ds-stat-num ds-stat-accent\">42<span>명</span></div><div class=\"ds-stat-label\">교육 수료 주민</div></div></section>",
+      "css": ".ds-statband { display:flex; flex-wrap:wrap; gap:40px; background:#1e2a38; padding:40px 24px; border-radius:14px; } .ds-stat-num { font-family:Montserrat,Pretendard,sans-serif; font-size:38px; font-weight:800; line-height:1; letter-spacing:-0.02em; font-variant-numeric:tabular-nums; color:#ffffff; } .ds-stat-num span { font-size:20px; font-weight:700; margin-left:2px; } .ds-stat-accent { color:#7baad8; } .ds-stat-label { margin-top:6px; font-family:Pretendard,sans-serif; font-size:14px; color:#c3ccd6; }"
+    },
+    {
+      "name": "Value Card",
+      "kind": "card",
+      "refersTo": "ValueCard",
+      "description": "6대 핵심가치 전용 카드. 좌측 세로 컬러 바 + inset ring + 육각 chip 아이콘.",
+      "html": "<div class=\"ds-valuecard\"><span class=\"ds-valuecard-bar\"></span><div class=\"ds-valuecard-head\"><span class=\"ds-valuecard-chip\"><svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"#2e75b6\" aria-hidden=\"true\"><path d=\"M12 2l8.66 5v10L12 22l-8.66-5V7z\" opacity=\"0.9\"/></svg></span><div><div class=\"ds-valuecard-label\">신뢰</div><div class=\"ds-valuecard-en\">TRUST</div></div></div><p class=\"ds-valuecard-symbol\">“믿고 맡길 수 있는 생활환경 관리”</p><div class=\"ds-valuecard-tags\"><span class=\"ds-valuecard-tag\">안전</span><span class=\"ds-valuecard-tag\">책임</span></div></div>",
+      "css": ".ds-valuecard { position:relative; display:flex; flex-direction:column; background:#ffffff; border-radius:14px; padding:24px; box-shadow: inset 0 0 0 1px #cfe0f1, 0 1px 2px rgba(28,35,43,0.06); transition:box-shadow 200ms cubic-bezier(0.16,1,0.3,1); } .ds-valuecard:hover { box-shadow: inset 0 0 0 1px #cfe0f1, 0 12px 28px rgba(28,35,43,0.10), 0 4px 8px rgba(28,35,43,0.06); } .ds-valuecard-bar { position:absolute; left:0; top:0; height:100%; width:6px; border-radius:14px 0 0 14px; background:#2e75b6; } .ds-valuecard-head { display:flex; align-items:center; gap:12px; } .ds-valuecard-chip { display:grid; place-items:center; height:44px; width:44px; border-radius:10px; background:#eaf2fa; } .ds-valuecard-label { font-family:Pretendard,sans-serif; font-size:18px; font-weight:700; color:#2c3540; } .ds-valuecard-en { font-family:Montserrat,Pretendard,sans-serif; font-size:12px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:#6b7a8b; } .ds-valuecard-symbol { margin:16px 0 0; font-family:Pretendard,sans-serif; font-size:14px; line-height:1.7; color:#3a4552; } .ds-valuecard-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:16px; } .ds-valuecard-tag { border-radius:9999px; padding:4px 10px; font-family:Pretendard,sans-serif; font-size:12px; font-weight:500; background:#eaf2fa; color:#204c79; }"
+    },
+    {
+      "name": "Notice Bar",
+      "kind": "custom",
+      "refersTo": "NoticeBar",
+      "description": "페이지 최상단 공지/모집 알림 바. dark 톤 + 자립 오렌지 배지.",
+      "html": "<div class=\"ds-noticebar\"><span class=\"ds-noticebar-badge\">모집</span><span class=\"ds-noticebar-text\">2026 집수리 교실 참가자를 모집합니다</span><a class=\"ds-noticebar-link\" href=\"#\">자세히 보기 →</a></div>",
+      "css": ".ds-noticebar { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:10px; padding:10px 20px; background:#1e2a38; color:#dde3ea; font-family:Pretendard,sans-serif; font-size:14px; text-align:center; } .ds-noticebar-badge { border-radius:9999px; padding:2px 8px; font-family:Montserrat,Pretendard,sans-serif; font-size:11px; font-weight:700; letter-spacing:0.04em; background:#f28c28; color:#ffffff; } .ds-noticebar-text { font-weight:500; } .ds-noticebar-link { color:#f5cd4f; font-weight:700; text-decoration:none; transition:opacity 120ms cubic-bezier(0.16,1,0.3,1); } .ds-noticebar-link:hover { opacity:0.8; }"
+    },
+    {
+      "name": "Badge",
+      "kind": "chip",
+      "refersTo": "Badge",
+      "description": "상태/카테고리 라벨. 6대 가치 + ink + danger, soft/solid/outline 변형.",
+      "html": "<span class=\"ds-badge ds-badge-trust\"><span class=\"ds-badge-dot\"></span>공지</span> <span class=\"ds-badge ds-badge-coop-solid\">완료</span> <span class=\"ds-badge ds-badge-danger-outline\">마감</span>",
+      "css": ".ds-badge { display:inline-flex; align-items:center; gap:6px; height:24px; padding:0 10px; border-radius:6px; font-family:Pretendard,sans-serif; font-size:12px; font-weight:600; white-space:nowrap; } .ds-badge-trust { background:#eaf2fa; color:#204c79; } .ds-badge-dot { height:6px; width:6px; border-radius:9999px; background:#2e75b6; } .ds-badge-coop-solid { background:#4caf50; color:#ffffff; } .ds-badge-danger-outline { border:1px solid #e14b4b; color:#e14b4b; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "따뜻한 이음 (The Warm Connective)",
+    "overview": "CHM Group의 시각 세계는 사람과 집, 그리고 마을을 잇는 따뜻한 손길이다. 차가운 기업 UI가 아니라, 도움을 받던 주민이 기술을 배워 이웃을 돌보는 자립의 서사를 화면이 그대로 닮는다. 신뢰의 파랑이 구조와 링크를 차분히 붙들고, 자립의 주황이 '신청·문의' 같은 결정적 행동에 온기를 얹는다. 배경은 순백이 아니라 살짝 데운 뉴트럴로 두어 동네 사랑방의 온도를 낸다. 깊이는 요란하지 않다 — 은은한 그림자와 둥근 모서리가 6색 육각 엠블럼의 부드러운 기하를 반복한다. 가장 중요한 사용자는 고령·취약계층 주민이므로, 화려함보다 읽힘과 눌림을 먼저 존중한다.",
+    "keyCharacteristics": [
+      "신뢰 블루가 뼈대, 자립 오렌지가 행동 — 색이 곧 역할.",
+      "6대 가치 = 6개 브랜드 색, 의미 있는 곳에만.",
+      "부드러운 그림자 + 둥근 모서리로 얻는 신뢰감, 하드 라인 없음.",
+      "데운 뉴트럴 배경으로 만드는 사랑방의 온도.",
+      "접근성이 기본값: 16px 본문 하한, 또렷한 대비, 명료한 초점."
+    ],
+    "rules": [
+      { "name": "The Blue-Anchors-Orange-Acts Rule", "body": "신뢰 블루는 구조·링크·톤을 붙들고, 자립 오렌지는 오직 전환 행동(신청·문의)에만 나타난다. 한 화면에 강조 오렌지 CTA는 원칙적으로 하나. 그 희소성이 전환력을 만든다.", "section": "colors" },
+      { "name": "The Six-Value Rule", "body": "6개 브랜드 색은 6대 핵심가치를 표현하는 신호로만 쓴다(가치 카드, 카드 상단 accent 바, 아이콘). 버튼·본문·큰 배경 면적에 장식으로 칠하지 않는다.", "section": "colors" },
+      { "name": "The Landing-Warmth Exception", "body": "랜딩(/)만 앰버/브라운 웜 팔레트를 두른다(chm-primary #d97706 등). 의도된 표면 예외이며 랜딩 바깥엔 쓰지 않는다. 정본은 언제나 DS 토큰이다.", "section": "colors" },
+      { "name": "The Montserrat-for-Numbers Rule", "body": "Montserrat(display)는 숫자·영문 라벨·워드마크 강조에만. 한글 본문에 강제하지 않는다.", "section": "typography" },
+      { "name": "The 16px Floor Rule", "body": "본문 텍스트는 16px 아래로 내려가지 않는다. 고령 사용자가 기본 사용자이므로 본문 축소는 접근성 후퇴다.", "section": "typography" },
+      { "name": "The Soft-Shadow, No-Harsh-Line Rule", "body": "깊이는 은은한 그림자로 낸다. 순수 검정 그림자나 무거운 1px 블랙 보더로 표면을 가르지 않는다. 경계가 필요하면 ink-200 보더를 쓴다.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do 전환 행동(신청·문의)에 자립 오렌지 CTA(bg-cta)를, 링크·톤에는 신뢰 블루(primary)를 쓴다.",
+      "Do 본문을 16px 이상, 대비를 WCAG AA(4.5:1) 이상으로 유지한다 — 고령·취약계층이 기본 사용자.",
+      "Do 6대 가치 색은 카드 accent 바·아이콘·가치 카드 등 의미 있는 신호에만 얹는다.",
+      "Do 깊이는 shadow-chm-md/lg와 10–14px 라운드로 낸다(부드럽고 신뢰감 있게).",
+      "Do 모든 상호작용 요소에 focus-visible 링(ring-trust-300)을 유지한다.",
+      "Do 배경은 순백 대신 데운 뉴트럴(surface-warm)·쿨 연블루(surface-cool)로 섹션 리듬을 만든다."
+    ],
+    "donts": [
+      "Don't 랜딩 밖 화면에 웜 팔레트(chm-primary #d97706, chm-text #431407 등)를 쓴다 — 랜딩 전용 예외다.",
+      "Don't 한 화면에 강조 오렌지 CTA를 여러 개 두어 전환 초점을 흩뜨린다.",
+      "Don't 6개 브랜드 색을 버튼·큰 배경 면적에 장식으로 남용한다.",
+      "Don't 순수 검정(#000) 텍스트·보더·그림자로 표면을 가른다 — ink-800/ink-200/부드러운 그림자를 쓴다.",
+      "Don't 로고 래스터 logo.png를 어두운 배경에 얹는다 — SVG <Logo inverse>를 쓴다.",
+      "Don't 본문 텍스트를 16px 아래로 축소한다."
+    ]
+  }
+}
